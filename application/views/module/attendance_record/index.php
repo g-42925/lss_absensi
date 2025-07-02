@@ -46,7 +46,6 @@
             <td><?=$row['nama_pegawai'];?></td>
             <td><?=$row['hhk'];?></td>
             <td><?=$row['th'];?></td>
-            <!-- <td><?//=$row['bl'];?></td> -->
             <td><?=$row['tl'];?></td>
             <td><?=$row['c'];?></td>
             <td><?=$row['s'];?></td>

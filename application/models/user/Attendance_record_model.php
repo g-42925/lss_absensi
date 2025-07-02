@@ -42,6 +42,7 @@ class Attendance_record_model extends CI_Model {
             
             // alfa (th) dan blm ada status (ts)
             $th = $this->db->query("SELECT count(is_status) as total FROM tx_absensi WHERE is_status='th' AND pegawai_id='$row[pegawai_id]' AND date(tanggal_absen) BETWEEN '$tglawal' AND '$tglakhr' AND is_pending='n'")->row_array();
+                       
 
             $qtgl = $this->db->query("SELECT * FROM tx_tanggal WHERE date(tanggal) BETWEEN '$tglawal' AND '$tglakhr'")->result_array();
             $totalts = 0;

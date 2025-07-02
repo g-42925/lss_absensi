@@ -77,15 +77,13 @@ class Get_model extends CI_Model {
         WHERE a.pegawai_id=$id AND a.is_del='n'";
 
         $result = $this->db->query($q1)->row_array();
-   
-        $q2 = "SELECT * FROM m_pola_kerja_det WHERE pola_kerja_id = '{$result['pola_kerja_id']}'";
+        
+        if($result){
+          $q2 = "SELECT * FROM m_pola_kerja_det WHERE pola_kerja_id = '{$result['pola_kerja_id']}'";
+          $result2 = $this->db->query($q2)->result_array();
+        }
 
-        $result2 = $this->db->query($q2)->result_array();
-
-        $result['pola_kerja'] = $result2;
-
-        $no = 0;
-        $msgpola = 'y';
+        $msgpola = 'no message';
         
         // foreach ($result as $row) {
                // jika ada data mulai_berlaku_tanggal
@@ -137,7 +135,7 @@ class Get_model extends CI_Model {
         //     }
         // }
         
-        if(isset($result['mulai_berlaku_tanggal'])){
+        if($result && isset($result['mulai_berlaku_tanggal'])){
            if($this->today>$result['mulai_berlaku_tanggal']){
                $tgl1 = strtotime($result['mulai_berlaku_tanggal']); 
                $tgl2 = strtotime($this->today); 
@@ -172,14 +170,15 @@ class Get_model extends CI_Model {
            }
         }
 
-        if (!$result) {
-            $msgpola = 'Belum setting pola kerja.';
+        if($res && !$result){
+          $msgpola = 'Belum setting pola kerja atau pegawai tidak aktif lagi';
         }
 
-        if ($res) {
-            return json_encode(array('status'=>true, 'result'=>$res, 'pola'=>$pola, 'msgpola'=>$msgpola));
-        }else{
-            return json_encode(array('status'=>false, 'msg'=>'ID unknown, silahkan logout dan login kembali.'));
+        if($res){
+          return json_encode(array('status'=>true, 'result'=>$res, 'pola'=>$pola, 'msgpola'=>$msgpola));
+        }
+        else{
+          return json_encode(array('status'=>false, 'msg'=>'ID unknown, silahkan logout dan login kembali.'));
         }
     }
 
@@ -203,20 +202,26 @@ class Get_model extends CI_Model {
             $limit = " ";
         }
 
-        $query = $this->db->query("SELECT * FROM tx_tanggal ORDER BY tanggal DESC $limit ");
-        $resq = $query->result_array();
+        $r = $this->db->query("SELECT * FROM tx_tanggal ORDER BY tanggal DESC $limit ")->result_array();
         $loadnya = $query->num_rows();
 
         $kary = $this->db->query("SELECT tanggal_mulai_kerja FROM m_pegawai WHERE pegawai_id='$postjson[id]'")->row_array();
 
+
+        if($kary){
+
+        }
+
         if ($kary) {
-            foreach ($resq as $row) {
+            foreach ($r as $row) {
 
                 $res = $this->db->query("SELECT a.*, c.mulai_berlaku_tanggal FROM tx_absensi a 
                 LEFT JOIN m_pegawai_pola c ON a.pegawai_id=c.pegawai_id
                 WHERE a.pegawai_id='$postjson[id]'
                 AND a.tanggal_absen='$row[tanggal]'
                 ")->row_array();
+
+                
 
                 $lembur = $this->db->query("SELECT a.lembur_id, 
                 a.tanggal_lembur, a.masuk_lembur, a.keluar_lembur, 

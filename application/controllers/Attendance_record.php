@@ -3,6 +3,15 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 class Attendance_record extends CI_Controller {
 
+    public $email;
+    public $session;
+    public $form_validation;
+    public $upload;
+    public $pagination;
+    public $other;
+    public $menu;
+    public $attr;
+
     public function __construct() {
         parent::__construct();
         is_logged_in();

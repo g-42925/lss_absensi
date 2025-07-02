@@ -78,6 +78,15 @@ class CI_Loader {
 	public $patterns;
 	public $tw;
 	public $form;
+	public $attr;
+	public $rp;
+	public $profile;
+	public $admin;
+	public $roles;
+	public $izin;
+	public $lokasi;
+	public $terkini;
+	public $validation;
 
 	// All these are set automatically. Don't mess with them.
 	/**

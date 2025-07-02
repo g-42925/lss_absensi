@@ -36,10 +36,9 @@
         <thead>
           <tr>
             <th class="w-s-n">Tanggal</th>
+            <th class="w-s-n">Id</th>
             <th>Kategori</th>
-            <th>Karyawan</th>
-            <th>Set.Masuk</th>
-            <th>Set.Keluar</th>
+            <th>Nama</th>
             <th>Status</th>
             <th class="text-end">Action</th>
           </tr>
@@ -53,7 +52,10 @@
               <?= $row['tanggal'];?>
             </td>
             <td class="w-s-n">
-              <span class="btn btn-label-dark btn-sm ft-11"><?= $row['kategori'];?></span>
+              <?= $row['pegawai'][0]['pegawai_id']; ?>
+            </td>
+            <td class="w-s-n">
+              <?= $row['kategori']; ?>
             </td>
             <td>
               <?php $nos=1; foreach ($row['pegawai'] as $row2) :
@@ -68,13 +70,11 @@
                 }
               ?>
               <a href="javascript:;" onclick="action_permit_req('<?=$row2['request_izin_id'];?>','<?=$row2['pegawai_id'];?>');">
-                <?=$nos++.'. '.$row2['nama_pegawai'];?>
+                <?= $row2['nama_pegawai'];?>
               </a>
               <?=$jm.'<br>';?>
               <?php endforeach; ?>
             </td>
-            <td><?= $row['j_masuk'];?></td>
-            <td><?= $row['j_keluar'];?></td>
             <td><?= $row['status'];?></td>
             <td align="right">
               <a href="<?=base_url('req_permission/edit/'.$row['id']);?>" class="btn p-1">

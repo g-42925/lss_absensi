@@ -25,7 +25,7 @@
                 <i class="ti ti-calendar ti-md"></i>
               </div>
               <h5 class="card-title mb-1 pt-2">Request Izin</h5>
-              <p class="mb-2 mt-1 ft-16"><?=$t_izin['num']+0;?></p>
+              <p class="mb-2 mt-1 ft-16"><?= $t_izin ?></p>
               <div class="pt-0">
                 <a href="<?=base_url('req_permission');?>" class="badge bg-label-secondary float-right">Lihat</a>
               </div>

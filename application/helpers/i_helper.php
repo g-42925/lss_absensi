@@ -15,14 +15,17 @@ function cek_menu_access() {
                 if ($CI->uri->segment(3)!='') {
                     if ($CI->uri->segment(4)!='') {
                         $segment = $CI->uri->segment(1).'/'.$CI->uri->segment(2).'/'.$CI->uri->segment(3).'/';
-                    }else{
+                    }
+                    else{
                         $segment = $CI->uri->segment(1).'/'.$CI->uri->segment(2).'/'.$CI->uri->segment(3).'/';
                     }
-                }else{
+                }
+                else{
                     $segment = $CI->uri->segment(1).'/'.$CI->uri->segment(2).'/';
                 }
-            }else{
-            $segment = $CI->uri->segment(1).'/';
+            }
+            else{
+                $segment = $CI->uri->segment(1).'/';
             }
         }else{
             $segment = '';

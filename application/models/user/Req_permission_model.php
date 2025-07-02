@@ -61,7 +61,6 @@ class Req_permission_model extends CI_Model {
                 'tipe'                => $row['tipe_request']
             );
         }
-
         return $data;
 
     }
@@ -99,7 +98,7 @@ class Req_permission_model extends CI_Model {
             'catatan_awal'          => $this->input->post('catatanl'),
             'jumlah_cuti'           => $jumlahhari+1,
             'file_dokumen'          => $filex,
-            'is_status'             => 1, // 0 pending, 1 acc, 2 tolak
+            'is_status'             => 0, // 0 pending, 1 acc, 2 tolak
             'created_at'            => date('Y-m-d H:i:s')
         ];
         $res = $this->db->insert('tx_request_izin', $data);
