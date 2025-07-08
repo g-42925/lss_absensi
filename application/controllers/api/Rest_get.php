@@ -7,6 +7,13 @@ use PHPMailer\PHPMailer\Exception;
 
 class Rest_get extends CI_Controller {
 
+    public $upload;
+    public $email;
+    public $session;
+    public $form_validation;
+    public $pagination;
+    public $get;
+
     function __construct() {
         parent::__construct();
         header('Access-Control-Allow-Origin: *');

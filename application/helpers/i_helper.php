@@ -78,20 +78,24 @@ function dataKaryawan(){
     return ($query);
 }
 
-function checkJumlahPola($id,$jhari){
+function checkJumlahPola($id,$jHari){
+    // $modifiedJHari = $jHari;
+    // $CI = get_instance();
+    // $q = $CI->db->query("SELECT jumlah_hari_siklus from m_pola_kerja where pola_kerja_id='$id'")->row_array();
+    // if($modifiedJHari > $q['jumlah_hari_siklus']){
+    //   checkJumlahPola($id,$modifiedJHari - $query['jumlah_hari_siklus']);
+    // }
+
+    // return $modifiedJHari;
+
+
     $CI = get_instance();
     $query = $CI->db->query("SELECT jumlah_hari_siklus FROM m_pola_kerja WHERE pola_kerja_id='$id'")->row_array();
     if (!isset($query['jumlah_hari_siklus'])) { $query['jumlah_hari_siklus'] = ''; }
-
-    if($query['jumlah_hari_siklus']!=''){
-        for ($i=0; $i < 10; $i++) { 
-            if ($jhari>$query['jumlah_hari_siklus']) {
-                $jhari = checkJumlahPola($id,$jhari-$query['jumlah_hari_siklus']);
-                break;
-            }
-        }
+    if($jHari>$query['jumlah_hari_siklus']) {
+        $jHari = checkJumlahPola($id,$jHari-$query['jumlah_hari_siklus']);
     }
-    return $jhari+0;
+    return $jHari+0;
 
 }
 

@@ -10,6 +10,15 @@ class Dashboard extends CI_Controller {
         $this->load->model('master_model', 'master');
     }
 
+    public $email;
+    public $session;
+    public $form_validation;
+    public $upload;
+    public $pagination;
+    public $menu;
+    public $master;
+    
+
     public function index() {
         $data['htmlpagejs'] = 'dashboard';
         $data['nmenu'] = 'Dashboard';

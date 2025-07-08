@@ -3,6 +3,16 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 class Data extends CI_Controller {
 
+    public $email;
+    public $session;
+    public $form_validation;
+    public $upload;
+    public $pagination;
+    public $other;
+    public $menu;
+    public $data;
+    public $att;
+
     public function __construct() {
         parent::__construct();
         is_logged_in();
@@ -12,6 +22,7 @@ class Data extends CI_Controller {
         $this->load->model('user/karyawan/data_model', 'data');
         $this->load->model('user/attendance_model', 'att');
     }
+    
 
     public function index() {
         cek_menu_access();

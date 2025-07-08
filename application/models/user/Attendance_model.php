@@ -101,7 +101,7 @@ class Attendance_model extends CI_Model {
         return $data;
     }
 
-    public function absensi_proses($tgl,$tipe = 'is_status',$idp,$value) {
+    public function absensi_proses($tgl,$idp,$value,$tipe = 'is_status') {
         $res = false;
         if ($tipe=='status') { 
             $tipe = 'is_status'; 

@@ -49,6 +49,35 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * @link		https://codeigniter.com/user_guide/libraries/loader.html
  */
 class CI_Loader {
+	public $benchmark;
+	public $hooks;
+	public $config;
+	public $log;
+	public $utf8;
+	public $uri;
+	public $router;
+	public $output;
+	public $security;
+	public $input;
+	public $lang;
+	public $db;
+	public $load;
+	public $email;
+	public $session;
+	public $form_validation;
+	public $upload;
+	public $pagination;
+	public $auth;
+	public $news;
+	public $slid;
+	public $menu;
+	public $master;
+	public $other;
+	public $data;
+	public $att;
+	public $patterns;
+	public $tw;
+	public $form;
 
 	// All these are set automatically. Don't mess with them.
 	/**
