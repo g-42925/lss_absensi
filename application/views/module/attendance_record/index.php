@@ -35,7 +35,6 @@
             <th>Cuti&nbsp;& Lainnya</th>
             <th>Cuti Sakit</th>
             <th>Cuti&nbsp;Setengah Hari</th>
-            <th>Cuti Bersama</th>
             <th>Cuti Tahunan</th>
             <th width="">&nbsp;Action&nbsp;</th>
           </tr>
@@ -50,7 +49,6 @@
             <td><?=$row['c'];?></td>
             <td><?=$row['s'];?></td>
             <td><?=$row['csh'];?></td>
-            <td><?=$row['cb'];?></td>
             <td><?=$row['ct'];?></td>
             <td align="right">
               <a href="<?=base_url('attendance_record/detail/'.$row['pegawai_id']);?>" class="btn p-1 text-primary">

@@ -45,7 +45,14 @@ class Dashboard extends CI_Controller {
 
         $data['a_l'] = $this->db->query("SELECT * FROM tx_absensi WHERE is_status='l' AND tanggal_absen='$today'")->num_rows();
 
-        $data['a_ts'] = $data['t_pegawai']-($data['a_masuk']+$data['a_sakit']+$data['a_izin']+$data['a_tl']+$data['a_l']);
+        $data['a_ts'] = $data['t_pegawai']-($data['a_masuk']+$data['a_sakit']+$data['a_izin']+$data['a_tl']+$data['a_l'])-1;
+
+        if($data['a_ts'] > 0){
+            $data['a_ts'] = $data['a_ts'];
+        }
+        else{
+          $data['a_ts'] = 0;
+        }
 
         $data['t_terkini'] = $this->db->get_where('tx_lokasi_terkini', ['is_read' => 'n'])->num_rows();
 

@@ -46,20 +46,6 @@
             </div>
           </div>
         </div>
-        <div class="col-xl-12 col-md-6 col-sm-6 col-xs-6 mb-4">
-          <div class="card">
-            <div class="card-body">
-              <div class="badge p-2 bg-label-primary mb-2 rounded">
-                <i class="ti ti-compass ti-md"></i>
-              </div>
-              <h5 class="card-title mb-1 pt-2">Data Terkini Terbaru</h5>
-              <p class="mb-2 mt-1 ft-16"><?=$t_terkini+0;?></p>
-              <div class="pt-0">
-                <a href="<?=base_url('terkini');?>" class="badge bg-label-secondary float-right">Lihat</a>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
     <!--/ Website Analytics -->
