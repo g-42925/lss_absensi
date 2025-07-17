@@ -2,6 +2,15 @@
 defined('BASEPATH') or exit('No direct script access allowed');
 
 class Locations extends CI_Controller {
+    public $email;
+    public $session;
+    public $validation;
+    public $upload;
+    public $pagination;
+    public $other;
+    public $menu;
+    public $lokasi;
+    public $form_validation;
 
     public function __construct() {
         parent::__construct();

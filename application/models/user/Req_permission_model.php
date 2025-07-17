@@ -61,7 +61,6 @@ class Req_permission_model extends CI_Model {
                 'tipe'                => $row['tipe_request']
             );
         }
-
         return $data;
 
     }
@@ -99,7 +98,7 @@ class Req_permission_model extends CI_Model {
             'catatan_awal'          => $this->input->post('catatanl'),
             'jumlah_cuti'           => $jumlahhari+1,
             'file_dokumen'          => $filex,
-            'is_status'             => 1, // 0 pending, 1 acc, 2 tolak
+            'is_status'             => 0, // 0 pending, 1 acc, 2 tolak
             'created_at'            => date('Y-m-d H:i:s')
         ];
         $res = $this->db->insert('tx_request_izin', $data);
@@ -182,6 +181,7 @@ class Req_permission_model extends CI_Model {
 
             // Lakukan proses insert atau update seperti biasa
             foreach ($idp as $value) {
+
                 if ($value != '') {
                     $checkdata = $query = $this->db->query("SELECT * FROM tx_request_izin_pegawai WHERE pegawai_id='$value' AND request_izin_id='$id' ORDER BY request_izin_peg_id DESC")->row_array();
 
@@ -219,6 +219,16 @@ class Req_permission_model extends CI_Model {
                         'catatan_awal'          => $cttnnya,
                         'jumlah_cuti'           => $jumlahhari+1
                     ];
+
+                    $this->db->update(
+                        'tx_absensi',
+                        ['is_status' => $cek['tipe_request']],
+                        [
+                            'pegawai_id' => $value,
+                            'tanggal_absen' => $this->input->post('tgl1')
+                        ]
+                    );
+                    
                     $this->db->insert('tx_request_izin_pegawai', $data);
                 }
             }

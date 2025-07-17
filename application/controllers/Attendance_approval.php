@@ -2,6 +2,15 @@
 defined('BASEPATH') or exit('No direct script access allowed');
 
 class Attendance_approval extends CI_Controller {
+    public $email;
+    public $session;
+    public $form_validation;
+    public $upload;
+    public $pagination;
+    public $other;
+    public $menu;
+    public $att;
+    
 
     public function __construct() {
         parent::__construct();

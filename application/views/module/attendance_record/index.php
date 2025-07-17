@@ -23,7 +23,6 @@
       </div>
     </div>
     <div class="card-datatable table-responsive">
-      <?=$this->session->flashdata('message');?>
       <table class="table border-top" id="dataTableatt2">
         <thead>
           <tr>
@@ -35,8 +34,8 @@
             <th>Cuti&nbsp;& Lainnya</th>
             <th>Cuti Sakit</th>
             <th>Cuti&nbsp;Setengah Hari</th>
-            <th>Cuti Bersama</th>
             <th>Cuti Tahunan</th>
+            <th>Cuti Bersama</th>
             <th width="">&nbsp;Action&nbsp;</th>
           </tr>
         </thead>
@@ -46,13 +45,12 @@
             <td><?=$row['nama_pegawai'];?></td>
             <td><?=$row['hhk'];?></td>
             <td><?=$row['th'];?></td>
-            <!-- <td><?//=$row['bl'];?></td> -->
             <td><?=$row['tl'];?></td>
             <td><?=$row['c'];?></td>
             <td><?=$row['s'];?></td>
             <td><?=$row['csh'];?></td>
-            <td><?=$row['cb'];?></td>
             <td><?=$row['ct'];?></td>
+            <td><?=$row['cb'];?></td>
             <td align="right">
               <a href="<?=base_url('attendance_record/detail/'.$row['pegawai_id']);?>" class="btn p-1 text-primary">
                 Lihat&nbsp;Detail

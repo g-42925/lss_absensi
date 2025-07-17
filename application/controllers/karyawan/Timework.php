@@ -3,6 +3,20 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 class Timework extends CI_Controller {
 
+    public $email;
+    public $session;
+    public $form;
+    public $upload;
+    public $pagination;
+    public $other;
+    public $menu;
+    public $data;
+    public $patterns;
+    public $tw;
+    public $form_validation;
+    
+
+
     public function __construct() {
         parent::__construct();
         is_logged_in();

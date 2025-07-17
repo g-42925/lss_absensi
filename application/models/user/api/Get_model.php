@@ -25,16 +25,29 @@ class Get_model extends CI_Model {
 
             if($result){
                 return json_encode(array('status'=>true, 'loc'=>'y', 'result'=>$result, 'sistem'=>$sistem));
-            }else {
+            }
+			else {
                 $result = $this->db->query("SELECT * FROM m_lokasi WHERE is_del='n'")->row_array();
                 if($result){
-                    return json_encode(array('status'=>true, 'loc'=>'y', 'result'=>$result, 'sistem'=>$sistem));
-                }else{
-                    return json_encode(array('status'=>false, 'loc'=>'n', 'msg'=>'Koordinat atau lokasi kantor belum ditetapkan, tapi kamu masih bisa melakukan absen.', 'sistem'=>$sistem));
+                    return json_encode(
+                      array(
+                        'status'=>true, 
+                        'loc'=>'y', 
+                        'result'=>$result, 
+                        'sistem'=>$sistem
+                      )
+                    );
                 }
             }
-        }else{
-            return json_encode(array('status'=>false, 'loc'=>'x', 'msg'=>'ID unknown, silahkan logout dan login kembali.', 'sistem'=>$sistem));
+        }
+        else{
+            return json_encode(
+                array(
+                    'status'=>false, 
+                    'loc'=>'x', 'msg'=>'ID unknown, silahkan logout dan login kembali.', 
+                    'sistem'=>$sistem
+                )
+            );
         }
     }
 
@@ -42,79 +55,130 @@ class Get_model extends CI_Model {
 
         if (!isset($postjson)) exit();
 
-        $res = $this->db->query("SELECT * FROM m_pegawai WHERE pegawai_id='$postjson[id]'")->row_array();
+        $id = (int)$postjson['id'];
+
+        $res = $this->db->query("SELECT * FROM m_pegawai WHERE pegawai_id=$id")->row_array();
 
         $pola = array();
-        $query = "SELECT 
+        
+        // $query = "SELECT 
+        // a.pegawai_id as pid, a.tanggal_mulai_kerja, 
+        // c.mulai_berlaku_tanggal, c.dari_hari_ke, c.pola_kerja_id 
+        // FROM m_pegawai a
+        // JOIN m_pegawai_pola c ON a.pegawai_id=c.pegawai_id AND c.is_selected='y'
+        // JOIN m_pola_kerja_det d ON c.pola_kerja_id=d.pola_kerja_id
+        // WHERE a.pegawai_id='$postjson[id]' AND a.is_del='n'";
+
+        $q1 = "SELECT 
         a.pegawai_id as pid, a.tanggal_mulai_kerja, 
         c.mulai_berlaku_tanggal, c.dari_hari_ke, c.pola_kerja_id 
         FROM m_pegawai a
         JOIN m_pegawai_pola c ON a.pegawai_id=c.pegawai_id AND c.is_selected='y'
-        JOIN m_pola_kerja_det d ON c.pola_kerja_id=d.pola_kerja_id
-        WHERE a.pegawai_id='$postjson[id]' AND a.is_del='n'";
+        WHERE a.pegawai_id=$id AND a.is_del='n'";
 
-        $result = $this->db->query($query)->result_array();
+        $result = $this->db->query($q1)->row_array();
+        
+        if($result){
+          $q2 = "SELECT * FROM m_pola_kerja_det WHERE pola_kerja_id = '{$result['pola_kerja_id']}'";
+          $result2 = $this->db->query($q2)->result_array();
+        }
 
-        $no = 0;
-        $msgpola = 'y';
-        foreach ($result as $row) {
+        $msgpola = 'no message';
+        
+        // foreach ($result as $row) {
+               // jika ada data mulai_berlaku_tanggal
+        //     if (isset($row['mulai_berlaku_tanggal'])) {
+        //         // jika pola kerja yang ditetapkan sudah berlaku
+        //         if ($this->today>=$row['mulai_berlaku_tanggal']) {
 
-            if (isset($row['mulai_berlaku_tanggal'])) {
-                // jika pola kerja yang ditetapkan sudah berlaku
-                if ($this->today>=$row['mulai_berlaku_tanggal']) {
+                    // $tgl = date("Y-m-d", strtotime($this->today." +".$no++." day"));
 
-                    $tgl = date("Y-m-d", strtotime($this->today." +".$no++." day"));
+                    // $tgl1 = strtotime($row['mulai_berlaku_tanggal']); 
+                    // $tgl2 = strtotime($tgl); 
 
-                    $tgl1 = strtotime($row['mulai_berlaku_tanggal']); 
-                    $tgl2 = strtotime($tgl); 
+                    // $jarak = $tgl2 - $tgl1;
+        //             $hari = $jarak / 60 / 60 / 24;
+        //             $checkJumlahPola = checkJumlahPola($row['pola_kerja_id'],$hari+($row['dari_hari_ke']));
 
-                    $jarak = $tgl2 - $tgl1;
-                    $hari = $jarak / 60 / 60 / 24;
-                    $checkJumlahPola = checkJumlahPola($row['pola_kerja_id'],$hari+($row['dari_hari_ke']));
+                    // $q = $this->db->query("SELECT a.*, b.toleransi_terlambat FROM m_pola_kerja_det a 
+                    //     JOIN m_pola_kerja b ON a.pola_kerja_id=b.pola_kerja_id 
+                    //     WHERE a.pola_kerja_id='$row[pola_kerja_id]' AND a.is_day='$checkJumlahPola'")->row_array();
 
-                    $q = $this->db->query("SELECT a.*, b.toleransi_terlambat FROM m_pola_kerja_det a 
-                        JOIN m_pola_kerja b ON a.pola_kerja_id=b.pola_kerja_id 
-                        WHERE a.pola_kerja_id='$row[pola_kerja_id]' AND a.is_day='$checkJumlahPola'")->row_array();
+        //             if (!isset($q['jam_masuk'])) { $q['jam_masuk'] = ''; }
+        //             if (!isset($q['jam_pulang'])) { $q['jam_pulang'] = ''; }
+        //             if (!isset($q['toleransi_terlambat'])) { $q['toleransi_terlambat'] = ''; }
 
-                    if (!isset($q['jam_masuk'])) { $q['jam_masuk'] = ''; }
-                    if (!isset($q['jam_pulang'])) { $q['jam_pulang'] = ''; }
-                    if (!isset($q['toleransi_terlambat'])) { $q['toleransi_terlambat'] = ''; }
+        //             if (isset($q['is_work']) && $q['is_work']=='n') { $st = 'l'; }else{ $st = 'ts'; }
 
-                    if (isset($q['is_work']) && $q['is_work']=='n') { $st = 'l'; }else{ $st = 'ts'; }
+                    // if ($st=='l') {
+                    //     $status= 'Libur';
+                    //     $clr= 'bg-danger';
+                    // }else{
+                    //     $status= 'Hari Kerja';
+                    //     $clr= 'bg-white';
+                    // }
 
-                    if ($st=='l') {
-                        $status= 'Libur';
-                        $clr= 'bg-danger';
-                    }else{
-                        $status= 'Hari Kerja';
-                        $clr= 'bg-white';
-                    }
-
-                    $pola[] = array(
-                        'tanggal'             => indo($tgl),
-                        'is_status'           => $st,
-                        'status'              => $status,
-                        'color'               => $clr,
-                        'j_masuk'             => substr($q['jam_masuk'],0,5),
-                        'j_pulang'            => substr($q['jam_pulang'],0,5),
-                        'j_toleransi'         => $q['toleransi_terlambat']." Menit",
-                    );
-                }else{
-                    $msgpola = 'Pola kerja akan tersedia mulai pada tanggal '.$row['mulai_berlaku_tanggal']. ', tapi kamu masih bisa melakukan absen jika itu diperlukan.';
+                    // $pola[] = array(
+                    //     'tanggal'             => indo($tgl),
+                    //     'is_status'           => $st,
+                    //     'status'              => $status,
+                    //     'color'               => $clr,
+                    //     'j_masuk'             => substr($q['jam_masuk'],0,5),
+                    //     'j_pulang'            => substr($q['jam_pulang'],0,5),
+                    //     'j_toleransi'         => $q['toleransi_terlambat']." Menit",
+                    // );
+        //         }else{
+        //             $msgpola = 'Pola kerja akan tersedia mulai pada tanggal '.$row['mulai_berlaku_tanggal']. ', tapi kamu masih bisa melakukan absen jika itu diperlukan.';
+        //         }
+        //     }else{                    
+        //         $msgpola = 'Belum setting pola kerja.';
+        //     }
+        // }
+        
+        if($result && isset($result['mulai_berlaku_tanggal'])){
+           if($this->today>$result['mulai_berlaku_tanggal']){
+               $tgl1 = strtotime($result['mulai_berlaku_tanggal']); 
+               $tgl2 = strtotime($this->today); 
+               $jarak = $tgl2 - $tgl1;
+               $hari = $jarak / 60 / 60 / 24;
+               $checkJumlahPola = checkJumlahPola($result['pola_kerja_id'],$hari+($result['dari_hari_ke']));
+               $q3 = $this->db->query("SELECT a.*, b.toleransi_terlambat FROM m_pola_kerja_det a JOIN m_pola_kerja b ON a.pola_kerja_id=b.pola_kerja_id WHERE a.pola_kerja_id='$result[pola_kerja_id]' AND a.is_day='$checkJumlahPola'")->row_array();
+               if (isset($q3['is_work']) && $q3['is_work']=='n'){ 
+                $st = 'l'; 
+               }
+               else{ 
+                $st = 'ts'; 
+               }               
+                if ($st=='l') {
+                    $status= 'Libur';
+                    $clr= 'bg-danger';
                 }
-            }else{                    
-                $msgpola = 'Belum setting pola kerja.';
-            }
+                else{
+                    $status= 'Hari Kerja';
+                    $clr= 'bg-white';
+                }
+                
+                $pola[] = array(
+                    'tanggal'             => date($tgl2),
+                    'is_status'           => $st,
+                    'status'              => $status,
+                    'color'               => $clr,
+                    'j_masuk'             => substr($q3['jam_masuk'],0,5),
+                    'j_pulang'            => substr($q3['jam_pulang'],0,5),
+                    'j_toleransi'         => $q3['toleransi_terlambat']." Menit",
+                );
+           }
         }
 
-        if (!$result) {
-            $msgpola = 'Belum setting pola kerja.';
+        if($res && !$result){
+          $msgpola = 'Belum setting pola kerja atau pegawai tidak aktif lagi';
         }
 
-        if ($res) {
-            return json_encode(array('status'=>true, 'result'=>$res, 'pola'=>$pola, 'msgpola'=>$msgpola));
-        }else{
-            return json_encode(array('status'=>false, 'msg'=>'ID unknown, silahkan logout dan login kembali.'));
+        if($res){
+          return json_encode(array('status'=>true, 'result'=>$res, 'pola'=>$pola, 'msgpola'=>$msgpola));
+        }
+        else{
+          return json_encode(array('status'=>false, 'msg'=>'ID unknown, silahkan logout dan login kembali.'));
         }
     }
 
@@ -138,20 +202,26 @@ class Get_model extends CI_Model {
             $limit = " ";
         }
 
-        $query = $this->db->query("SELECT * FROM tx_tanggal ORDER BY tanggal DESC $limit ");
-        $resq = $query->result_array();
+        $r = $this->db->query("SELECT * FROM tx_tanggal ORDER BY tanggal DESC $limit ")->result_array();
         $loadnya = $query->num_rows();
 
         $kary = $this->db->query("SELECT tanggal_mulai_kerja FROM m_pegawai WHERE pegawai_id='$postjson[id]'")->row_array();
 
+
+        if($kary){
+
+        }
+
         if ($kary) {
-            foreach ($resq as $row) {
+            foreach ($r as $row) {
 
                 $res = $this->db->query("SELECT a.*, c.mulai_berlaku_tanggal FROM tx_absensi a 
                 LEFT JOIN m_pegawai_pola c ON a.pegawai_id=c.pegawai_id
                 WHERE a.pegawai_id='$postjson[id]'
                 AND a.tanggal_absen='$row[tanggal]'
                 ")->row_array();
+
+                
 
                 $lembur = $this->db->query("SELECT a.lembur_id, 
                 a.tanggal_lembur, a.masuk_lembur, a.keluar_lembur, 

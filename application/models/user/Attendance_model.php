@@ -7,8 +7,10 @@ class Attendance_model extends CI_Model {
         parent::__construct();
     }
 
-	public function get_data($tgl,$statt) {
+	public function get_data($tgl,$statt,$isRun) {
         $data = array();
+
+        $cutiBersama = $this->db->query("SELECT * FROM tx_cuti_bersama WHERE tanggal='$tgl'")->num_rows();
 
         if ($tgl==date('Y-m-d')) {
             $check_tgl = $this->db->query("SELECT * FROM tx_tanggal WHERE tanggal='$tgl'")->num_rows();
@@ -16,7 +18,9 @@ class Attendance_model extends CI_Model {
                 $datatgl = [
                     'tanggal'       => $tgl
                 ];
-                $this->db->insert('tx_tanggal', $datatgl);
+                if($isRun){
+                    $this->db->insert('tx_tanggal', $datatgl);
+                }
             }            
         }
 
@@ -28,6 +32,7 @@ class Attendance_model extends CI_Model {
         $result = $this->db->query($query)->result_array();
 
         foreach ($result as $row) {
+
 
             $q2 = $this->db->query("SELECT * FROM tx_absensi WHERE tanggal_absen='$tgl' AND pegawai_id='$row[pid]'")->num_rows();
 
@@ -49,20 +54,34 @@ class Attendance_model extends CI_Model {
                     if (!isset($q['jam_pulang'])) { $q['jam_pulang'] = ''; }
                     if (!isset($q['toleransi_terlambat'])) { $q['toleransi_terlambat'] = ''; }
 
-                    if (isset($q['is_work']) && $q['is_work']=='n') { $st = 'l'; }else{ $st = 'ts'; }
+                    if($cutiBersama>0){
+                        $st = 'cb';
+                    }
+                    else{
+                        if(isset($q['is_work']) && $q['is_work']=='n'){ 
+                            $st = 'l'; 
+                        }
+                        else{ 
+                            $st = 'ts'; 
+                        }
+
+                    }
                     
                     
-                        if ($q2==0) {
-                            $datains = [
-                                'tanggal_absen'       => $tgl,
-                                'pegawai_id'          => $row['pid'],
-                                'j_masuk'             => $q['jam_masuk'],
-                                'j_pulang'            => $q['jam_pulang'],
-                                'j_toleransi'         => $q['toleransi_terlambat'],
-                                'is_status'           => $st
-                            ];
+                    if($q2==0){
+                        $datains = [
+                            'tanggal_absen'       => $tgl,
+                            'pegawai_id'          => $row['pid'],
+                            'j_masuk'             => $q['jam_masuk'],
+                            'j_pulang'            => $q['jam_pulang'],
+                            'j_toleransi'         => $q['toleransi_terlambat'],
+                            'is_status'           => $st
+                        ];
+
+                        if($isRun){
                             $this->db->insert('tx_absensi', $datains);
                         }
+                    }
                 }
             }
         }
@@ -101,7 +120,7 @@ class Attendance_model extends CI_Model {
         return $data;
     }
 
-    public function absensi_proses($tgl,$tipe = 'is_status',$idp,$value) {
+    public function absensi_proses($tgl,$idp,$value,$tipe = 'is_status') {
         $res = false;
         if ($tipe=='status') { 
             $tipe = 'is_status'; 

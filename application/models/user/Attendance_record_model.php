@@ -26,19 +26,50 @@ class Attendance_record_model extends CI_Model {
             $hbhk = $this->db->query("SELECT count(is_status) as total FROM tx_absensi WHERE is_status='hbhk' AND pegawai_id='$row[pegawai_id]' AND date(tanggal_absen) BETWEEN '$tglawal' AND '$tglakhr' AND is_pending='n'")->row_array();
 
             // tugas luar
-            $tl = checkStatusAbsen('tl',$row['pegawai_id'],$tglawal,$tglakhr);
+            $tl = checkStatusAbsen('tl',$row['pegawai_id'],$tglawal,$tglakhr)-1;
             // sakit
-            $sakit = checkStatusAbsen('s',$row['pegawai_id'],$tglawal,$tglakhr);
+            $sakit = checkStatusAbsen('s',$row['pegawai_id'],$tglawal,$tglakhr)-1;
             // izin
-            $i = checkStatusAbsen('i',$row['pegawai_id'],$tglawal,$tglakhr);
+            $i = checkStatusAbsen('i',$row['pegawai_id'],$tglawal,$tglakhr) - 1;
             // cuti
             $c = checkStatusAbsen('c',$row['pegawai_id'],$tglawal,$tglakhr);
             // cuti setengah hari
-            $csh = checkStatusAbsen('csh',$row['pegawai_id'],$tglawal,$tglakhr);
+            $csh = checkStatusAbsen('csh',$row['pegawai_id'],$tglawal,$tglakhr)-1;
             // cuti bersama
             $cb = checkStatusAbsen('cb',$row['pegawai_id'],$tglawal,$tglakhr);
             // cuti tahunan
-            $ct = checkStatusAbsen('ct',$row['pegawai_id'],$tglawal,$tglakhr);
+            $ct = checkStatusAbsen('ct',$row['pegawai_id'],$tglawal,$tglakhr)-1;
+
+            if($sakit > 0){
+              $cutiSakit = $sakit;
+            }
+            else{
+                $cutiSakit = 0;
+            }
+
+            if($tl > 0){
+              $tugasLuar = $tl;
+            }
+            else{
+               $tugasLuar = 0;
+            }
+
+            if($csh > 0){
+              $cutiSetengahHari = $csh;
+            }
+            else{
+                $cutiSetengahHari;
+            }
+
+            if($ct > 0){
+                $cutiTahunan = $ct;
+            }
+            else{
+                $cutiTahunan = 0;
+            }
+
+
+            $tidakHadir = checkStatusAbsen('ts',$row['pegawai_id'],$tglawal,$tglakhr);
             
             // alfa (th) dan blm ada status (ts)
             $th = $this->db->query("SELECT count(is_status) as total FROM tx_absensi WHERE is_status='th' AND pegawai_id='$row[pegawai_id]' AND date(tanggal_absen) BETWEEN '$tglawal' AND '$tglakhr' AND is_pending='n'")->row_array();
@@ -46,6 +77,7 @@ class Attendance_record_model extends CI_Model {
             $qtgl = $this->db->query("SELECT * FROM tx_tanggal WHERE date(tanggal) BETWEEN '$tglawal' AND '$tglakhr'")->result_array();
             $totalts = 0;
             $nots = 0;
+            
             foreach ($qtgl as $rowx) {
                 if ($rowx['tanggal']>=$row['tanggal_mulai_kerja']) {
                     // (is_status!='ts' AND is_status!='th')
@@ -60,18 +92,19 @@ class Attendance_record_model extends CI_Model {
             if (!isset($hhk['total'])) { $hhk['total'] = 0; }
             if (!isset($hbhk['total'])) { $hbhk['total'] = 0; }
 
+
             $data[] = array(
                 'pegawai_id'              => $row['pegawai_id'],
                 'nama_pegawai'            => $row['nama_pegawai'],
                 'hhk'                     => $hhk['total']+$hbhk['total'],
                 'bl'                      => $bl['total']+$bl2['total'],
-                'tl'                      => $tl,
-                's'                       => $sakit,
+                'tl'                      => $tugasLuar,
+                's'                       => $cutiSakit,
                 'c'                       => $c+$i,
-                'csh'                     => $csh,
+                'csh'                     => $cutiSetengahHari,
                 'cb'                      => $cb,
-                'ct'                      => $ct,
-                'th'                      => $th['total']+($nots-$totalts)
+                'ct'                      => $cutiTahunan,
+                'th'                      => $tidakHadir
             );
         }
         return $data;
