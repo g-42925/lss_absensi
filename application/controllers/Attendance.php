@@ -42,7 +42,7 @@ class Attendance extends CI_Controller {
             $this->session->set_flashdata('message', '<div class="me-3 ms-3"><div class="alert alert-warning p-cg" role="alert">Maksimal 3 hari kedepan dari tanggal sekarang.</div></div>');
         }
 
-        $data['datas']  = $this->att->get_data($data['today'],'n');
+        $data['datas']  = $this->att->get_data($data['today'],'n',false);
 
         $this->load->view('templates/header', $data);
         $this->load->view('templates/sidemenu', $data);

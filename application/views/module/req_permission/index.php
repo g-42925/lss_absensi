@@ -31,7 +31,6 @@
       </div>
     </div>
     <div class="card-datatable table-responsive">
-      <?=$this->session->flashdata('message');?>
       <table class="table border-top" id="dataTableatt">
         <thead>
           <tr>

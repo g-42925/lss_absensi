@@ -36,6 +36,10 @@ class Rest_get extends CI_Controller {
         echo json_encode($config);
     }
 
+    function cron(){
+        return 'cron job is running';
+    }
+
     function company_data() {
         $postjson = json_decode(file_get_contents('php://input'), true);
         $data = $this->get->company_data($postjson);

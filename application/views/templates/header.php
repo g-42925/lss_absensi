@@ -23,7 +23,7 @@
 
     <meta name="author" content="https://carvellonic.com">
     <meta name="description" content="" />
-
+    <link href="https://cdn.tailwindcss.com" rel="stylesheet">
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="<?=base_url('assets/temp/');?>assets/logo/favicon.png" />
 
