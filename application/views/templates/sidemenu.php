@@ -7,7 +7,7 @@
         <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
           <div class="app-brand demo">
             <a href="<?=base_url('dashboard');?>" class="app-brand-link">
-              <img src="<?=base_url('assets/temp/assets/logo/client/leryn_lss_abseni.png');?>" width="160">
+              <img src="<?=base_url('assets/temp/assets/logo/client/logo_4.png');?>" width="65">
             </a>
 
             <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto">

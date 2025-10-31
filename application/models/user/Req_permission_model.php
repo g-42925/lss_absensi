@@ -9,59 +9,86 @@ class Req_permission_model extends CI_Model {
 
 	public function get_data($tglawal,$tglakhr) {
         $data = array();
-        $query = $this->db->query("SELECT * FROM tx_request_izin WHERE date(tanggal_request) BETWEEN '$tglawal' AND '$tglakhr' ORDER BY request_izin_id DESC")->result_array();
+        $companyId = $this->session->userdata('company_id');
+		$query = $this->db->query(" SELECT x.*, y.*, z.pegawai_id, z.nama_pegawai, z.is_del FROM tx_request_izin x JOIN tx_request_izin_pegawai y ON x.request_izin_id = y.request_izin_id JOIN m_pegawai z ON y.pegawai_id = z.pegawai_id WHERE x.company_id = ? AND z.is_del = 'n' AND DATE(x.tanggal_request) BETWEEN ? AND ? ORDER BY created_at DESC ", [$companyId, $tglawal, $tglakhr])->result_array();
 
-        foreach ($query as $row) {
+        foreach($query as $index => $r){
+          if($r['tipe_request'] == "c"){
+            $query[$index]['type_request'] = "cuti";
+          }
+					if($r['tipe_request'] == "i"){
+            $query[$index]['type_request'] = "izin";
+          }
+					if($r['tipe_request'] == "s"){
+            $query[$index]['type_request'] = "sakit";
+          }
 
-            $query2 = $this->db->query("SELECT * FROM tx_request_izin_pegawai a LEFT JOIN m_pegawai b ON a.pegawai_id=b.pegawai_id WHERE a.request_izin_id='$row[request_izin_id]' AND b.is_del='n' ")->result_array();
-
-            if ($row['tipe_request']=='s') {
-              $bgs = 'Sakit';
-            }else if ($row['tipe_request']=='i') {
-              $bgs = 'Izin';
-            }else if ($row['tipe_request']=='c') {
-              $bgs = 'Cuti';
-            }else if ($row['tipe_request']=='cb') {
-              $bgs = 'Cuti Bersama';
-            }else if ($row['tipe_request']=='ct') {
-              $bgs = 'Cuti Tahunan';
-            }else if ($row['tipe_request']=='csh') {
-              $bgs = 'Cuti Setengah Hari';
-            }else if ($row['tipe_request']=='tl') {
-              $bgs = 'Tugas Luar';
-            }else if ($row['tipe_request']=='lm') {
-              $bgs = 'Lembur';
-            }else{
-              $bgs = '';
-            }
-
-            if ($row['is_status']==0) {
-                $status = 'Pending';
-            }else if ($row['is_status']==1) {
-              $status = 'Approved';
-            }else if ($row['is_status']==2) {
-              $status = 'Reject';
-            }else{
-              $status = 'Unknown';
-            }
-
-            $totgl = '';
-            if ($row['tanggal_request_end']!='') {
-                $totgl = ' s/d '.indo($row['tanggal_request_end']);
-            }
-
-            $data[] = array(
-                'id'                  => $row['request_izin_id'],
-                'tanggal'             => indo($row['tanggal_request']).$totgl,
-                'kategori'            => $bgs,
-                'j_masuk'             => $row['r_jam_masuk'],
-                'j_keluar'            => $row['r_jam_keluar'],
-                'pegawai'             => $query2,
-                'status'              => $status,
-                'tipe'                => $row['tipe_request']
-            );
+          if($r['is_status'] == 1){
+            $query[$index]['is_status'] = "approved";
+          }
+          if($r['is_status'] == 0){
+            $query[$index]['is_status'] = "pending";
+          }
+          if($r['is_status'] == 2){
+            $query[$index]['is_status'] = "rejected";
+          }
         }
-        return $data;
+
+        
+
+        return $query;
+
+        // foreach ($query as $row) {
+            
+        //     $query2 = $this->db->query("SELECT * FROM tx_request_izin_pegawai a LEFT JOIN m_pegawai b ON a.pegawai_id=b.pegawai_id WHERE a.request_izin_id='$row[request_izin_id]' AND b.is_del='n' ")->result_array();
+
+        //     if ($row['tipe_request']=='s') {
+        //       $bgs = 'Sakit';
+        //     }else if ($row['tipe_request']=='i') {
+        //       $bgs = 'Izin';
+        //     }else if ($row['tipe_request']=='c') {
+        //       $bgs = 'Cuti';
+        //     }else if ($row['tipe_request']=='cb') {
+        //       $bgs = 'Cuti Bersama';
+        //     }else if ($row['tipe_request']=='ct') {
+        //       $bgs = 'Cuti Tahunan';
+        //     }else if ($row['tipe_request']=='csh') {
+        //       $bgs = 'Cuti Setengah Hari';
+        //     }else if ($row['tipe_request']=='tl') {
+        //       $bgs = 'Tugas Luar';
+        //     }else if ($row['tipe_request']=='lm') {
+        //       $bgs = 'Lembur';
+        //     }else{
+        //       $bgs = '';
+        //     }
+
+        //     if ($row['is_status']==0) {
+        //         $status = 'Pending';
+        //     }else if ($row['is_status']==1) {
+        //       $status = 'Approved';
+        //     }else if ($row['is_status']==2) {
+        //       $status = 'Reject';
+        //     }else{
+        //       $status = 'Unknown';
+        //     }
+
+        //     $totgl = '';
+        //     if ($row['tanggal_request_end']!='') {
+        //         $totgl = ' s/d '.indo($row['tanggal_request_end']);
+        //     }
+
+        //     $data[] = array(
+        //         'id'                  => $row['request_izin_id'],
+        //         'tanggal'             => indo($row['tanggal_request']).$totgl,
+        //         'kategori'            => $bgs,
+        //         'j_masuk'             => $row['r_jam_masuk'],
+        //         'j_keluar'            => $row['r_jam_keluar'],
+        //         'pegawai'             => $query2,
+        //         'status'              => $status,
+        //         'tipe'                => $row['tipe_request']
+        //     );
+        // }
+        // return $data;
 
     }
 
@@ -99,7 +126,8 @@ class Req_permission_model extends CI_Model {
             'jumlah_cuti'           => $jumlahhari+1,
             'file_dokumen'          => $filex,
             'is_status'             => 0, // 0 pending, 1 acc, 2 tolak
-            'created_at'            => date('Y-m-d H:i:s')
+            'created_at'            => date('Y-m-d H:i:s'),
+            'company_id'            => $this->session->userdata('company_id')
         ];
         $res = $this->db->insert('tx_request_izin', $data);
         $idnya = $this->db->insert_id();
@@ -146,6 +174,8 @@ class Req_permission_model extends CI_Model {
 
         $cek = $this->db->query("SELECT * FROM tx_request_izin WHERE request_izin_id='$id'")->row_array();
 
+        $employee = $this->db->query("select * from m_pegawai where pegawai_id = ?",[$this->input->post('idp')[0]])->row_array();
+
         $this->db->set([
             'tipe_request'          => $this->input->post('kat'),
             'tanggal_request'       => $this->input->post('tgl1'),
@@ -160,6 +190,24 @@ class Req_permission_model extends CI_Model {
         $this->db->where('request_izin_id', $id);
         $res = $this->db->update('tx_request_izin');
 
+        if($this->input->post('kat') == "c"){
+          if($this->input->post("status") == 1){
+            $tanggalAwal = new DateTime($this->input->post('tgl1'));
+            $tanggalAkhir = new DateTime($this->input->post('tgl2'));
+            $difference = $tanggalAwal->diff($tanggalAkhir)->days+1;
+            $sisaJumlahCuti = $employee['jumlah_cuti'] - $difference;
+
+            $this->db->set([
+              'jumlah_cuti' => $sisaJumlahCuti,
+            ]);
+            $this->db->where(
+              'pegawai_id',$this->input->post('idp')[0]
+            );
+            $this->db->update(
+              'm_pegawai'
+            );
+          }
+        }
 
         $buff = $this->db->query("SELECT * FROM tx_request_izin_pegawai WHERE request_izin_id='$id'")->result_array();
         $idp = $this->input->post('idp');

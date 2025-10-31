@@ -12,11 +12,11 @@
         </div>
       </div>
    <div class="card-datatable table-responsive">
-      <?=$this->session->flashdata('message');?>
       <table class="table border-top" id="dataTableatt">
         <thead>
           <tr>
-            <th class="w-s-n">Tanggal</th>
+            <th class="w-s-n">Mulai Dari</th>
+            <th class="w-s-n">Sampai</th>
             <th class="w-s-n">Keterangan</th>
             <th class="w-s-n">Action</th>
           </tr>
@@ -25,7 +25,7 @@
           <?php foreach ($offdays as $row) : ?>
           <tr>
             <td class="w-s-n">
-              <?= $row['tanggal'];?>
+              <?= $row['tanggal'];?> - <?= $row['sampai_tanggal'] ?>
             </td>
             <td class="w-s-n">
               <?= $row['keterangan']?>
@@ -34,7 +34,7 @@
               <a href="<?= site_url('off/edit/'.$row['id']) ?>" class="btn p-1">
                 <i class="ti ti-edit"></i>
               </a>
-              <a href="<?= site_url('off/delete/'.$row['id']) ?>" class="btn p-1" data-bs-toggle="modal" data-bs-target="#delRow<?=$row['id'];?>">
+              <a href="<?= site_url('off/delete/'.$row['id']) ?>" class="btn p-1">
                 <i class="ti ti-trash"></i>
               </a>
             </td>

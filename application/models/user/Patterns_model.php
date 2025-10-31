@@ -7,14 +7,15 @@ class Patterns_model extends CI_Model {
         parent::__construct();
     }
 
-	public function get_data() {
+	public function get_data($companyId) {
         $query = $this->db->query("SELECT * FROM m_pola_kerja
-        	WHERE is_del='n'")->result_array();
+        	WHERE is_del='n' and company_id=$companyId")->result_array();
         return $query;
     }
 
-    public function add_proses() {
+    public function add_proses($companyId) {
         $data = [
+            'company_id'              => $companyId,
             'nama_pola'               => $this->input->post('nama'),
             'jumlah_hari_siklus'  	  => $this->input->post('jumlahhari'),
             'toleransi_terlambat'  	  => $this->input->post('tolet'),
@@ -33,7 +34,9 @@ class Patterns_model extends CI_Model {
                     'is_work'           => $this->input->post('work')[$i],
                     'is_polkat'         => $this->input->post('sistemkerja')[$i],
                     'jam_masuk'         => $this->input->post('masuk')[$i],
-                    'jam_pulang'        => $this->input->post('pulang')[$i]
+                    'jam_pulang'        => $this->input->post('pulang')[$i],
+                    'jam_istirahat'     => $this->input->post('break')[$i],
+                    'selesai_istirahat' => $this->input->post('breakEnd')[$i]
                 ];
                 $res = $this->db->insert('m_pola_kerja_det', $pdet);
             }
@@ -68,7 +71,9 @@ class Patterns_model extends CI_Model {
                     'is_work'           => $this->input->post('work')[$i],
                     'is_polkat'         => $this->input->post('sistemkerja')[$i],
                     'jam_masuk'         => $this->input->post('masuk')[$i],
-                    'jam_pulang'        => $this->input->post('pulang')[$i]
+                    'jam_pulang'        => $this->input->post('pulang')[$i],
+                    'jam_istirahat'     => $this->input->post('break')[$i],
+                    'selesai_istirahat' => $this->input->post('breakEnd')[$i]
                 ];
                 $res = $this->db->insert('m_pola_kerja_det', $pdet);
             }

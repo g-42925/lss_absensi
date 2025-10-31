@@ -40,7 +40,8 @@ class Attendance_record extends CI_Controller {
             $data['tglakhir'] = $akhir;
         }
 
-        $data['datas']      = $this->attr->get_data($data['tglawal'],$data['tglakhir']);
+        $companyId = $this->session->userdata('company_id');
+        $data['datas']      = $this->attr->get_data($companyId,$data['tglawal'],$data['tglakhir']);
 
         $this->load->view('templates/header', $data);
         $this->load->view('templates/sidemenu', $data);

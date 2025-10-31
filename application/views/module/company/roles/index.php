@@ -5,11 +5,10 @@
     <div class="card-header border-bottom">
       <h5 class="card-title"><?=$namalabel;?></h5>
       <div class="text-start">
-        <a href="<?=base_url('company/roles/add');?>" class="btn btn-secondary btn-primary btn-sm"><i class="ti ti-plus me-md-1"></i> Tambah Data</a>
+        <a href="<?=base_url('company/roles/add/0');?>" class="btn btn-secondary btn-primary btn-sm"><i class="ti ti-plus me-md-1"></i> Tambah Data</a>
       </div>
     </div>
     <div class="card-datatable table-responsive">
-      <?=$this->session->flashdata('message');?>
       <table class="table border-top" id="dataTable">
         <thead>
           <tr>

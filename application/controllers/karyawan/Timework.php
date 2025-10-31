@@ -62,8 +62,9 @@ class Timework extends CI_Controller {
             redirect('karyawan/timework/');
         }
 
-        $data['pola']      = $this->patterns->get_data();
+        $data['pola']      = $this->patterns->get_data($this->session->userdata('company_id'));
         $data['karyawan']  = $this->db->get_where('m_pegawai', ['pegawai_id' => $id])->row_array();
+        $data['failed'] = filter_var($this->input->get('failed'), FILTER_VALIDATE_BOOLEAN);
 
         $this->load->view('templates/header', $data);
         $this->load->view('templates/sidemenu', $data);
@@ -89,15 +90,17 @@ class Timework extends CI_Controller {
 
         if ($this->form_validation->run() == false) {
             $this->session->set_flashdata('message', '<div class="alert alert-danger p-cg" role="alert">'.validation_errors().'</div>');
-            redirect('karyawan/timework/add/'.$id);
-        } else {
+            redirect('karyawan/timework/add/'.$id.'?failed=true');
+        } 
+        else {
             $res = $this->tw->add_proses($id);
             if ($res==true) {
                 $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-success p-cg" role="alert">Data berhasil disimpan.</div></div>');
                 redirect('karyawan/timework');
-            }else{
+            }
+            else{
                 $this->session->set_flashdata('message', '<div class="alert alert-danger p-cg" role="alert">Proses gagal, silahkan coba lagi.</div>');
-                redirect('karyawan/timework/add/'.$id);
+                redirect('karyawan/timework/add/'.$id.'?failed=true');
             }
         }
     }
@@ -105,7 +108,7 @@ class Timework extends CI_Controller {
     public function edit($id = null) {
         cek_menu_access();
         if ($id==null) { redirect('karyawan/timework'); }
-        $check = $this->db->get_where('m_pegawai_pola', ['pegawai_pola_id' => $id]);
+        $check = $this->db->get_where('m_pegawai_pola', ['pegawai_id' => $id]);
         if ($check->num_rows()==0) { 
             $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-danger p-cg" role="alert">Data tidak ditemukan.</div></div>');
             redirect('karyawan/timework'); 
@@ -122,7 +125,12 @@ class Timework extends CI_Controller {
             redirect('karyawan/timework/');
         }
 
-        $data['edit']       = $check->row_array();
+        $companyId = $this->session->userdata('company_id');
+        $data['failed'] = filter_var($this->input->get('failed'), FILTER_VALIDATE_BOOLEAN);
+
+
+        $data['edit'] = $check->row_array();
+        $data['patterns'] = $this->db->get_where('m_pola_kerja',['company_id' => $companyId])->result_array();
 
         $this->load->view('templates/header', $data);
         $this->load->view('templates/sidemenu', $data);
@@ -136,7 +144,8 @@ class Timework extends CI_Controller {
         cek_menu_access();
 
         if ($id==null) { redirect('karyawan/timework'); }
-        $check = $this->db->get_where('m_pegawai_pola', ['pegawai_pola_id' => $id]);
+        
+        $check = $this->db->get_where('m_pegawai_pola', ['pegawai_id' => $id]);
         $rowcheck = $check->row_array();
         if ($check->num_rows()==0) {
             $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-danger p-cg" role="alert">Data tidak ditemukan.</div></div>');
@@ -149,15 +158,16 @@ class Timework extends CI_Controller {
 
         if ($this->form_validation->run() == false) {
             $this->session->set_flashdata('message', '<div class="alert alert-danger p-cg" role="alert">'.validation_errors().'</div>');
-            redirect('karyawan/timework/edit/'.$id);
-        } else {
+            redirect('karyawan/timework/edit/'.$id.'?failed=true');
+        } 
+        else {
             $res = $this->tw->edit_proses($id);
             if ($res==true) {
-                $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-success p-cg" role="alert">Data berhasil disimpan.</div></div>');
                 redirect('karyawan/timework');
-            }else{
+            }
+            else{
                 $this->session->set_flashdata('message', '<div class="alert alert-danger p-cg" role="alert">Proses gagal, silahkan coba lagi.</div>');
-                redirect('karyawan/timework/edit/'.$id);
+                redirect('karyawan/timework/edit/'.$id.'?failed=true');
             }
         }
     }

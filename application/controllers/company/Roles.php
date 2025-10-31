@@ -29,7 +29,10 @@ class Roles extends CI_Controller {
         $data['namalabel']  = $data['title'];
 
         $data['auth']       = authUser();
-        $data['datas'] = $this->roles->get_data();
+
+        $companyId = $this->session->userdata('company_id');
+
+        $data['datas'] = $this->roles->get_data($companyId);
 
         $this->load->view('templates/header', $data);
         $this->load->view('templates/sidemenu', $data);
@@ -39,7 +42,7 @@ class Roles extends CI_Controller {
         $this->load->view('templates/fscript-html-end', $data);
     }
 
-    public function add() {
+    public function add($failed) {
         cek_menu_access();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Perusahaan';
@@ -47,6 +50,7 @@ class Roles extends CI_Controller {
         $data['title']      = 'Jabatan';
         $data['namalabel']  = $data['title'];
         $data['auth']       = authUser();
+        $data['failed']     = $failed;
         
         if($data['auth']['tambah']!='y'){
             $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-danger p-cg" role="alert">Tidak ada akses.</div></div>');
@@ -73,21 +77,26 @@ class Roles extends CI_Controller {
 
         if ($this->form_validation->run() == false) {
             $this->session->set_flashdata('message', '<div class="alert alert-danger p-cg" role="alert">'.validation_errors().'</div>');
-            redirect('company/roles/add');
-        } else {
+            redirect('company/roles/add/1');
+        } 
+        else {
             $query = $this->db->get_where('m_role', ['nama_role' => $unama, 'is_del' => 'n'])->num_rows();
+            
             if ($query < 1) {
-                $res = $this->roles->add_proses();
+                $res = $this->roles->add_proses(
+                    $this->session->userdata('company_id')
+                );
                 if ($res==true) {
-                    $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-success p-cg" role="alert">Data berhasil disimpan.</div></div>');
-                    redirect('company/roles');
-                }else{
-                    $this->session->set_flashdata('message', '<div class="alert alert-danger p-cg" role="alert">Proses gagal, silahkan coba lagi.</div>');
-                    redirect('company/roles/add');
+                  redirect('company/roles');
                 }
-            } else {
-                $this->session->set_flashdata('message', '<div class="alert alert-warning p-cg" role="alert">Proses gagal, nama <b>"'.$unama.'"</b> ini sudah digunakan.</div>');
-                redirect('company/roles/add');
+                else{
+                    $this->session->set_flashdata('message', '<div class="alert alert-danger p-cg" role="alert">Proses gagal, silahkan coba lagi.</div>');
+                    redirect('company/roles/add/1');
+                }
+            } 
+            else {
+                $this->session->set_flashdata('message', '<div class="alert alert-warning p-cg" role="alert">Proses gagal, role <b>"'.$unama.'"</b> ini sudah ditambahkan.</div>');
+                redirect('company/roles/add/1');
             }
         }
     }

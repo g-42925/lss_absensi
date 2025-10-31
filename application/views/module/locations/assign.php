@@ -10,7 +10,9 @@
       </div>
     </div>
     <div class="card-datatable table-responsive">
-      <?=$this->session->flashdata('message');?>
+      <?php if ($failed): ?>
+        <?=$this->session->flashdata('message');?>
+      <?php endif; ?>
       <table class="table border-top" id="dataTable">
         <thead>
           <tr>

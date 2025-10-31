@@ -10,13 +10,11 @@
       </div>
     </div>
     <div class="card-datatable table-responsive">
-      <?=$this->session->flashdata('message');?>
       <table class="table border-top" id="dataTable">
         <thead>
           <tr>
             <th>ID&nbsp;Karyawan</th>
             <th>Nama&nbsp;Karyawan</th>
-            <th>Riwayat&nbsp;Pola</th>
             <th class="text-end">Action</th>
           </tr>
         </thead>
@@ -25,11 +23,7 @@
           <tr>
             <td><?= $row['id_pegawai'];?></td>
             <td><?= $row['nama_pegawai'];?></td>
-            <td><?= $row['totalpola'];?></td>
             <td align="right">
-              <a href="<?=base_url('karyawan/timework/record/'.$row['pegawai_id']);?>" class="btn p-1">
-                <i class="ti ti-eye"></i>
-              </a>
               <a href="#" class="btn p-1" data-bs-toggle="modal" data-bs-target="#delRow<?=$row['pegawai_pola_id'];?>">
                 <i class="ti ti-trash"></i>
               </a>
@@ -91,7 +85,7 @@
             <div class="row">
               <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-6" id="mberlaku">
                 <label class="form-label">Mulai Berlaku<i class="text-danger">*</i></label>
-                <input type="text" class="form-control" name="tglmulai" autocomplete="off" placeholder="YYYY-MM-DD" onchange="checkharipola()" id="flatpickr-date" required />
+                <input type="text" class="form-control" name="tglmulai" autocomplete="off" placeholder="YYYY-MM-DD" onchange="checkharipola(); setEnabled()" id="flatpickr-date" required />
               </div>
               <div class="col-xl-6 col-md-6 col-sm-6 col-xs-6" id="mhberlaku">
                 <label class="form-label">Hari ( dari pola kerja )<i class="text-danger">*</i></label>
@@ -111,6 +105,8 @@
               Batal
             </button>
             <button
+              id="submitButton"
+              disabled="true"
               type="submit"
               class="btn btn-primary">
               Simpan
@@ -147,6 +143,10 @@
     $.get('<?=base_url('karyawan/timework/pola/'.$id)?>', function(data) {
       $('#res_pola_set').html(data);
     });
+  }
+
+  function setEnabled(){
+    document.getElementById('submitButton').disabled = false
   }
 
 </script>

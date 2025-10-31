@@ -15,9 +15,7 @@
   data-template="vertical-menu-template">
   <head>
     <meta charset="utf-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests" />
     <title><?=$title;?></title>
 
@@ -83,6 +81,7 @@
     <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
     <script src="<?=base_url('assets/temp/');?>assets/vendor/libs/jquery/jquery.js"></script>
     <script src="<?=base_url('assets/temp/');?>assets/js/config.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
 
     <style type="text/css">
       .customselectinput .select2-selection.select2-selection--single{

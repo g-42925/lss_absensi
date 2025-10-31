@@ -7,7 +7,10 @@
     </div>
     <div class="card">
       <form class="card-body" action="<?=base_url('karyawan/timework/add_proses/'.$karyawan['pegawai_id']);?>" method="POST">
-        <?=$this->session->flashdata('message');?>
+        <?php if($failed): ?>
+          <?=$this->session->flashdata('message');?>
+        <?php endif; ?>
+  
         <div class="row g-3">
           <div class="col-xl-6 col-md-6 col-sm-6">
             <label class="form-label">Nama Lengkap<i class="text-danger">*</i></label>

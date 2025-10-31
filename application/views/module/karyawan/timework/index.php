@@ -6,7 +6,6 @@
       <h5 class="card-title mb-0"><?=$namalabel;?></h5>
     </div>
     <div class="card-datatable table-responsive">
-      <?=$this->session->flashdata('message');?>
       <table class="table border-top" id="dataTable">
         <thead>
           <tr>
@@ -28,11 +27,16 @@
             </td>
             <td align="right">
               <?php if ($row['pola_kerja_id']) { ?>
+              <!---
               <a href="<?=base_url('karyawan/timework/record/'.$row['pegawai_id']);?>" class="btn btn-primary p-1 ft-12">
                 <i class="ti ti-eye"></i>&nbsp;&nbsp;Lihat Pola Kerja&nbsp;
               </a>
+              -->
+              <a href="<?=base_url('karyawan/timework/edit/'.$row['pegawai_id']).'?failed=false'; ?>" class="btn btn-primary p-1 ft-12">
+                <i class="ti ti-pencil"></i>
+              </a>
             <?php }else{ ?>
-              <a href="<?=base_url('karyawan/timework/add/'.$row['pegawai_id']);?>" class="btn btn-outline-primary p-1 ft-12">
+              <a href="<?=base_url('karyawan/timework/add/'.$row['pegawai_id']).'?failed=false';?>" class="btn btn-outline-primary p-1 ft-12">
                 <i class="ti ti-plus"></i>&nbsp;&nbsp;Set Pola Kerja&nbsp;
               </a>
             <?php } ?>

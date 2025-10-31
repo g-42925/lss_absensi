@@ -5,11 +5,10 @@
     <div class="card-header border-bottom">
       <h5 class="card-title"><?=$namalabel;?></h5>
       <div class="text-start">
-        <a href="<?=base_url('locations/add');?>" class="btn btn-secondary btn-primary btn-sm"><i class="ti ti-plus me-md-1"></i> Tambah Data</a>
+        <a href="<?=base_url('locations/add?failed=false');?>" class="btn btn-secondary btn-primary btn-sm"><i class="ti ti-plus me-md-1"></i> Tambah Data</a>
       </div>
     </div>
     <div class="card-datatable table-responsive">
-      <?=$this->session->flashdata('message');?>
       <table class="table border-top" id="dataTable">
         <thead>
           <tr>
@@ -26,13 +25,13 @@
             <td><?= $row['alamat_lokasi'];?></td>
             <td><?= $row['total'];?></td>
             <td align="right">
-              <a href="<?=base_url('locations/assign/'.$row['lokasi_id']);?>" class="btn p-1" title="Pengaturan Lokasi Karyawan">
+              <a href="<?=base_url('locations/assign/'.$row['lokasi_id']).'?failed=false';?>" class="btn p-1" title="Pengaturan Lokasi Karyawan">
                 <i class="ti ti-user-plus"></i>
               </a>
-              <a href="<?=base_url('locations/edit/'.$row['lokasi_id']);?>" class="btn p-1">
+              <a href="<?=base_url('locations/edit/'.$row['lokasi_id']).'?failed=false';?>" class="btn p-1">
                 <i class="ti ti-edit"></i>
               </a>
-              <a href="#" class="btn p-1" data-bs-toggle="modal" data-bs-target="#delRow<?=$row['lokasi_id'];?>">
+              <a href="<?=base_url('locations/hapus/'.$row['lokasi_id']); ?>" class="btn p-1" data-bs-toggle="modal" data-bs-target="#delRow<?=$row['lokasi_id'];?>">
                 <i class="ti ti-trash"></i>
               </a>
               <!-- Konfirmasi Hapus -->

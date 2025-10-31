@@ -11,102 +11,122 @@ class Attendance_record_model extends CI_Model {
         $this->today = date('Y-m-d');
     }
 
-	public function get_data($tglawal,$tglakhr) {
+	public function get_data($companyId,$tglawal,$tglakhr) {
         $data = array();
-        $query = $this->db->query("SELECT * FROM m_pegawai WHERE is_del='n'")->result_array();
-
-        foreach ($query as $row) {
-
-            // belum lengkap (contoh belum absen pulang dihari sebelumnya) 
-            $bl = $this->db->query("SELECT count(jam_keluar) as total FROM tx_absensi WHERE jam_masuk!='' AND jam_keluar='' AND pegawai_id='$row[pegawai_id]' AND tanggal_absen!='$this->today' AND date(tanggal_absen) BETWEEN '$tglawal' AND '$tglakhr' AND is_pending='n'")->row_array();
-            $bl2 = $this->db->query("SELECT count(absen_id) as total FROM tx_absensi WHERE jam_keluar!='' AND pegawai_id='$row[pegawai_id]' AND tanggal_absen!='$this->today' AND date(tanggal_absen) BETWEEN '$tglawal' AND '$tglakhr' AND is_pending='n' AND acc_keluar='n'")->row_array();
-            // hadir di hari kerja
-            $hhk = $this->db->query("SELECT count(is_status) as total FROM tx_absensi WHERE is_status='hhk' AND pegawai_id='$row[pegawai_id]' AND date(tanggal_absen) BETWEEN '$tglawal' AND '$tglakhr' AND is_pending='n'")->row_array();
-            // hadir bukan di hari kerja
-            $hbhk = $this->db->query("SELECT count(is_status) as total FROM tx_absensi WHERE is_status='hbhk' AND pegawai_id='$row[pegawai_id]' AND date(tanggal_absen) BETWEEN '$tglawal' AND '$tglakhr' AND is_pending='n'")->row_array();
-
-            // tugas luar
-            $tl = checkStatusAbsen('tl',$row['pegawai_id'],$tglawal,$tglakhr)-1;
-            // sakit
-            $sakit = checkStatusAbsen('s',$row['pegawai_id'],$tglawal,$tglakhr)-1;
-            // izin
-            $i = checkStatusAbsen('i',$row['pegawai_id'],$tglawal,$tglakhr) - 1;
-            // cuti
-            $c = checkStatusAbsen('c',$row['pegawai_id'],$tglawal,$tglakhr);
-            // cuti setengah hari
-            $csh = checkStatusAbsen('csh',$row['pegawai_id'],$tglawal,$tglakhr)-1;
-            // cuti bersama
-            $cb = checkStatusAbsen('cb',$row['pegawai_id'],$tglawal,$tglakhr);
-            // cuti tahunan
-            $ct = checkStatusAbsen('ct',$row['pegawai_id'],$tglawal,$tglakhr)-1;
-
-            if($sakit > 0){
-              $cutiSakit = $sakit;
-            }
-            else{
-                $cutiSakit = 0;
-            }
-
-            if($tl > 0){
-              $tugasLuar = $tl;
-            }
-            else{
-               $tugasLuar = 0;
-            }
-
-            if($csh > 0){
-              $cutiSetengahHari = $csh;
-            }
-            else{
-                $cutiSetengahHari;
-            }
-
-            if($ct > 0){
-                $cutiTahunan = $ct;
-            }
-            else{
-                $cutiTahunan = 0;
-            }
-
-
-            $tidakHadir = checkStatusAbsen('ts',$row['pegawai_id'],$tglawal,$tglakhr);
-            
-            // alfa (th) dan blm ada status (ts)
-            $th = $this->db->query("SELECT count(is_status) as total FROM tx_absensi WHERE is_status='th' AND pegawai_id='$row[pegawai_id]' AND date(tanggal_absen) BETWEEN '$tglawal' AND '$tglakhr' AND is_pending='n'")->row_array();
-
-            $qtgl = $this->db->query("SELECT * FROM tx_tanggal WHERE date(tanggal) BETWEEN '$tglawal' AND '$tglakhr'")->result_array();
-            $totalts = 0;
-            $nots = 0;
-            
-            foreach ($qtgl as $rowx) {
-                if ($rowx['tanggal']>=$row['tanggal_mulai_kerja']) {
-                    // (is_status!='ts' AND is_status!='th')
-                    $ts = $this->db->query("SELECT absen_id FROM tx_absensi WHERE is_status!='ts' AND tanggal_absen='$rowx[tanggal]' AND pegawai_id='$row[pegawai_id]' AND is_pending='n'")->row_array();
-                    if ($ts) { $totalts++; }
-                $nots++; }
-            }
-
-            if (!isset($th['total'])) { $th['total'] = 0; }
-            if (!isset($bl['total'])) { $bl['total'] = 0; }
-            if (!isset($bl2['total'])) { $bl2['total'] = 0; }
-            if (!isset($hhk['total'])) { $hhk['total'] = 0; }
-            if (!isset($hbhk['total'])) { $hbhk['total'] = 0; }
-
+        $query = $this->db->query("SELECT * FROM m_pegawai WHERE is_del='n' and company_id=$companyId")->result_array();
+      
+        
+        foreach($query as $row){
+            $hHK = $this->db->query("select * from tx_absensi where is_status = 'hhk' and pegawai_id = ?",[$row['pegawai_id']])->result_array();
+            $alpha = $this->db->query("select * from tx_absensi where (is_status = 'alpha-1' or is_status = 'alpha-2') and pegawai_id = ?",[$row['pegawai_id']])->result_array();
+            $onDuty = $this->db->query("select * from tx_absensi where is_status = 'on duty' and pegawai_id = ?",[$row['pegawai_id']])->result_array();
+            $leave = $this->db->query("select * from tx_absensi where is_status = 'c' and pegawai_id = ?",[$row['pegawai_id']])->result_array();
+            $other = $this->db->query("select * from tx_absensi where (is_status = 'i' or is_status = 's') and pegawai_id = ?",[$row['pegawai_id']])->result_array();
 
             $data[] = array(
                 'pegawai_id'              => $row['pegawai_id'],
                 'nama_pegawai'            => $row['nama_pegawai'],
-                'hhk'                     => $hhk['total']+$hbhk['total'],
-                'bl'                      => $bl['total']+$bl2['total'],
-                'tl'                      => $tugasLuar,
-                's'                       => $cutiSakit,
-                'c'                       => $c+$i,
-                'csh'                     => $cutiSetengahHari,
-                'cb'                      => $cb,
-                'ct'                      => $cutiTahunan,
-                'th'                      => $tidakHadir
+                'hHK'                     => count($hHK),
+                'alpha'                   => count($alpha),
+                'onDuty'                  => count($onDuty),
+                'c'                       => count($leave),
+                'lL'                      => count($other),
             );
         }
+
+
+        // foreach ($query as $row) {
+
+        //     // belum lengkap (contoh belum absen pulang dihari sebelumnya) 
+        //     $bl = $this->db->query("SELECT count(jam_keluar) as total FROM tx_absensi WHERE jam_masuk!='' AND jam_keluar='' AND pegawai_id='$row[pegawai_id]' AND tanggal_absen!='$this->today' AND date(tanggal_absen) BETWEEN '$tglawal' AND '$tglakhr' AND is_pending='n'")->row_array();
+        //     $bl2 = $this->db->query("SELECT count(absen_id) as total FROM tx_absensi WHERE jam_keluar!='' AND pegawai_id='$row[pegawai_id]' AND tanggal_absen!='$this->today' AND date(tanggal_absen) BETWEEN '$tglawal' AND '$tglakhr' AND is_pending='n' AND acc_keluar='n'")->row_array();
+        //     // hadir di hari kerja
+        //     $hhk = $this->db->query("SELECT count(is_status) as total FROM tx_absensi WHERE is_status='hhk' AND pegawai_id='$row[pegawai_id]' AND date(tanggal_absen) BETWEEN '$tglawal' AND '$tglakhr' AND is_pending='n'")->row_array();
+        //     // hadir bukan di hari kerja
+        //     $hbhk = $this->db->query("SELECT count(is_status) as total FROM tx_absensi WHERE is_status='hbhk' AND pegawai_id='$row[pegawai_id]' AND date(tanggal_absen) BETWEEN '$tglawal' AND '$tglakhr' AND is_pending='n'")->row_array();
+
+        //     // tugas luar
+        //     $tl = checkStatusAbsen('tl',$row['pegawai_id'],$tglawal,$tglakhr);
+        //     // sakit
+        //     $sakit = checkStatusAbsen('s',$row['pegawai_id'],$tglawal,$tglakhr);
+        //     // izin
+        //     $i = checkStatusAbsen('i',$row['pegawai_id'],$tglawal,$tglakhr);
+        //     // cuti
+        //     $c = checkStatusAbsen('c',$row['pegawai_id'],$tglawal,$tglakhr);
+        //     // cuti setengah hari
+        //     $csh = checkStatusAbsen('csh',$row['pegawai_id'],$tglawal,$tglakhr);
+        //     // cuti bersama
+        //     $cb = checkStatusAbsen('cb',$row['pegawai_id'],$tglawal,$tglakhr);
+        //     // cuti tahunan
+        //     $ct = checkStatusAbsen('ct',$row['pegawai_id'],$tglawal,$tglakhr);
+
+        //     if($sakit > 0){
+        //       $cutiSakit = $sakit;
+        //     }
+        //     else{
+        //         $cutiSakit = 0;
+        //     }
+
+        //     if($tl > 0){
+        //       $tugasLuar = $tl;
+        //     }
+        //     else{
+        //        $tugasLuar = 0;
+        //     }
+
+        //     if($csh > 0){
+        //       $cutiSetengahHari = $csh;
+        //     }
+        //     else{
+        //         $cutiSetengahHari;
+        //     }
+
+        //     if($ct > 0){
+        //         $cutiTahunan = $ct;
+        //     }
+        //     else{
+        //         $cutiTahunan = 0;
+        //     }
+
+
+        //     $tidakHadir = checkStatusAbsen('ts',$row['pegawai_id'],$tglawal,$tglakhr);
+            
+        //     // alfa (th) dan blm ada status (ts)
+        //     $th = $this->db->query("SELECT count(is_status) as total FROM tx_absensi WHERE is_status='th' AND pegawai_id='$row[pegawai_id]' AND date(tanggal_absen) BETWEEN '$tglawal' AND '$tglakhr' AND is_pending='n'")->row_array();
+
+        //     $qtgl = $this->db->query("SELECT * FROM tx_tanggal WHERE date(tanggal) BETWEEN '$tglawal' AND '$tglakhr'")->result_array();
+        //     $totalts = 0;
+        //     $nots = 0;
+            
+        //     foreach ($qtgl as $rowx) {
+        //         if ($rowx['tanggal']>=$row['tanggal_mulai_kerja']) {
+        //             // (is_status!='ts' AND is_status!='th')
+        //             $ts = $this->db->query("SELECT absen_id FROM tx_absensi WHERE is_status!='ts' AND tanggal_absen='$rowx[tanggal]' AND pegawai_id='$row[pegawai_id]' AND is_pending='n'")->row_array();
+        //             if ($ts) { $totalts++; }
+        //         $nots++; }
+        //     }
+
+        //     if (!isset($th['total'])) { $th['total'] = 0; }
+        //     if (!isset($bl['total'])) { $bl['total'] = 0; }
+        //     if (!isset($bl2['total'])) { $bl2['total'] = 0; }
+        //     if (!isset($hhk['total'])) { $hhk['total'] = 0; }
+        //     if (!isset($hbhk['total'])) { $hbhk['total'] = 0; }
+
+
+        //     $data[] = array(
+        //         'pegawai_id'              => $row['pegawai_id'],
+        //         'nama_pegawai'            => $row['nama_pegawai'],
+        //         'hhk'                     => $hhk['total']+$hbhk['total'],
+        //         'bl'                      => $bl['total']+$bl2['total'],
+        //         'tl'                      => $tl,
+        //         's'                       => $sakit,
+        //         'c'                       => $i,
+        //         'csh'                     => $csh,
+        //         'cb'                      => $cb,
+        //         'ct'                      => $ct,
+        //         'th'                      => $tidakHadir
+        //     );
+        // }
         return $data;
     }
 

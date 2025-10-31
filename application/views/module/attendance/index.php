@@ -28,7 +28,6 @@
       </div>
     </div>
     <div class="card-datatable table-responsive">
-      <?=$this->session->flashdata('message');?>
       <table class="table border-top" id="dataTableatt">
         <thead>
           <tr>
@@ -60,10 +59,16 @@
             }
           ?>
           <tr>
-            <td class="w-s-n"><?=$row['nama_pegawai'];?></td>
-            <td class="v-a-t">
+            <td class="w-s-n"><?=$row['nama_pegawai'];?></td> <!-- nama -->
+            <td class="v-a-t"> <!-- status -->
               <select class="form-control <?=$bgs;?>" name="status" id="status<?=$row['pid'];?>" required="" onchange="updateStatus('status','<?=$row['pid'];?>',this.value)" <?php if ($row['is_request']>0) { echo 'disabled'; } ?>>
                 <option value="ts" <?php if ($row['is_status']=='ts') echo 'selected'; ?>>Belum ada status [TS]</option>
+                <option value="on duty" <?= $row['is_status'] == 'on duty' ? 'selected':'' ?> <?php if($row['is_status']) echo 'selected' ?>>Bertugas di luar</option>
+                <option value="alpha-2" <?= $row['is_status'] == 'alpha-2' ? 'selected':'' ?>>Alpha-2</option>                                
+                <option value="alpha-1" <?= $row['is_status'] == 'alpha-1' ? 'selected':'' ?>>Alpha-1</option>                
+                <option value="alpha-0" <?= $row['is_status'] == 'alpha-0' ? 'selected':'' ?>>Alpha-0</option>                
+                <option value="off" <?= $row['is_status'] == 'off' ? 'selected':'' ?>>Off</option>  
+                <option value="free" <?= $row['is_status'] == 'free' ? 'selected':'' ?>>Off</option>                                              
                 <option value="th" <?php if ($row['is_status']=='th') echo 'selected'; ?>>Tidak hadir [TH]</option>
                 <option value="hhk" <?php if ($row['is_status']=='hhk') echo 'selected'; ?>>Hadir dihari kerja [HHK]</option>
                 <option value="hbhk" <?php if ($row['is_status']=='hbhk') echo 'selected'; ?>>Hadir bukan dihari kerja [HBHK]</option>
@@ -81,29 +86,34 @@
                   <a href="<?=base_url('attendance/req_cancel/'.$row['pid'].'/'.$today);?>">klik untuk membatalkan.</a></div>
               <?php } ?>
             </td>
-            <td class="v-a-t">
+            <td class="v-a-t"> <!-- jam masuk -->
               <input type="text" class="form-control flatpickr-input text-center active" placeholder="hh:mm" id="flatpickr-time-work-a<?=$row['pid'];?>" value="<?=$row['jam_masuk'];?>" readonly="readonly" onchange="checkStatus<?=$row['pid'];?>('<?=$row['is_status'];?>');updateStatus('jmasuk','<?=$row['pid'];?>',this.value)" <?php if ($row['is_request']>0) { echo 'disabled'; } ?>>
               <?php if ($row['jam_masuk']!='') { ?>
               <div class="text-center">
-                <a href="javascript:;" onclick="action_data_att('in','<?=$row['absen_id'];?>','map');" class="btn p-1" data-toggle="tooltip" title="Lihat Map">
+                <a target="_blank" href="https://www.google.com/maps?q=<?= $row['point_latitude'] ?>,<?= $row['point_longitude'] ?>" class="btn p-1" data-toggle="tooltip" title="Lihat Map">
                   <i class="ti ti-map-pin ft-13"></i>
                 </a>
-                <a href="javascript:;" onclick="action_data_att('in','<?=$row['absen_id'];?>','photo');"class="btn p-1" data-toggle="tooltip" title="Lihat Foto Absen">
+                <a target="_blank" href="<?= $row['foto_absen_masuk'] ?>" class="btn p-1" data-toggle="tooltip" title="Lihat Foto Absen">
                   <i class="ti ti-photo ft-13"></i>
-                </a>
-                <a href="javascript:;" onclick="action_data_att('in','<?=$row['absen_id'];?>','catatan');" class="btn p-1" data-toggle="tooltip" title="Lihat Catatan">
-                  <i class="ti ti-note ft-13"></i>
                 </a>
               </div>
               <?php } ?>
             </td>
-            <td class="v-a-t">
+            <td class="v-a-t"> <!-- istirahat -->
               <input type="text" class="form-control flatpickr-input text-center active" placeholder="hh:mm" id="flatpickr-time-work-b<?=$row['pid'];?>" value="<?=$row['jam_istirahat'];?>" readonly="readonly" onchange="updateStatus('jisti','<?=$row['pid'];?>',this.value)" <?php if ($row['is_request']>0) { echo 'disabled'; } ?>>
             </td>
-            <td class="v-a-t">
+            <td class="v-a-t"> <!-- s.istirahat -->
               <input type="text" class="form-control flatpickr-input text-center active" placeholder="hh:mm" id="flatpickr-time-work-c<?=$row['pid'];?>" value="<?=$row['jam_sistirahat'];?>" readonly="readonly" onchange="updateStatus('jsisti','<?=$row['pid'];?>',this.value)" <?php if ($row['is_request']>0) { echo 'disabled'; } ?>>
+              <div class="text-center">
+                <a target="_blank" href="https://www.google.com/maps?q=<?= $row['s_istirahat_latitude'] ?>,<?= $row['s_istirahat_longitude'] ?>" class="btn p-1" data-toggle="tooltip" title="Lihat Map">
+                  <i class="ti ti-map-pin ft-13"></i>
+                </a>
+                <a target="_blank" href="<?= $row['s_istirahat_photo'] ?>" class="btn p-1" data-toggle="tooltip" title="Lihat Foto Absen">
+                  <i class="ti ti-photo ft-13"></i>
+                </a>
+              </div>
             </td>
-            <td class="v-a-t">
+            <td class="v-a-t"> <!-- jam keluar -->
               <?php if ($row['acc_keluar']=='y') { ?>
               <input type="text" class="form-control flatpickr-input text-center active" placeholder="hh:mm" id="flatpickr-time-work-d<?=$row['pid'];?>" value="<?=$row['jam_keluar'];?>" readonly="readonly" onchange="updateStatus('jkeluar','<?=$row['pid'];?>',this.value)" <?php if ($row['is_request']>0) { echo 'disabled'; } ?>>
               <?php }else if ($row['acc_keluar']=='n') { ?>
@@ -121,14 +131,11 @@
               <?php } ?>
               <?php if ($row['acc_keluar']!='n' && $row['acc_keluar']!='t' && $row['jam_keluar']!='') { ?>
               <div class="text-center">
-                <a href="javascript:;" onclick="action_data_att('out','<?=$row['absen_id'];?>','map');" class="btn p-1" data-toggle="tooltip" title="Lihat Map">
+                <a target="_blank" href="https://www.google.com/maps?q=<?= $row['latitude_keluar'] ?>,<?= $row['longitude_keluar'] ?>" class="btn p-1" data-toggle="tooltip" title="Lihat Map">
                   <i class="ti ti-map-pin ft-13"></i>
                 </a>
-                <a href="javascript:;" onclick="action_data_att('out','<?=$row['absen_id'];?>','photo');"class="btn p-1" data-toggle="tooltip" title="Lihat Foto Absen">
+                <a target="_blank" href="<?= $row['foto_absen_keluar'] ?>" class="btn p-1" data-toggle="tooltip" title="Lihat Foto Absen">
                   <i class="ti ti-photo ft-13"></i>
-                </a>
-                <a href="javascript:;" onclick="action_data_att('out','<?=$row['absen_id'];?>','catatan');" class="btn p-1" data-toggle="tooltip" title="Lihat Catatan">
-                  <i class="ti ti-note ft-13"></i>
                 </a>
               </div>
               <?php } ?>

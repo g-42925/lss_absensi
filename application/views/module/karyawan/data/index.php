@@ -5,48 +5,54 @@
     <div class="card-header border-bottom">
       <h5 class="card-title"><?=$namalabel;?></h5>
       <div class="text-start">
-        <a href="<?=base_url('karyawan/data/add');?>" class="btn btn-secondary btn-primary btn-sm"><i class="ti ti-plus me-md-1"></i> Tambah Data</a>
+        <a href="<?=base_url('karyawan/data/add/0');?>" class="btn btn-secondary btn-primary btn-sm"><i class="ti ti-plus me-md-1"></i> Tambah Data</a>
       </div>
     </div>
     <div class="card-datatable table-responsive">
-      <?=$this->session->flashdata('message');?>
       <table class="table border-top" id="dataTable">
         <thead>
-          <tr>
-            <th class="w-s-n">ID Karyawan</th>
+          <tr class="text-center">
+            <th class="w-s-n">Nik</th>
+            <th class="w-s-n">Divisi</th>
             <th class="w-s-n">Nama Lengkap</th>
             <th class="w-s-n">No WhatsApp</th>
-            <th>Email</th>
-            <th>Status</th>
-            <th class="text-end">Action</th>
+            <th class="w-s-n">Tangggal Kontrak</th>
+            <th>Gaji</th>
+            <th>Action</th>
           </tr>
         </thead>
         <tbody>
           <?php $no=1; foreach ($datas as $row) : ?>
-          <tr>
-            <td><?= $row['id_pegawai'];?></td>
+          <tr class="text-center">
+            <td><?= $row['nik'];?></td>
+            <td><?= $row['divisi'];?></td>
             <td><?= $row['nama_pegawai'];?></td>
             <td><?= $row['nomor_pegawai'];?></td>
-            <td><?= $row['email_pegawai'];?></td>
+            <td><?= $row['status_pegawai'] == 'contract' ? date('d M Y',strtotime($row['contract_start_date']))."-".date('d M Y',strtotime($row['contract_end_date'])):"-" ?></td>
+            <td><?= number_format($row['salary'],2); ?></td>
             <td>
-              <?php if ($row['is_status']=='y') { ?>
-              <span class="badge bg-label-success">Aktif</span>
-              <?php } else if ($row['is_status']=='n') { ?>
-              <span class="badge bg-label-danger">Tidak Aktif</span>
-              <?php } else { ?>
-              <span class="badge bg-label-secondary">Unknown</span>
-              <?php } ?>
-            </td>
-            <td align="right">
               <a href="<?=base_url('attendance_record/detail/'.$row['pegawai_id']);?>" class="btn p-1" title="Rekap Kehadiran">
                 <i class="ti ti-checklist"></i>
               </a>
-              <a href="<?=base_url('karyawan/data/edit/'.$row['pegawai_id']);?>" class="btn p-1">
+              <a href="<?= base_url('karyawan/data/edit/'.$row['pegawai_id']).'?failed=false' ;?>" class="btn p-1">
                 <i class="ti ti-edit"></i>
               </a>
               <a href="#" class="btn p-1" data-bs-toggle="modal" data-bs-target="#delRow<?=$row['pegawai_id'];?>">
                 <i class="ti ti-trash"></i>
               </a>
+              <a href="<?= base_url('allowance/config/').$row['pegawai_id'] ?>" class="btn p-1">
+                <i class="ti ti-currency-dollar"></i>
+              </a>
+              <a href="<?= base_url('benefit/config/').$row['pegawai_id'] ?>" class="btn p-1">
+                <i class="ti ti-notebook"></i>
+              </a>
+              <a href="<?= base_url('file/config/').$row['pegawai_id'] ?>" class="btn p-1">
+                <i class="ti ti-file"></i>
+              </a>
+              <a href="<?= base_url('payroll/filter/').$row['pegawai_id'] ?>" class="btn p-1">
+                <i class="ti ti-calendar"></i>
+              </a>
+
               <!-- Konfirmasi Hapus -->
               <div class="modal fade" id="delRow<?=$row['pegawai_id'];?>" tabindex="-1" aria-hidden="true">
                 <div class="modal-dialog modal-simple modal-enable-otp modal-dialog-centered">

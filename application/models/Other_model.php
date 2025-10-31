@@ -79,8 +79,8 @@ class Other_model extends CI_Model {
         return $this->db->update($tabel);
     }
 
-    public function get_roles() {
-        $query = $this->db->query("SELECT * FROM m_role WHERE is_del='n' AND is_status='y'")->result_array();
+    public function get_roles($companyId) {
+        $query = $this->db->query("SELECT * FROM m_role WHERE is_del='n' AND is_status='y' and company_id=$companyId")->result_array();
         return $query;
     }
 

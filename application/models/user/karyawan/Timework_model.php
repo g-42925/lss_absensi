@@ -35,11 +35,11 @@ class Timework_model extends CI_Model {
 
     public function edit_proses($id) {
         $this->db->set([
-            'pola_kerja_id'           => $this->input->post('pola'),
+            'pola_kerja_id'           => $this->input->post('selected_pattern'),
             'mulai_berlaku_tanggal'   => $this->input->post('tglmulai'),
             'dari_hari_ke'            => $this->input->post('harike')
         ]);
-        $this->db->where('pegawai_pola_id', $id);
+        $this->db->where('pegawai_id', $id);
         $res = $this->db->update('m_pegawai_pola');
         return $res;
     }

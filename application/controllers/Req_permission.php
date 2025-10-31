@@ -24,7 +24,7 @@ class Req_permission extends CI_Controller {
         cek_menu_access();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Data Request Izin';
-        $data['title']      = 'Data Request Izin';
+        $data['title']      = 'Request Izin';
         $data['namalabel']  = $data['title'];
         $data['auth']       = authUser();
 
@@ -38,8 +38,10 @@ class Req_permission extends CI_Controller {
         if ($akhir!=null) {
             $data['tglakhir'] = $akhir;
         }
+         
+        $companyId = $this->session->userdata('company_id');
 
-        $data['datas']      = $this->rp->get_data($data['tglawal'],$data['tglakhir']);
+        $data['datas']  = $this->rp->get_data($data['tglawal'],$data['tglakhir']);
 
         $this->load->view('templates/header', $data);
         $this->load->view('templates/sidemenu', $data);
@@ -140,7 +142,9 @@ class Req_permission extends CI_Controller {
             redirect('req_permission/');
         }
 
-        $data['karyawan']   = $this->rp->get_karyawan($id);
+        $data['karyawan'] = $this->db->query("select * from tx_request_izin_pegawai trip join m_pegawai mp on mp.pegawai_id = trip.pegawai_id where trip.request_izin_id = ?",[$id])->row_array();
+
+        //$data['karyawan']   = $this->rp->get_karyawan($id);
         $data['edit']       = $check->row_array();
         $data['thismonth'] = date('Y-m-t');
 

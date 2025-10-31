@@ -10,8 +10,6 @@ class Attendance_model extends CI_Model {
 	public function get_data($tgl,$statt,$isRun) {
         $data = array();
 
-        $cutiBersama = $this->db->query("SELECT * FROM tx_cuti_bersama WHERE tanggal='$tgl'")->num_rows();
-
         if ($tgl==date('Y-m-d')) {
             $check_tgl = $this->db->query("SELECT * FROM tx_tanggal WHERE tanggal='$tgl'")->num_rows();
             if ($check_tgl==0) {
@@ -24,7 +22,7 @@ class Attendance_model extends CI_Model {
             }            
         }
 
-        $query = "SELECT a.pegawai_id as pid, a.nama_pegawai, a.tanggal_mulai_kerja, b.*, c.mulai_berlaku_tanggal, c.dari_hari_ke, c.is_day, c.pola_kerja_id FROM m_pegawai a
+        $query = "SELECT a.company_id, a.pegawai_id as pid, a.nama_pegawai, a.tanggal_mulai_kerja, b.*, c.mulai_berlaku_tanggal, c.dari_hari_ke, c.is_day, c.pola_kerja_id FROM m_pegawai a
             LEFT JOIN tx_absensi b ON a.pegawai_id=b.pegawai_id AND b.tanggal_absen='$tgl' AND b.is_pending='$statt'
             LEFT JOIN m_pegawai_pola c ON a.pegawai_id=c.pegawai_id AND c.is_selected='y'
             WHERE a.is_del='n'";
@@ -32,7 +30,8 @@ class Attendance_model extends CI_Model {
         $result = $this->db->query($query)->result_array();
 
         foreach ($result as $row) {
-
+            $cH = $this->db->query("select * from company_holidays where company_id='$row[company_id]' and tanggal='$tgl'")->num_rows();
+            $globalHolidays = $this->db->query("select * from global_holidays where tanggal='$tgl'")->num_rows();
 
             $q2 = $this->db->query("SELECT * FROM tx_absensi WHERE tanggal_absen='$tgl' AND pegawai_id='$row[pid]'")->num_rows();
 
@@ -54,7 +53,7 @@ class Attendance_model extends CI_Model {
                     if (!isset($q['jam_pulang'])) { $q['jam_pulang'] = ''; }
                     if (!isset($q['toleransi_terlambat'])) { $q['toleransi_terlambat'] = ''; }
 
-                    if($cutiBersama>0){
+                    if($cH > 0 || $globalHolidays > 0){
                         $st = 'cb';
                     }
                     else{
@@ -113,7 +112,16 @@ class Attendance_model extends CI_Model {
                 'dari_hari_ke'          => $row['dari_hari_ke'],
                 'is_day'                => $row['is_day'],
                 'is_request'            => $row['is_request'],
-                'acc_keluar'            => $row['acc_keluar']
+                'acc_keluar'            => $row['acc_keluar'],
+                'foto_absen_masuk'      => $row['foto_absen_masuk'],
+                'point_latitude'        => $row['point_latitude'],
+                'point_longitude'       => $row['point_longitude'],
+                'foto_absen_keluar'     => $row['foto_absen_keluar'],
+                'latitude_keluar'       => $row['latitude_keluar'],
+                'longitude_keluar'      => $row['longitude_keluar'],
+                's_istirahat_photo'     => $row['s_istirahat_photo'],
+                's_istirahat_latitude'  => $row['s_istirahat_latitude'],
+                's_istirahat_longitude' => $row['s_istirahat_longitude']
             );
             }
         }

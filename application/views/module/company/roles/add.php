@@ -7,7 +7,10 @@
     </div>
     <div class="card">
       <form class="card-body" action="<?=base_url('company/roles/add_proses');?>" method="POST">
-        <?=$this->session->flashdata('message');?>
+        <?php if ($failed == 1): ?>
+          <?=$this->session->flashdata('message');?>        
+        <?php endif; ?>
+      
         <div class="row g-3">
           <div class="col-xl-8 col-md-8 col-sm-7 col-xs-7">
             <label class="form-label">Nama Jabatan</label>

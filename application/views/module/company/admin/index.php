@@ -5,11 +5,10 @@
     <div class="card-header border-bottom">
       <h5 class="card-title"><?=$namalabel;?></h5>
       <div class="text-start">
-        <a href="<?=base_url('company/admin/add');?>" class="btn btn-secondary btn-primary btn-sm"><i class="ti ti-plus me-md-1"></i> Tambah Data</a>
+        <a href="<?=base_url('company/admin/add/0');?>" class="btn btn-secondary btn-primary btn-sm"><i class="ti ti-plus me-md-1"></i> Tambah Data</a>
       </div>
     </div>
     <div class="card-datatable table-responsive">
-      <?=$this->session->flashdata('message');?>
       <table class="table border-top" id="dataTable">
         <thead>
           <tr>
@@ -38,7 +37,7 @@
               <?php } ?>
             </td>
             <td align="right">
-              <a href="<?=base_url('company/admin/edit/'.$row['user_id']);?>" class="btn p-1">
+              <a href="<?=base_url('company/admin/edit/'.$row['user_id']).'?failed=false';?>" class="btn p-1">
                 <i class="ti ti-edit"></i>
               </a>
               <a href="#" class="btn p-1" data-bs-toggle="modal" data-bs-target="#delRow<?=$row['user_id'];?>">

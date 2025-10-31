@@ -72,7 +72,8 @@ class Auth extends CI_Controller {
                 if (password_verify($password, $user['password'])) {
                     $data = [
                         'u_id'          => $user['user_id'],
-                        'role_id'       => $user['role_id']
+                        'role_id'       => $user['role_id'],
+                        'company_id'    => $user['company_id']
                     ];
                     $this->session->set_userdata($data);
                     redirect('auth');
@@ -93,6 +94,7 @@ class Auth extends CI_Controller {
     public function logout() {
         $this->session->unset_userdata('u_id');
         $this->session->unset_userdata('role_id');
+        $this->session->unset_userdata('company_id');
         $this->session->set_flashdata('message', '<div class="alert alert-primary" role="alert">Telah keluar.</div>');
         redirect('auth');
     }

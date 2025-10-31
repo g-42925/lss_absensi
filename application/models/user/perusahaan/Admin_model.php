@@ -15,8 +15,9 @@ class Admin_model extends CI_Model {
         return $query;
     }
 
-    public function add_proses() {
+    public function add_proses($companyId) {
         $data = [
+            'company_id'        => $companyId,
             'role_id'  			=> $this->input->post('roles'),
             'permission_id'  	=> $this->input->post('izin'),
             'nama_lengkap'  	=> $this->input->post('nama'),
@@ -38,6 +39,7 @@ class Admin_model extends CI_Model {
         }
 
         $this->db->set([
+            'company_id'        => $this->session->userdata('company_id'),
             'role_id'  			=> $this->input->post('roles'),
             'permission_id'  	=> $this->input->post('izin'),
             'nama_lengkap'  	=> $this->input->post('nama'),

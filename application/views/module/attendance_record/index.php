@@ -27,35 +27,28 @@
         <thead>
           <tr>
             <th>Nama&nbsp;Karyawan</th>
-            <th>Hari Kehadiran</th>
-            <th>Tidak Hadir</th>
-            <!-- <th>Belum Lengkap</th> -->
-            <th>Tugas&nbsp;Luar Kantor</th>
-            <th>Cuti&nbsp;& Lainnya</th>
-            <th>Cuti Sakit</th>
-            <th>Cuti&nbsp;Setengah Hari</th>
-            <th>Cuti Tahunan</th>
-            <th>Cuti Bersama</th>
-            <th width="">&nbsp;Action&nbsp;</th>
+            <th>Hari Kehadiran</th> <!-- hhk -->
+            <th>Tidak Hadir</th> <!-- alpha-1 / alpha-2 -->
+            <th>Tugas&nbsp;Luar Kantor</th> <!-- on duty -->
+            <th>Cuti</th> <!-- c -->
+            <th>Izin/Sakit</th> <!-- i/s -->
+            <!-- <th width="">&nbsp;Action&nbsp;</th> -->
           </tr>
         </thead>
         <tbody>
           <?php $no=1; foreach ($datas as $row) : ?>
           <tr>
             <td><?=$row['nama_pegawai'];?></td>
-            <td><?=$row['hhk'];?></td>
-            <td><?=$row['th'];?></td>
-            <td><?=$row['tl'];?></td>
+            <td><?=$row['hHK'];?></td>
+            <td><?=$row['alpha'];?></td>
+            <td><?=$row['onDuty'];?></td>
             <td><?=$row['c'];?></td>
-            <td><?=$row['s'];?></td>
-            <td><?=$row['csh'];?></td>
-            <td><?=$row['ct'];?></td>
-            <td><?=$row['cb'];?></td>
-            <td align="right">
+            <td><?=$row['lL'];?></td>
+            <!-- <td>
               <a href="<?=base_url('attendance_record/detail/'.$row['pegawai_id']);?>" class="btn p-1 text-primary">
                 Lihat&nbsp;Detail
               </a>
-            </td>
+            </td> -->
           </tr>
           <?php $no++; endforeach; ?>
         </tbody>

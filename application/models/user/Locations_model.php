@@ -7,9 +7,9 @@ class Locations_model extends CI_Model {
         parent::__construct();
     }
 
-	public function get_data() {
+	public function get_data($companyId) {
         $data = array();
-        $query = $this->db->query("SELECT * FROM m_lokasi WHERE is_del='n'");
+        $query = $this->db->query("SELECT * FROM m_lokasi WHERE is_del='n' and company_id=$companyId");
         $num_rows = $query->num_rows();
 
         $no = 1;
@@ -65,8 +65,9 @@ class Locations_model extends CI_Model {
         return $data;
     }
 
-    public function add_proses() {
+    public function add_proses($companyId) {
         $data = [
+            'company_id'            => $companyId,
             'nama_lokasi'  	        => $this->input->post('nama'),
             'alamat_lokasi'         => $this->input->post('alamat'),
             'garis_lintang'  	    => $this->input->post('gl'),

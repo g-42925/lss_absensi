@@ -11,7 +11,7 @@
               <!-- Logo -->
               <div class="app-brand justify-content-center_ mb-3 mt-0">
                 <a href="#" class="app-brand-link gap-2">
-                  <img src="<?=base_url('assets/temp/assets/logo/client/logo.png');?>" width="90">
+                  <img src="<?=base_url('assets/temp/assets/logo/client/logo_4.png');?>" width="90">
                 </a>
               </div>
               <!-- /Logo -->

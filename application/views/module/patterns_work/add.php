@@ -7,32 +7,29 @@
     </div>
     <div class="card">
       <form class="card-body" action="<?=base_url('patterns_work/add_proses');?>" method="POST">
-        <?=$this->session->flashdata('message');?>
+        <?php if ($failed): ?>
+          <?=$this->session->flashdata('message');?>
+        <?php endif; ?>
         <div class="row g-3">
-          <div class="col-xl-6 col-md-6 col-sm-6">
+          <div class="col-xl-4 col-md-4 col-sm-4">
             <label class="form-label">Nama Pola<i class="text-danger">*</i></label>
             <input type="text" class="form-control" name="nama" autocomplete="off" placeholder="..." required />
           </div>
-          <div class="col-xl-6 col-md-6 col-sm-6">
+          <div class="col-xl-4 col-md-4 col-sm-4">
             <label class="form-label">Toleransi Keterlambatan</label>
             <div class="input-group">
               <input type="text" class="form-control" name="tolet" placeholder="0">
               <span class="input-group-text">Menit</span>
             </div>
           </div>
-          <div class="col-xl-12 col-md-12">
+          <div class="col-xl-4 col-md-4">
+            <label class="form-label">Jumlah Hari<i class="text-danger">*</i></label>
+            <input type="text" class="form-control" name="jumlahhari" id="jumlahhari" autocomplete="off" placeholder="7" onkeyup="checkPolaHari(this.value)" required />
+            </div>
+          </div>
+          <div class="col-xl-12 col-md-12 mt-6">
             <div class="table-responsive">
               <table class="table">
-                <thead>
-                  <tr class="v-align-middle">
-                    <td class="text-center ft-14" colspan="2">
-                      Jumlah Hari ( Dalam Siklus )<span id="alertxjumlah"></span><i class="text-danger">*</i>
-                    </td>
-                    <th class="text-center" colspan="4">
-                      <input type="text" class="form-control" name="jumlahhari" id="jumlahhari" autocomplete="off" placeholder="7" required  onkeyup="checkPolaHari(this.value)" />
-                    </th>
-                  </tr>
-                </thead>
                 <tbody id="siklus_pola_kerja_xm"></tbody>
               </table>
             </div>
@@ -60,13 +57,13 @@
           <tr>
             <td>Day&nbsp;`+i+`</td>
             <td>
-              <select class="form-control" name="work[]" required="">
+              <select class="form-control w-28" name="work[]" required="">
                 <option value="y">Hari Kerja</option>
                 <option value="n">Libur</option>
               </select>
             </td>
-            <td>
-              <select class="form-control" name="sistemkerja[]" required="">
+            <td class="hidden">
+              <select class="form-control w-14" name="sistemkerja[]" required="">
                 <option value="1">WFO</option>
                 <option value="2">WFH</option>
               </select>
@@ -74,19 +71,38 @@
             <td width="140">
               <input type="text" class="form-control flatpickr-input text-center active" placeholder="hh:mm" value="08:00" id="flatpickr-time-work-m`+i+`" readonly="readonly" name="masuk[]">
             </td>
-            <td width="120" align="center">Sampai</td>
-            <td width="140">
+            <td class="120">
+              <input type="text" class="outline-none w-14" value="Sampai">
+            </td>
+            <td width="w-fit">
               <input type="text" class="form-control flatpickr-input text-center active" placeholder="hh:mm" value="17:00" id="flatpickr-time-work-p`+i+`" readonly="readonly" name="pulang[]">
+            </td>
+            <td class="">
+              <input type="text" class="outline-none [width:calc(1ch*7)]" value="Istirahat">
+            </td>
+            <td class="">
+              <input id="breakStart-`+i+`" type="text" value="12:00" class="form-control flatpickr-input text-center active" name="break[]">
+            </td>
+            <td class="">
+              <input type="text" class="outline-none w-14" value="Sampai">
+            </td>
+            <td class="">
+              <input value="13:00" type="text" id="breakEnd-`+i+`" class="form-control flatpickr-input text-center active" name="breakEnd[]">
             </td>
           </tr>
         `;
       }
+    
       $('#siklus_pola_kerja_xm').html(atext);
       for (var i = 1; i <= a; i++) {
-        const twMm = document.querySelector('#flatpickr-time-work-m'+i),
-        twPp = document.querySelector('#flatpickr-time-work-p'+i);
+        const twPp = document.querySelector('#flatpickr-time-work-p'+i)
+        const twMm = document.querySelector('#flatpickr-time-work-m'+i)
+        const start = document.querySelector('#breakStart-'+i)
+        const end = document.querySelector('#breakEnd-'+i)
         twMm.flatpickr({ enableTime: true, noCalendar: true, time_24hr: true });
         twPp.flatpickr({ enableTime: true, noCalendar: true, time_24hr: true });
+        start.flatpickr({ enableTime: true, noCalendar: true, time_24hr: true });
+        end.flatpickr({ enableTime: true, noCalendar: true, time_24hr: true });
       }
     }
   }

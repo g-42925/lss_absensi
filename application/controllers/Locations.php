@@ -29,7 +29,9 @@ class Locations extends CI_Controller {
         $data['namalabel']  = $data['title'];
         $data['auth']       = authUser();
 
-        $data['datas']      = $this->lokasi->get_data();
+        $data['datas']      = $this->lokasi->get_data(
+            $this->session->userdata('company_id')
+        );
 
         $this->load->view('templates/header', $data);
         $this->load->view('templates/sidemenu', $data);
@@ -46,9 +48,10 @@ class Locations extends CI_Controller {
         $data['title']      = 'Lokasi Kehadiran';
         $data['namalabel']  = $data['title'];
         $data['auth']       = authUser();
+
+        $data['failed'] = filter_var($this->input->get('failed'), FILTER_VALIDATE_BOOLEAN);
         
         if($data['auth']['tambah']!='y'){
-            $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-danger p-cg" role="alert">Tidak ada akses.</div></div>');
             redirect('locations/');
         }
 
@@ -72,21 +75,26 @@ class Locations extends CI_Controller {
 
         if ($this->form_validation->run() == false) {
             $this->session->set_flashdata('message', '<div class="alert alert-danger p-cg" role="alert">'.validation_errors().'</div>');
-            redirect('locations/add');
-        } else {
+            redirect('locations/add?failed=true');
+        } 
+        else {
             $query = $this->db->get_where('m_lokasi', ['nama_lokasi' => $unama, 'is_del' => 'n'])->num_rows();
             if ($query < 1) {
-                $res = $this->lokasi->add_proses();
+                $res = $this->lokasi->add_proses(
+                  $this->session->userdata('company_id')
+                );
                 if ($res==true) {
                     $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-success p-cg" role="alert">Data berhasil disimpan.</div></div>');
                     redirect('locations');
-                }else{
-                    $this->session->set_flashdata('message', '<div class="alert alert-danger p-cg" role="alert">Proses gagal, silahkan coba lagi.</div>');
-                    redirect('locations/add');
                 }
-            } else {
+                else{
+                    $this->session->set_flashdata('message', '<div class="alert alert-danger p-cg" role="alert">Proses gagal, silahkan coba lagi.</div>');
+                    redirect('locations/add?failed=true');
+                }
+            } 
+            else {
                 $this->session->set_flashdata('message', '<div class="alert alert-warning p-cg" role="alert">Proses gagal, nama lokasi <b>"'.$unama.'"</b> ini sudah digunakan.</div>');
-                redirect('locations/add');
+                redirect('locations/add?failed=true');
             }
         }
     }
@@ -112,6 +120,8 @@ class Locations extends CI_Controller {
         }
 
         $data['edit']       = $check->row_array();
+        $data['failed'] = filter_var($this->input->get('failed'), FILTER_VALIDATE_BOOLEAN);
+
 
         $this->load->view('templates/header', $data);
         $this->load->view('templates/sidemenu', $data);
@@ -129,7 +139,6 @@ class Locations extends CI_Controller {
         $check = $this->db->get_where('m_lokasi', ['lokasi_id' => $id]);
         $rowcheck = $check->row_array();
         if ($check->num_rows()==0) {
-            $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-danger p-cg" role="alert">Data tidak ditemukan.</div></div>');
             redirect('locations'); 
         }
 
@@ -141,21 +150,22 @@ class Locations extends CI_Controller {
 
         if ($this->form_validation->run() == false) {
             $this->session->set_flashdata('message', '<div class="alert alert-danger p-cg" role="alert">'.validation_errors().'</div>');
-            redirect('locations/edit/'.$id);
-        } else {
+            redirect('locations/edit/'.$id.'?failed=false');
+        } 
+        else {
             $query = $this->db->get_where('m_lokasi', ['nama_lokasi' => $unama, 'is_del' => 'n', 'lokasi_id!=' => $id])->num_rows();
             if ($query < 1) {
                 $res = $this->lokasi->edit_proses($id);
                 if ($res==true) {
-                    $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-success p-cg" role="alert">Data berhasil disimpan.</div></div>');
                     redirect('locations');
                 }else{
                     $this->session->set_flashdata('message', '<div class="alert alert-danger p-cg" role="alert">Proses gagal, silahkan coba lagi.</div>');
-                    redirect('locations/edit/'.$id);
+                    redirect('locations/edit/'.$id.'?failed=false');
                 }
-            } else {
+            } 
+            else {
                 $this->session->set_flashdata('message', '<div class="alert alert-warning p-cg" role="alert">Proses gagal, nama lokasi <b>"'.$unama.'"</b> ini sudah digunakan.</div>');
-                redirect('locations/edit/'.$id);
+                redirect('locations/edit/'.$id.'?failed=true');
             }
         }
     }
@@ -173,10 +183,12 @@ class Locations extends CI_Controller {
             $res = $this->other->hapus_data('m_lokasi','lokasi_id',$id);
             if ($res==true) {
                 $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-success p-cg" role="alert">Data berhasil dihapus.</div></div>');
-            }else{
+            }
+            else{
                 $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-danger p-cg" role="alert">Proses gagal, silahkan coba lagi.</div></div>');
             }
-        }else{
+        }
+        else{
             $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-warning p-cg" role="alert">Data tidak bisa dihapus, karna masih ada '.$num.' data karyawan didalamnya.</div></div>');
         }
         redirect('locations');
@@ -204,6 +216,8 @@ class Locations extends CI_Controller {
 
         $data['datas']      = $this->lokasi->get_assign($id);
         $data['karyawan']   = $this->lokasi->get_karyawan($id);
+        $data['failed'] = filter_var($this->input->get('failed'), FILTER_VALIDATE_BOOLEAN);
+
 
         $this->load->view('templates/header', $data);
         $this->load->view('templates/sidemenu', $data);
@@ -219,13 +233,12 @@ class Locations extends CI_Controller {
         $data['auth']       = authUser();
         if($data['auth']['tambah']!='y'){
             $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-danger p-cg" role="alert">Tidak ada akses.</div></div>');
-            redirect('locations/assign/'.$id);
+            redirect('locations/assign/'.$id.'?failed=true');
         }
 
         if ($id==null) { redirect('locations'); }
         $check = $this->db->get_where('m_lokasi', ['lokasi_id' => $id]);
         if ($check->num_rows()==0) {
-            $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-danger p-cg" role="alert">Data tidak ditemukan.</div></div>');
             redirect('locations'); 
         }
 
@@ -233,15 +246,16 @@ class Locations extends CI_Controller {
 
         if ($this->form_validation->run() == false) {
             $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-danger p-cg" role="alert">'.validation_errors().'</div></div>');
-            redirect('locations/assign/'.$id);
-        } else {
+            redirect('locations/assign/'.$id.'?failed=true');
+        } 
+        else {
             $res = $this->lokasi->assign_proses($id);
             if ($res==true) {
-                $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-success p-cg" role="alert">Data berhasil disimpan.</div></div>');
                 redirect('locations/assign/'.$id);
-            }else{
+            }
+            else{
                 $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-danger p-cg" role="alert">Proses gagal, silahkan coba lagi.</div></div>');
-                redirect('locations/assign/'.$id);
+                redirect('locations/assign/'.$id.'?failed=true');
             }
         }
     }

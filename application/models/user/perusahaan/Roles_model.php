@@ -7,13 +7,14 @@ class Roles_model extends CI_Model {
         parent::__construct();
     }
 
-	public function get_data() {
-        $query = $this->db->query("SELECT * FROM m_role WHERE is_del='n' AND is_status='y'")->result_array();
+	public function get_data($companyId) {
+        $query = $this->db->query("SELECT * FROM m_role WHERE is_del='n' AND is_status='y' and company_id=$companyId")->result_array();
         return $query;
     }
 
-    public function add_proses() {
+    public function add_proses($companyId) {
         $data = [
+            'company_id'        => $companyId,
             'nama_role'  		=> $this->input->post('nama'),
             'is_status'  		=> $this->input->post('status'),
             'created_at'  		=> date('Y-m-d H:i:s')
@@ -32,6 +33,7 @@ class Roles_model extends CI_Model {
                         $cekrow = $query->num_rows();
                         if($cekrow==0){
                             $data = [
+                                'company_id' => $companyId,
                                 'id_role' => $idnya,
                                 'id_menu' => $explo[0]
                             ];
@@ -40,6 +42,7 @@ class Roles_model extends CI_Model {
                         $query = $this->db->query("SELECT * FROM m_menu WHERE menu_id='$explo[0]'")->row_array();
                         if ($query['tipe']==1) {
     	                    $data = [
+                                'company_id' => $companyId,
     	                        'id_role' => $idnya,
     	                        'id_menu' => $explo[1]
     	                    ];

@@ -4,7 +4,7 @@
     <!-- Website Analytics -->
     <div class="col-xl-8 col-lg-7 col-md-7 mb-4">
       <div class="row">
-        <div class="col-xl-4 col-md-6 col-sm-6 col-xs-6 mb-4">
+        <div class="col-xl-6 col-md-6 col-sm-6 col-xs-6 mb-4">
           <div class="card">
             <div class="card-body">
               <div class="badge p-2 bg-label-primary mb-2 rounded">
@@ -18,13 +18,13 @@
             </div>
           </div>
         </div>
-        <div class="col-xl-4 col-md-6 col-sm-6 col-xs-6 mb-4">
+        <div class="col-xl-6 col-md-6 col-sm-6 col-xs-6 mb-4">
           <div class="card">
             <div class="card-body">
               <div class="badge p-2 bg-label-primary mb-2 rounded">
                 <i class="ti ti-calendar ti-md"></i>
               </div>
-              <h5 class="card-title mb-1 pt-2">Request Izin</h5>
+              <h5 class="card-title mb-1 pt-2">Izin Pending</h5>
               <p class="mb-2 mt-1 ft-16"><?= $t_izin ?></p>
               <div class="pt-0">
                 <a href="<?=base_url('req_permission');?>" class="badge bg-label-secondary float-right">Lihat</a>
@@ -32,7 +32,7 @@
             </div>
           </div>
         </div>
-        <div class="col-xl-4 col-md-6 col-sm-6 col-xs-6 mb-4">
+        <!-- <div class="col-xl-4 col-md-6 col-sm-6 col-xs-6 mb-4">
           <div class="card">
             <div class="card-body">
               <div class="badge p-2 bg-label-primary mb-2 rounded">
@@ -45,7 +45,7 @@
               </div>
             </div>
           </div>
-        </div>
+        </div> -->
       </div>
     </div>
     <!--/ Website Analytics -->

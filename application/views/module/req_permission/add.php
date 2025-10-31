@@ -44,11 +44,11 @@
             <input type="text" class="form-control" name="tgl2" placeholder="YYYY-MM-DD" id="flatpickr-date2" />
           </div>
           <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 d-none" id="jmsuk">
-            <label class="form-label">Jam Masuk<i class="text-danger">*</i></label>
+            <label class="form-label">Jam Mulai<i class="text-danger">*</i></label>
             <input type="text" class="form-control flatpickr-input active" name="jmasuk" placeholder="hh:mm" id="flatpickr-time" readonly="readonly">
           </div>
           <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 d-none" id="jkuar">
-            <label class="form-label">Jam Keluar<i class="text-danger">*</i></label>
+            <label class="form-label">Jam Selesai<i class="text-danger">*</i></label>
             <input type="text" class="form-control flatpickr-input active" name="jkeluar" placeholder="hh:mm" id="flatpickr-time2" readonly="readonly">
           </div>
           <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">

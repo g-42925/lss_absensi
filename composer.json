@@ -13,7 +13,8 @@
 	"require": {
 		"php": ">=5.3.7",
 		"dompdf/dompdf": "^0.8.3",
-		"xendit/xendit-php": "^2.19"
+		"xendit/xendit-php": "^2.19",
+		"aws/aws-sdk-php": "^3.263"
 	},
 	"suggest": {
 		"paragonie/random_compat": "Provides better randomness in PHP 5.x"

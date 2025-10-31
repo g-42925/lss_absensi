@@ -1,4 +1,3 @@
-<!-- Content -->
 <div class="container-xxl flex-grow-1 container-p-y">
   <!-- Users List Table -->
   <div class="card">
@@ -34,10 +33,9 @@
       <table class="table border-top" id="dataTableatt">
         <thead>
           <tr>
-            <th class="w-s-n">Tanggal</th>
-            <th class="w-s-n">Id</th>
-            <th>Kategori</th>
-            <th>Nama</th>
+            <th class="w-s-n">Date</th>
+            <th class="w-s-n">Requested By</th>
+            <th>Category</th>
             <th>Status</th>
             <th class="text-end">Action</th>
           </tr>
@@ -48,33 +46,49 @@
           ?>
           <tr>
             <td class="w-s-n">
-              <?= $row['tanggal'];?>
+              <?= $row['tanggal_request'] ?> - <?= $row['tanggal_request_end'] ?>
             </td>
             <td class="w-s-n">
-              <?= $row['pegawai'][0]['pegawai_id']; ?>
+              <?= $row['nama_pegawai'] ?> (<?= $row['pegawai_id']; ?>)
             </td>
             <td class="w-s-n">
-              <?= $row['kategori']; ?>
+              <?= $row['tipe_request'] ?>
             </td>
-            <td>
-              <?php $nos=1; foreach ($row['pegawai'] as $row2) :
-                $jm = '';
-                if ($row['tipe']=='csh' || $row['tipe']=='tl') {
-                    if($row2['r_absen_masuk']!=''){
-                        $jm = '<br><small>Absen '.$row2['r_absen_masuk']."</small>";
-                    }
-                    if($row2['r_absen_keluar']!=''){
-                        $jm = '<br><small>Absen '.$row2['r_absen_masuk']."~".$row2['r_absen_keluar']."</small>";
-                    }
-                }
-              ?>
-              <a href="javascript:;" onclick="action_permit_req('<?=$row2['request_izin_id'];?>','<?=$row2['pegawai_id'];?>');">
-                <?= $row2['nama_pegawai'];?>
+            <td class="w-s-n">
+              <?= $row['is_status'] ?>
+            </td>                   
+            <td align="right">
+              <a href="<?=base_url('req_permission/edit/'.$row['request_izin_id']);?>" class="btn p-1">
+                <i class="ti ti-edit"></i>
               </a>
-              <?=$jm.'<br>';?>
-              <?php endforeach; ?>
+              <a href="#" class="btn p-1" data-bs-toggle="modal" data-bs-target="#delRow<?=$row['request_izin_id'];?>">
+                <i class="ti ti-trash"></i>
+              </a>
+              <div class="modal fade" id="delRow<?=$row['request_izin_id'];?>" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-simple modal-enable-otp modal-dialog-centered">
+                  <div class="modal-content p-3 p-md-5">
+                    <div class="modal-body">
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      <div class="text-center mb-4">
+                        <h3 class="mb-2">Konfirmasi</h3>
+                        <p>Yakin ingin menghapus data ini ?</p>
+                      </div>
+                      <div class="col-12 text-center pt-3">
+                        <button
+                          type="button"
+                          class="btn btn-label-secondary me-sm-3 me-1"
+                          data-bs-dismiss="modal"
+                          aria-label="Close">
+                          Batal
+                        </button>
+                        <a href="<?=base_url('req_permission/hapus/'.$row['request_izin_id']);?>" class="btn btn-danger">Ya, Hapus</a>
+                      </div>
+                  </div>
+                </div>
+              </div>
             </td>
-            <td><?= $row['status'];?></td>
+            
+            <!-- <td><?= $row['status'];?></td>
             <td align="right">
               <a href="<?=base_url('req_permission/edit/'.$row['id']);?>" class="btn p-1">
                 <i class="ti ti-edit"></i>
@@ -82,7 +96,6 @@
               <a href="#" class="btn p-1" data-bs-toggle="modal" data-bs-target="#delRow<?=$row['id'];?>">
                 <i class="ti ti-trash"></i>
               </a>
-              <!-- Konfirmasi Hapus -->
               <div class="modal fade" id="delRow<?=$row['id'];?>" tabindex="-1" aria-hidden="true">
                 <div class="modal-dialog modal-simple modal-enable-otp modal-dialog-centered">
                   <div class="modal-content p-3 p-md-5">
@@ -106,7 +119,7 @@
                   </div>
                 </div>
               </div>
-            </td>
+            </td> -->
           </tr>
           <?php $no++; endforeach; ?>
         </tbody>
@@ -130,6 +143,8 @@
     window.location.href='<?=base_url('req_permission/index/');?>'+valx+'/'+valx2;
   }
 
+  /*
+
   $(document).ready(function () {
     $('#flatpickr-date2').flatpickr({
       maxDate: "<?=$today;?>"
@@ -138,6 +153,8 @@
       maxDate: "<?=$today;?>"
     });
   });
+
+  */
 
   function action_permit_req(a,b){
     $('#optiondataModalPermitReq').modal('toggle');

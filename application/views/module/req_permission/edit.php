@@ -17,9 +17,9 @@
                 <i class="ti ti-trash ft-12"></i>&nbsp;&nbsp;All</button>
             </div>
             <select class="select2 select2s form-select" id="my-select-kary" name="idp[]" required multiple>
-              <?php foreach ($karyawan as $row) : ?>
-              <option value="<?=$row['pegawai_id'];?>" data-foo="<?=$row['id_pegawai'];?>" <?php if ($row['pegawai_id']==$row['pid']) echo 'selected'; ?>><?=$row['nama_pegawai'];?></option>
-              <?php endforeach; ?>
+              <option selected value="<?= $karyawan['pegawai_id'] ?>" data-foo="<?= $karyawan['pegawai_id'] ?>"><?= $karyawan['nama_pegawai'] ?></option>
+            
+              <!-- <option value="<?=$karyawan['pegawai_id'];?>" data-foo="<?=$karyawan['pegawai_id'];?>" <?php if ($row['pegawai_id']==$row['pid']) echo 'selected'; ?>><?=$row['nama_pegawai'];?></option> -->
             </select>
           </div>
           <div class="col-xl-6 col-md-6 col-sm-6 col-xs-6">

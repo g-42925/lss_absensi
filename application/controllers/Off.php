@@ -22,12 +22,14 @@ class Off extends CI_Controller {
 
     public function index() {
         $data['htmlpagejs'] = 'none';
-        $data['nmenu']      = 'Off Days';
-        $data['title']      = 'Off Days';
+        $data['nmenu']      = 'Hari Libur';
+        $data['title']      = 'Hari Libur Khusus';
         $data['namalabel']  = $data['title'];
         $data['auth']       = authUser();
 
-        $data['offdays']    = $this->db->query("SELECT * FROM tx_cuti_bersama")->result_array();
+        $companyId = $this->session->userdata('company_id');
+
+        $data['offdays'] = $this->db->query("select * from company_holidays where company_id=$companyId order by tanggal desc")->result_array();
 
         $this->load->view('templates/header',$data);
         $this->load->view('templates/sidemenu',$data);
@@ -39,8 +41,8 @@ class Off extends CI_Controller {
 
     public function add(){
         $data['htmlpagejs'] = 'none';
-        $data['nmenu']      = 'Add Off Day';
-        $data['title']      = 'Add Off Day';
+        $data['nmenu']      = 'Hari Libur';
+        $data['title']      = 'Hari Libur Khusus';
         $data['namalabel']  = $data['title'];
         $data['auth']       = authUser();
 
@@ -53,20 +55,25 @@ class Off extends CI_Controller {
     }
 
     public function add_proses(){
-        $this->db->insert('tx_cuti_bersama', [
-            'tanggal' => $this->input->post('tanggal'),
-            'keterangan' => $this->input->post('keterangan')
+        $companyId = $this->session->userdata('company_id');
+
+        $this->db->insert('company_holidays', [
+            'company_id' => $companyId,
+            'tanggal' => $this->input->post('start'),
+            'sampai_tanggal' => $this->input->post('end'),
+            'keterangan' => $this->input->post('note')
         ]);
+        
         redirect('off');
     }
 
     public function edit($id){
         $data['htmlpagejs'] = 'none';
-        $data['nmenu']      = 'Edit Off Day';
-        $data['title']      = 'Edit Off Day';
+        $data['nmenu']      = 'Hari Libur';
+        $data['title']      = 'Hari Libur Khusus';
         $data['namalabel']  = $data['title'];
         $data['auth']       = authUser();
-        $data['data']       = $this->db->query("SELECT * FROM tx_cuti_bersama where id='$id'")->row_array();
+        $data['data']       = $this->db->query("SELECT * FROM company_holidays where id='$id'")->row_array();
         $this->load->view('templates/header',$data);
         $this->load->view('templates/sidemenu',$data);
         $this->load->view('templates/sidenav');
@@ -78,16 +85,17 @@ class Off extends CI_Controller {
     public function edit_proses(){
         $id = $this->input->post('id');
         $this->db->where('id', $id);
-        $this->db->update('tx_cuti_bersama', [
-            'tanggal' => $this->input->post('tanggal'),
-            'keterangan' => $this->input->post('keterangan')
+        $this->db->update('company_holidays', [
+            'tanggal' => $this->input->post('start'),
+            'sampai_tanggal' => $this->input->post('end'),
+            'keterangan' => $this->input->post('note')
         ]);
         redirect('off');
     }
 
     public function delete($id){
         $this->db->where('id', $id);
-        $this->db->delete('tx_cuti_bersama');
+        $this->db->delete('company_holidays');
         redirect('off');
     }
 }
