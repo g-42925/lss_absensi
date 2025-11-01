@@ -1752,7 +1752,7 @@ function login(){
     $deductions = $this->db->query("select * from salary_deduction where employee_id = ? and date between ? and ?",[$empId,$dateX,$dateY])->result_array();
 
     foreach($deductions as $d){
-      if($d['deduction_type'] == "late penalty" || $d['deduction_type'] == "after break late" || $d['deduction_type'] == "clockout late penalty"){
+      if($d['deduction_type'] == "late penalty" || $d['deduction_type'] == "after break late" || $d['deduction_type'] == "clockout late penalty" || $d['deduction_type'] == "clockout forget"){
         $deductionValue += $d['amount'];
       }
     }

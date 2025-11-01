@@ -289,6 +289,26 @@ class Cron extends CI_Controller {
               );
             }
           }
+          if($d['is_status'] == 'hhk' && $d['jam_keluar'] == '00:00'){
+            if($div['clockout_late_penalty']){
+              $penaltyValue = $div['penalty_nominal'];
+              
+              $data = [
+                'id' => uniqid(),
+                'employee_id' => $e['pegawai_id'],
+                'deduction_type' => $d['clockout forget'],
+                'date' => date('Y-m-d'),
+                'amount' => $penaltyValue,
+                'note' => '...'
+              ];
+
+              $this->db->insert(
+                'salary_deduction',
+                $data
+              );
+
+            }
+          }
         }
       }
     }
