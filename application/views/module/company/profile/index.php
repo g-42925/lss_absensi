@@ -9,7 +9,7 @@
             <div class="d-flex align-items-center flex-column">
               <img
                 class="img-fluid rounded mb-3 pt-1"
-                src="<?=base_url('assets/uploaded/components/'.$profile['logo']);?>"
+                src="<?= $profile['logo'] ?>"
                 height="100"
                 width="100"
                 alt="Logo Company" />
