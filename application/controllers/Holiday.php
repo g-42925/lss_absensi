@@ -60,7 +60,8 @@ class Holiday extends CI_Controller {
             'company_id' => $companyId,
             'tanggal' => $this->input->post('start'),
             'sampai_tanggal' => $this->input->post('end'),
-            'keterangan' => $this->input->post('note')
+            'keterangan' => $this->input->post('note'),
+            'caa' => $this->input->post('caa')
         ]);
         
         redirect('holiday');

@@ -67,10 +67,41 @@ class Cron extends CI_Controller {
 
       
           if(count($companyHolidays) > 0 || count($globalHolidays) > 0){
-            $this->db->insert(
-              'tx_absensi',
-              $data1
-            );
+            if(count($globalHolidays) > 0){
+              if($div['alpha_penalty_on_holiday_date']){
+                if($globalHolidays[0]['caa']){
+                  $dataAlpha = [
+                    ...$data1,
+                    'status' => 'alpha-2'
+                  ];
+       
+                  $this->db->insert(
+                    'tx_absensi',
+                    $dataAlpha
+                  );
+                }
+                else{
+                  $this->db->insert(
+                    'tx_absensi',
+                    $data1
+                  );
+                }
+              }
+              else{
+                $this->db->insert(
+                  'tx_absensi',
+                  $data1
+                );
+              }
+            }
+
+            if(count($companyHolidays) > 0 && count(globalHolidays) <  1){
+              $this->db->insert(
+                'tx_absensi',
+                $data1
+              );
+            }
+
           }
 
           if(count($companyHolidays) < 1 && count($globalHolidays) < 1){

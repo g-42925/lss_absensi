@@ -8,6 +8,7 @@
           <tr class="text-center">
             <th>Employee</th>
             <th>Date</th>
+            <th>Description</th>
             <th>Start Photo</th>
             <th>Start Time</th>
             <th>Start Location</th>
@@ -21,6 +22,7 @@
           <tr class="text-center">
             <td class="text-capitalize"><?= $r['nama_pegawai'] ?> (<?= $r['employee_id'] ?>)</td>
             <td class="text-capitalize"><?= $r['date'];?></td>
+            <td class="text-capitalize"><?= $r['description'];?></td>
             <td class="text-capitalize">
               <a target="_blank" href="<?= $r['start_photo'] ?>"><i class="ti ti-photo"></i></a>
             </td>  

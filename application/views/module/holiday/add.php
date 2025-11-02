@@ -16,6 +16,14 @@
     <div class="col-xl-3 col-lg-4 col-md-5 col-sm-6 col-xs-5 input-group">
       <input type="text" name="note" class="form-control" placeholder="Keterangan" />
     </div>
+     <div class="col-xl-6 col-md-6 col-sm-6 col-xs-6">
+      <label class="form-label" for="multicol-country">Considered as alpha<i class="text-danger">*</i></label>
+      <select class="select2 form-select" name="caa" required>
+x       <option value="0" selected>No</option>
+        <option value="1">Yes</option>
+
+      </select>
+    </div>
     <div class="col-xl-3 col-lg-4 col-md-5 col-sm-6 col-xs-5 input-group">
       <button type="submit" class="input-group-text btn btn-outline-primary">Tambah</button>
     </div>
