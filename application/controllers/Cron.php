@@ -95,7 +95,7 @@ class Cron extends CI_Controller {
               }
             }
 
-            if(count($companyHolidays) > 0 && count(globalHolidays) <  1){
+            if(count($companyHolidays) > 0 && count($globalHolidays) <  1){
               $this->db->insert(
                 'tx_absensi',
                 $data1
