@@ -68,7 +68,7 @@ class Cron extends CI_Controller {
       
           if(count($companyHolidays) > 0 || count($globalHolidays) > 0){
             if(count($globalHolidays) > 0){
-              if($div['alpha_penalty_on_holiday_date']){
+              if($division['alpha_penalty_on_holiday_date']){
                 if($globalHolidays[0]['caa']){
                   $dataAlpha = [
                     ...$data1,
@@ -186,7 +186,7 @@ class Cron extends CI_Controller {
               }
             }
             else{
-              $off = $this->db->query("select * from m_pola_kerja mpk join m_pola_kerja_det mpkd on mpk.pola_kerja_id = mpkd.pola_kerja_id where mpk.pola_kerja_id = ? and is_day = ?",[$workSysId,Date('N')])->row_array();
+              $off = $this->db->query("select * from m_pola_kerja mpk join m_pola_kerja_det mpkd on mpk.pola_kerja_id = mpkd.pola_kerja_id where mpk.pola_kerja_id = ? and is_day = ? and is_work='n'",[$workSysId,Date('N')])->row_array();
               $onDuty = $this->db->query("select * from assignment where employee_id  = ? and curdate() between start_from and until",[$e['pegawai_id']])->row_array();
 
 

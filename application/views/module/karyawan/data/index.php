@@ -34,22 +34,22 @@
               <a href="<?=base_url('attendance_record/detail/'.$row['pegawai_id']);?>" class="btn p-1" title="Rekap Kehadiran">
                 <i class="ti ti-checklist"></i>
               </a>
-              <a href="<?= base_url('karyawan/data/edit/'.$row['pegawai_id']).'?failed=false' ;?>" class="btn p-1">
+              <a href="<?= base_url('karyawan/data/edit/'.$row['pegawai_id']).'?failed=false' ;?>" class="btn p-1" title="edit">
                 <i class="ti ti-edit"></i>
               </a>
-              <a href="#" class="btn p-1" data-bs-toggle="modal" data-bs-target="#delRow<?=$row['pegawai_id'];?>">
+              <a href="#" class="btn p-1" data-bs-toggle="modal" data-bs-target="#delRow<?=$row['pegawai_id'];?>" title="Hapus">
                 <i class="ti ti-trash"></i>
               </a>
-              <a href="<?= base_url('allowance/config/').$row['pegawai_id'] ?>" class="btn p-1">
+              <a href="<?= base_url('allowance/config/').$row['pegawai_id'] ?>" class="btn p-1" titke="bonus / tunjangan">
                 <i class="ti ti-currency-dollar"></i>
               </a>
-              <a href="<?= base_url('benefit/config/').$row['pegawai_id'] ?>" class="btn p-1">
+              <a href="<?= base_url('benefit/config/').$row['pegawai_id'] ?>" class="btn p-1" title="potongan">
                 <i class="ti ti-notebook"></i>
               </a>
-              <a href="<?= base_url('file/config/').$row['pegawai_id'] ?>" class="btn p-1">
+              <a href="<?= base_url('file/config/').$row['pegawai_id'] ?>" class="btn p-1" title="file">
                 <i class="ti ti-file"></i>
               </a>
-              <a href="<?= base_url('payroll/filter/').$row['pegawai_id'] ?>" class="btn p-1">
+              <a href="<?= base_url('payroll/filter/').$row['pegawai_id'] ?>" class="btn p-1" title="payroll">
                 <i class="ti ti-calendar"></i>
               </a>
 

@@ -64,17 +64,14 @@ class Payroll extends CI_Controller {
         $totalAllowance = 0;
         $totalBenefit = 0;
         $totalOverwork = 0;
+        $offDays = 0;
         $income = [];
         $benefit = [];
         $penalty = [];
 
         $emp = $this->db->query("select * from m_pegawai where pegawai_id = ?",[$empId])->row_array();
         $attendance = $this->db->query("select * from tx_absensi where tanggal_absen between ? and ? and pegawai_id = ?",[$dateX,$dateY,$empId])->result_array();
-    
-        $emp['salary'] = (int) ($emp['salary'] / 26) * count($attendance);
-    
-        $alphaPenalty = $this->db->query("select sum(amount) as amt from salary_deduction where employee_id = ? and date between ? and ? and deduction_type = 'alpha-2'",[$empId,$dateX,$dateY])->row_array();
-  
+
         foreach($attendance as $a){
           if($a['is_status'] == 'alpha-2'){
             $alphaCount += 1;
@@ -82,8 +79,15 @@ class Payroll extends CI_Controller {
           if($a['is_status'] == "hhk"){
             $attendanceCount += 1;
           }
+          if($a['is_status'] == "off"){
+            $offDays += 1;
+          }
         }
     
+        $emp['salary'] = (int) ($emp['salary'] / 26) * count($attendance) - ((int) ($emp['salary'] / 26) * $offDays);
+    
+        $alphaPenalty = $this->db->query("select sum(amount) as amt from salary_deduction where employee_id = ? and date between ? and ? and deduction_type = 'alpha-2'",[$empId,$dateX,$dateY])->row_array();
+
         $deductions = $this->db->query("select * from salary_deduction where employee_id = ? and date between ? and ?",[$empId,$dateX,$dateY])->result_array();
 
         foreach($deductions as $d){
@@ -164,6 +168,8 @@ class Payroll extends CI_Controller {
           }
 
           $salary = ($emp['salary'] - ($alphaPenalty['amt'] + $deductionValue) + $totalAllowance + $totalOverwork + $qReimburse['val']) - $totalBenefit;
+
+          
 
           if((int) $alphaPenalty['amt'] > 0){
             $penalty[] = [
@@ -248,27 +254,34 @@ class Payroll extends CI_Controller {
             	$totalAllowance = 0;
         		$totalBenefit = 0;
         		$totalOverwork = 0;
+            $offDays = 0;
         		$income = [];
         		$benefit = [];
         		$penalty = [];
 
         		$attendance = $this->db->query("select * from tx_absensi where tanggal_absen between ? and ? and pegawai_id = ?",[$dateX,$dateY,$empId])->result_array();
-    
-        		$e['salary'] = (int) ($e['salary'] / 26) * count($attendance);
 
-			    $employees[$empIndex]['salaryx'] = (int) ($e['salary'] / 26) * count($attendance);
+            
+        foreach($attendance as $a){
+          if($a['is_status'] == 'alpha-2'){
+            $alphaCount += 1;
+          }
+          if($a['is_status'] == "hhk"){
+            $attendanceCount += 1;
+          }
+          if($a['is_status'] == "off"){
+            $offDays += 1;
+          }
+        }
+    
+        $e['salary'] = (int) ($e['salary'] / 26) * count($attendance) - ((int) ($e['salary'] / 26) * $offDays);
+
+			      $employees[$empIndex]['salaryx'] = (int) ($e['salary'] / 26) * count($attendance) - ((int) ($e['salary'] / 26) * $offDays);
 
     
         		$alphaPenalty = $this->db->query("select sum(amount) as amt from salary_deduction where employee_id = ? and date between ? and ? and deduction_type = 'alpha-2'",[$empId,$dateX,$dateY])->row_array();
   
-        		foreach($attendance as $a){
-            		if($a['is_status'] == 'alpha-2'){
-            			$alphaCount += 1;
-          			}
-          			if($a['is_status'] == "hhk"){
-            			$attendanceCount += 1;
-          			}
-        		}
+     
 
         		$deductions = $this->db->query("select * from salary_deduction where employee_id = ? and date between ? and ?",[$empId,$dateX,$dateY])->result_array();
 
@@ -403,8 +416,8 @@ class Payroll extends CI_Controller {
         $summary = 0;
 
         foreach($data['divisions'] as $d){
-          foreach($d['employees'] as $emp){
-            $summary += $emp['thp'];
+          foreach($d['employees'] as $_emp){
+            $summary += $_emp['thp'];
 		  }
         };
 
@@ -446,27 +459,34 @@ class Payroll extends CI_Controller {
             	$totalAllowance = 0;
         		$totalBenefit = 0;
         		$totalOverwork = 0;
+            $offDays = 0;
         		$income = [];
         		$benefit = [];
         		$penalty = [];
 
         		$attendance = $this->db->query("select * from tx_absensi where tanggal_absen between ? and ? and pegawai_id = ?",[$dateX,$dateY,$empId])->result_array();
     
-        		$e['salary'] = (int) ($e['salary'] / 26) * count($attendance);
+        foreach($attendance as $a){
+          if($a['is_status'] == 'alpha-2'){
+            $alphaCount += 1;
+          }
+          if($a['is_status'] == "hhk"){
+            $attendanceCount += 1;
+          }
+          if($a['is_status'] == "off"){
+            $offDays += 1;
+          }
+        }
+    
+        $emp['salary'] = (int) ($emp['salary'] / 26) * count($attendance) - ((int) ($emp['salary'] / 26) * $offDays);
 
-			    $employees[$empIndex]['salaryx'] = (int) ($e['salary'] / 26) * count($attendance);
+
+			    $employees[$empIndex]['salaryx'] = (int) ($e['salary'] / 26) * count($attendance) - ((int) ($emp['salary'] / 26) * $offDays);
 
     
         		$alphaPenalty = $this->db->query("select sum(amount) as amt from salary_deduction where employee_id = ? and date between ? and ? and deduction_type = 'alpha-2'",[$empId,$dateX,$dateY])->row_array();
   
-        		foreach($attendance as $a){
-            		if($a['is_status'] == 'alpha-2'){
-            			$alphaCount += 1;
-          			}
-          			if($a['is_status'] == "hhk"){
-            			$attendanceCount += 1;
-          			}
-        		}
+        		
 
         		$deductions = $this->db->query("select * from salary_deduction where employee_id = ? and date between ? and ?",[$empId,$dateX,$dateY])->result_array();
 
@@ -545,7 +565,7 @@ class Payroll extends CI_Controller {
             		];
           	    }
 
-          		$salary = ($e['salary'] - ($alphaPenalty['amt'] + $deductionValue) + $totalAllowance + $totalOverwork + $qReimburse['val']) - $totalBenefit;
+          		$salary = ($emp['salary'] - ($alphaPenalty['amt'] + $deductionValue) + $totalAllowance + $totalOverwork + $qReimburse['val']) - $totalBenefit;
 
           		if((int) $alphaPenalty['amt'] > 0){
             		$penalty[] = [
@@ -580,7 +600,7 @@ class Payroll extends CI_Controller {
 
           		$company = $this->db->query("select * from companies where id = ?",[$companyId])->row_array();
 
-		  		$employees[$empIndex]['salary'] = $e['salary'];
+		  		$employees[$empIndex]['salary'] = $emp['salary'];
 		  		$employees[$empIndex]['thp'] = $salary;
 			    $employees[$empIndex]['totalAllowance'] = $totalAllowance + $totalOverwork + $qReimburse['val'];
 				$employees[$empIndex]['totalBenefit'] = (int) $totalBenefit + $alphaPenalty['amt'] + $deductionValue;
@@ -600,7 +620,7 @@ class Payroll extends CI_Controller {
 			$row = [
 			  'Employee' => $e['nama_pegawai'],
 			  'Division' => $div['division_name'],
-			  'Salary' => $e['salary'],
+			  'Salary' => $emp['salary'],
 			  'Additional' => $e['totalAllowance'],
 			  'Minus' => $e['totalBenefit'],
 			  'Take Home Pay' => $e['thp']
@@ -639,24 +659,29 @@ class Payroll extends CI_Controller {
         $totalAllowance = 0;
         $totalBenefit = 0;
         $totalOverwork = 0;
+        $offDays = 0;
         $income = [];
         $benefit = [];
         $penalty = [];
 
         $attendance = $this->db->query("select * from tx_absensi where tanggal_absen between ? and ? and pegawai_id = ?",[$dateX,$dateY,$empId])->result_array();
     
-        $e['salary'] = (int) ($e['salary'] / 26) * count($attendance);
-    
-        $alphaPenalty = $this->db->query("select sum(amount) as amt from salary_deduction where employee_id = ? and date between ? and ? and deduction_type = 'alpha-2'",[$empId,$dateX,$dateY])->row_array();
-  
-        foreach($attendance as $a){
+         foreach($attendance as $a){
           if($a['is_status'] == 'alpha-2'){
             $alphaCount += 1;
           }
           if($a['is_status'] == "hhk"){
             $attendanceCount += 1;
           }
+          if($a['is_status'] == "off"){
+            $offDays += 1;
+          }
         }
+    
+        $emp['salary'] = (int) ($emp['salary'] / 26) * count($attendance) - ((int) ($emp['salary'] / 26) * $offDays);
+    
+        $alphaPenalty = $this->db->query("select sum(amount) as amt from salary_deduction where employee_id = ? and date between ? and ? and deduction_type = 'alpha-2'",[$empId,$dateX,$dateY])->row_array();
+
     
         $deductions = $this->db->query("select * from salary_deduction where employee_id = ? and date between ? and ?",[$empId,$dateX,$dateY])->result_array();
 
@@ -669,7 +694,6 @@ class Payroll extends CI_Controller {
         $allowances = $this->db->query("select * from employee_allowance ea join allowance a on ea.allowance_id = a.allowance_id where ea.employee_id = ?",[$empId])->result_array();
         $overworks = $this->db->query("select * from employee_overwork eo join m_pegawai mp on eo.employee_id = mp.pegawai_id join divisions d on mp.division_id = d.id where mp.pegawai_id = ? and date between ? and ?",[$empId,$dateX,$dateY])->result_array();
         $qReimburse = $this->db->query("select sum(value) as val from reimburse_claim where employee_id = ? and date between ? and ? and status = 'approved'",[$empId,$dateX,$dateY])->row_array();
-
 
         foreach($overworks as $overwork){
           $start = new DateTime($overwork['start_from']);
@@ -737,7 +761,7 @@ class Payroll extends CI_Controller {
 
           }
 
-          $salary = ($e['salary'] - ($alphaPenalty['amt'] + $deductionValue) + $totalAllowance + $totalOverwork + $qReimburse['val']) - $totalBenefit;
+          $salary = ($emp['salary'] - ($alphaPenalty['amt'] + $deductionValue) + $totalAllowance + $totalOverwork + $qReimburse['val']) - $totalBenefit;
 
           if((int) $alphaPenalty['amt'] > 0){
             $penalty[] = [

@@ -338,6 +338,16 @@ function loginv2(){
   $post = json_decode($input,true);
     
     $r1 = $this->db->query("select * from m_pegawai emp join companies c on emp.company_id = c.id join divisions divs on emp.division_id = divs.id where emp.email_pegawai = ? and emp.is_del != 'y'",[$post['email']])->row_array();
+    $rFile = $this->db->query("select * from employee_file ef join file f on ef.file_id = f.file_id where ef.where employee_id = ?",[$r1['pegawai_id']])->result_array();
+    
+    if(count($rFile) > 0){
+      foreach($rFile as $file){
+        if($file['title'] == 'Photo'){
+          $r1['foto_pegawai'] = $file['source'];
+        }
+      }
+    }
+
     if($r1){
       $r5 = $r1 ? $this->db->query("select * from m_lokasi where company_id = ? and is_del!='y'",array($r1['company_id']))->result_array() : [];
       $companyHolidays = $this->db->query("select * from company_holidays where company_id = ? and curdate() between tanggal and sampai_tanggal",[$r1['company_id']])->row_array();
@@ -548,10 +558,10 @@ function login(){
 
           $this->db->trans_begin();
 
-          $q1 = $this->db->insert(
-            'salary_deduction',
-            $data1
-          );
+          // $q1 = $this->db->insert(
+          //   'salary_deduction',
+          //   $data1
+          // );
 
           $this->db->where('absen_id',$lastDefaultStatus["absen_id"]);
          
@@ -1716,6 +1726,7 @@ function login(){
     $totalAllowance = 0;
     $totalBenefit = 0;
     $totalOverwork = 0;
+    $offDays = 0;
     $income = [];
     $benefit = [];
     $penalty = [];
@@ -1735,11 +1746,7 @@ function login(){
     
     $emp = $this->db->query("select * from m_pegawai where pegawai_id = ?",[$empId])->row_array();
     $attendance = $this->db->query("select * from tx_absensi where tanggal_absen between ? and ? and pegawai_id = ?",[$dateX,$dateY,$empId])->result_array();
-    
-    $emp['salary'] = (int) ($emp['salary'] / 26) * count($attendance);;
-    
-    $alphaPenalty = $this->db->query("select sum(amount) as amt from salary_deduction where employee_id = ? and date between ? and ? and deduction_type = 'alpha-2'",[$empId,$dateX,$dateY])->row_array();
-  
+
     foreach($attendance as $a){
       if($a['is_status'] == 'alpha-2'){
         $alphaCount += 1;
@@ -1747,8 +1754,16 @@ function login(){
       if($a['is_status'] == "hhk"){
         $attendanceCount += 1;
       }
+      if($a['is_status'] == "off"){
+        $offDays += 1;
+      }
     }
     
+    $emp['salary'] = (int) ($emp['salary'] / 26) * count($attendance) - ((int) ($e['salary'] / 26) * $offDays);
+    
+    $alphaPenalty = $this->db->query("select sum(amount) as amt from salary_deduction where employee_id = ? and date between ? and ? and deduction_type = 'alpha-2'",[$empId,$dateX,$dateY])->row_array();
+  
+   
     $deductions = $this->db->query("select * from salary_deduction where employee_id = ? and date between ? and ?",[$empId,$dateX,$dateY])->result_array();
 
     foreach($deductions as $d){
@@ -2186,7 +2201,7 @@ function login(){
         if($serverDate2 > $limit){
           $activity[] = [
             'type' => 'Check Out',
-            'time' => $q['jam_masuk'],
+            'time' => $q['jam_keluar'],
             'late' => true
           ];
         }
@@ -2260,7 +2275,7 @@ function login(){
         if($serverDate2 > $limit){
           $activity[] = [
             'type' => 'Check Out',
-            'time' => $q['jam_masuk'],
+            'time' => $q['jam_keluar'],
             'late' => true
           ];
         }
