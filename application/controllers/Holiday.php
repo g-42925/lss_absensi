@@ -73,13 +73,15 @@ class Holiday extends CI_Controller {
         $data['title']      = 'Cuti Bersama';
         $data['namalabel']  = $data['title'];
         $data['auth']       = authUser();
-        $data['data']       = $this->db->query("SELECT * FROM global_holidays where id='$id'")->row_array();
-        $this->load->view('templates/header',$data);
-        $this->load->view('templates/sidemenu',$data);
-        $this->load->view('templates/sidenav');
-        $this->load->view('module/holiday/edit',$data);
-        $this->load->view('templates/footer');
-        $this->load->view('templates/fscript-html-end');    
+        $data['data']       = $this->db->query("SELECT * FROM global_holidays where id = ?",[$id])->row_array();
+
+        print_r($data['data']);
+        // $this->load->view('templates/header',$data);
+        // $this->load->view('templates/sidemenu',$data);
+        // $this->load->view('templates/sidenav');
+        // $this->load->view('module/holiday/edit',$data);
+        // $this->load->view('templates/footer');
+        // $this->load->view('templates/fscript-html-end');    
     }
 
     public function edit_proses(){

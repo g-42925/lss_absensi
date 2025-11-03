@@ -18,7 +18,7 @@
         </div>
         <div class="col-xl-2 col-lg-4 col-md-2 col-sm-12">
           <label class="form-label">&nbsp;</label>
-          <a href="<?=base_url('attendance_record/download_laporan/'.$tglawal.'/'.$tglakhir);?>" class="form-control btn btn-outline-primary">Download</a>
+          <a href="<?=base_url('attendance_record/toCsv/'.$tglawal.'/'.$tglakhir);?>" class="form-control btn btn-outline-primary">Download</a>
         </div>
       </div>
     </div>

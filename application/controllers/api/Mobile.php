@@ -1502,7 +1502,7 @@ function login(){
       "start_photo" => $post["start_photo"],
       "start_location" => $post["start_location"],
       "start_time" => date('H:i'),
-      "finish_location" => "-",
+      "finish_location" => "0/0",
       "finish_photo" => "-",
       "finish_time" => "00:00"
     ];

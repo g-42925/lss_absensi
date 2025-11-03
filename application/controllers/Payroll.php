@@ -172,7 +172,7 @@ class Payroll extends CI_Controller {
             ];
           }
           if((int) $deductionValue > 0){
-            $income[] = [
+            $penalty[] = [
               'name' => 'terlambat',
               'value' => (int) $deductionValue
             ];
@@ -422,9 +422,9 @@ class Payroll extends CI_Controller {
  		$filename = "data_payroll_" . date('Ymd_His') . ".csv";
 
 		header('Content-Type: text/csv');
-    	header('Content-Disposition: attachment; filename="' . $filename . '"');
-    	header('Pragma: no-cache');
-    	header('Expires: 0');
+    header('Content-Disposition: attachment; filename="' . $filename . '"');
+    header('Pragma: no-cache');
+    header('Expires: 0');
 
 		$output = fopen('php://output', 'w');
 

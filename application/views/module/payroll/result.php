@@ -1,5 +1,29 @@
+<style>
+@media print {
+  body * {
+    visibility: hidden; /* Sembunyikan semua elemen */
+  }
+
+  #printArea, #printArea * {
+    visibility: visible; /* Kecuali elemen yang ingin diprint */
+  }
+
+  #printArea {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    padding: 20px;
+  }
+
+  .no-print {
+    display: none !important; /* Hilangkan tombol print */
+  }
+}
+</style>
+
 <div class="container-xxl flex-grow-1 container-p-y">
-  <<div class="max-w-3xl mx-auto">
+  <div class="max-w-3xl mx-auto">
     <div class="flex justify-end mb-4 no-print">
       <button onclick="window.print()"
           class="px-4 py-2 bg-blue-600 text-white rounded shadow hover:bg-blue-700">
@@ -7,7 +31,7 @@
       </button>
     </div>
 
-    <div class="slip bg-white rounded-2xl shadow p-6">
+    <div class="slip bg-white rounded-2xl shadow p-6" id="printArea">
       <!-- Header -->
       <div class="flex items-center justify-between border-b pb-4 mb-4">
         <div>
@@ -101,6 +125,5 @@
     </div>
   </div>
 </div>
-
 
 

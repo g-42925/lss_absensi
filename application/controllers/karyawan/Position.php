@@ -134,4 +134,65 @@ class Position extends CI_Controller {
           redirect('karyawan/position/add?failed=true');
         }
     }
+
+    public function edit_proccess($id){
+
+        $data = [
+          'name' => $this->input->post('name'),
+          'parent' => $this->input->post('parent'),
+        ];
+
+        $this->db->trans_begin();
+
+        try{
+          $this->db->where('id',$id);
+
+          $q = $this->db->update(
+            'position',
+            $data
+          );
+
+          if(!$q){
+            throw new Exception("failed to run query");
+          }
+          
+          $this->db->trans_commit();
+          redirect('karyawan/position');
+        }
+        catch(Exception $e){
+          $this->db->trans_rollback();
+          $this->session->set_flashdata('message', '<div class="alert alert-danger">proses gagal. silahkan coba lagi</div>');
+          redirect('karyawan/position/add?failed=true');
+        }
+    }
+
+    public function edit($id){
+        cek_menu_access();
+        $data['htmlpagejs'] = 'none';
+        $data['nmenu']      = 'Karyawan';
+        $data['title']      = 'Posisi';
+        $data['namalabel']  = $data['title'];
+        $data['auth']       = authUser();
+
+        $data['id'] = $id;
+
+        $companyId = $this->session->userdata('company_id');
+
+        $data['failed'] = filter_var($this->input->get('failed'),FILTER_VALIDATE_BOOLEAN);
+
+        $data['current'] = $this->db->query("select * from position where id = ?",[$id])->row_array();
+
+        $data['position'] = $this->db->query("select * from position where company_id = ?",[$companyId])->result_array();
+
+        $data['location'] = $this->db->query("select * from m_lokasi where company_id = ?",[$companyId])->result_array();
+
+        $data['failed'] = filter_var($this->input->get('failed'),FILTER_VALIDATE_BOOLEAN);
+
+        $this->load->view('templates/header', $data);
+        $this->load->view('templates/sidemenu', $data);
+        $this->load->view('templates/sidenav', $data);
+        $this->load->view('module/karyawan/position/edit', $data);
+        $this->load->view('templates/footer', $data);
+        $this->load->view('templates/fscript-html-end', $data);
+    }
 }

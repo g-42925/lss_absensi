@@ -12,6 +12,7 @@
           <tr>
             <th class="w-s-n">Nama</th>
             <th class="w-s-n">Hirarki</th>
+            <th class="w-s-n">Action</th>
           </tr>
         </thead>
         <tbody>
@@ -19,6 +20,14 @@
           <tr>
             <td><?= $row['name'];?></td>
             <td><?= $row['hirarki'];?></td>
+            <td class="w-s-n input-group">
+              <a href="<?= site_url('karyawan/position/edit/'.$row['id']) ?>" class="btn p-1">
+                <i class="ti ti-edit"></i>
+              </a>
+              <a href="<?= site_url('karyawan/position/delete/'.$row['id']) ?>" class="btn p-1">
+                <i class="ti ti-trash"></i>
+              </a>
+            </td>
           </tr>
           <?php $no++; endforeach; ?>
         </tbody>

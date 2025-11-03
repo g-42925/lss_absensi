@@ -4,7 +4,7 @@
       <h5 class="card-title"><?=$namalabel;?></h5>
     </div>
   </div>
-  <form method="post" action="<?php echo site_url('holiday/edit_proses'); ?>" class="row mt-3 g-3">
+  <form method="post" action="<?php echo site_url('position/edit_proses').'/'.$id ?>" class="row mt-3 g-3">
     <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 hidden">
       <label class="form-label">Tanggal<i class="text-danger">*</i></label>
       <input type="text" value="<?= $data['id'] ?>" class="form-control" name="id" placeholder="YYYY-MM-DD" id="flatpickr-date" required />

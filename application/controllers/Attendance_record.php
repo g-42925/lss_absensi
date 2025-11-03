@@ -41,7 +41,7 @@ class Attendance_record extends CI_Controller {
         }
 
         $companyId = $this->session->userdata('company_id');
-        $data['datas']      = $this->attr->get_data($companyId,$data['tglawal'],$data['tglakhir']);
+        $data['datas'] = $this->attr->get_data($companyId,$data['tglawal'],$data['tglakhir']);
 
         $this->load->view('templates/header', $data);
         $this->load->view('templates/sidemenu', $data);
@@ -93,6 +93,46 @@ class Attendance_record extends CI_Controller {
         $data['tgl_akhir'] = $akhir;
         $data['all_data'] = $this->attr->get_data($mulai,$akhir);
         $this->load->view('module/attendance_record/download', $data);
+    }
+
+    public function toCsv($awal,$akhir){
+        $filename = "attendance record" . date('Ymd_His') . ".csv";
+	    header('Content-Type: text/csv');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+        header('Pragma: no-cache');
+        header('Expires: 0');
+        $output = fopen('php://output', 'w');
+        fputcsv($output, ['Nama Karyawan', 'Hari Kehadiran', 'Tidak Hadir', 'Tugas Luar Kantor', 'Cuti', 'Izin/Sakit']);
+
+        if ($awal!=null) {
+            $data['tglawal'] = $awal;
+        }
+
+        $data['today'] = date('Y-m-d');
+        $data['tglakhir'] = date('Y-m-d');
+        if ($akhir!=null) {
+            $data['tglakhir'] = $akhir;
+        }
+
+        $companyId = $this->session->userdata('company_id');
+        $data['datas'] = $this->attr->get_data($companyId,$data['tglawal'],$data['tglakhir']);
+
+        foreach ($data['datas'] as $d) {
+            $row = [
+			  'Nama Karyawan' => $d['nama_pegawai'],
+			  'Hari Kehadiran' => $d['hHK'],
+			  'Tidak Hadir' => $d['alpha'],
+			  'Tugas Luar Kantor' => $d['onDuty'],
+			  'Cuti' => $d['c'],
+			  'Izin/Sakit' => $d['lL']
+			];
+
+		    fputcsv($output, $row);
+        }
+
+        fclose($output);
+    	exit; // pastikan tidak ada output lain
+
     }
 
     public function download_laporan_detail($id,$mulai,$akhir) {
