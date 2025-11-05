@@ -276,6 +276,22 @@
                         </div>
                     </div>
 
+                    <div class="flex flex-col md:flex-row md:items-center">
+                        <label class="block text-gray-600 font-medium md:w-1/3">
+                            FFO Check Out Allowed <span class="text-red-500">*</span>
+                        </label>
+                        <div class="mt-1 md:mt-0 md:w-2/3 flex items-center space-x-6">
+                            <label class="inline-flex items-center">
+                                <input <?= $current['ffo_check_out_allowed'] == 1 ? 'checked':'' ?> type="radio" value="1" name="ffocoa" class="form-radio text-blue-600">
+                                <span class="ml-2 text-gray-700">yes</span>
+                            </label>
+                            <label class="inline-flex items-center">
+                                <input <?= $current['ffo_check_out_allowed'] == 0 ? 'checked':'' ?> type="radio" value="0" name="ffocoa" class="form-radio text-blue-600">
+                                <span class="ml-2 text-gray-700">no</span>
+                            </label>
+                        </div>
+                    </div>
+
                     <div class="w-2/3 ml-auto hidden" id="shiftList">
                         <label class="form-label" for="multicol-country">Pilih Shift<i class="text-danger">*</i></label>
                         <select class="form-select" required="" onchange="test(this.value)">

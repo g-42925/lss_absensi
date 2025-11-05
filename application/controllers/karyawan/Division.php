@@ -88,7 +88,8 @@ class Division extends CI_Controller {
           'after_break_late_penalty' => $this->input->post('afterBreakLatePenalty'),
           'after_break_late_penalty_type' => $this->input->post('afterBreakLatePenaltyType'),
           'after_break_late_penalty_value' => $this->input->post('afterBreakLatePenaltyValue'),
-          'ffo_check_in_allowed' => $this->input->post('ffocia')
+          'ffo_check_in_allowed' => $this->input->post('ffocia'),
+          'ffo_check_out_allowed' => $this->input->post('ffocoa')
 
         ];
 
@@ -181,7 +182,7 @@ class Division extends CI_Controller {
             redirect('karyawan/division/add?failed=true');
         }
         else{
-           $data = [
+          $data = [
             'id'                    => time(),
             'company_id'            => $this->session->userdata('company_id'),
             'division_name'  	      => $this->input->post('divisionName'),
@@ -200,7 +201,8 @@ class Division extends CI_Controller {
             'after_break_late_penalty' => $this->input->post('afterBreakLatePenalty'),
             'after_break_late_penalty_type' => $this->input->post('afterBreakLatePenaltyType'),
             'after_break_late_penalty_value' => $this->input->post('afterBreakLatePenaltyValue'),
-            'ffo_check_in_allowed' => $this->input->post('ffocia')
+            'ffo_check_in_allowed' => $this->input->post('ffocia'),
+            'ffo_check_out_allowed' => $this->input->post('ffocoa')
           ];
         
           $q = $this->db->insert(

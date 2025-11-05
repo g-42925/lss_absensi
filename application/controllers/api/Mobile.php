@@ -338,7 +338,7 @@ function loginv2(){
   $post = json_decode($input,true);
     
     $r1 = $this->db->query("select * from m_pegawai emp join companies c on emp.company_id = c.id join divisions divs on emp.division_id = divs.id where emp.email_pegawai = ? and emp.is_del != 'y'",[$post['email']])->row_array();
-    $rFile = $this->db->query("select * from employee_file ef join file f on ef.file_id = f.file_id where ef.where employee_id = ?",[$r1['pegawai_id']])->result_array();
+    $rFile = $this->db->query("select * from employee_file ef join file f on ef.file_id = f.file_id where employee_id = ?",[$r1['pegawai_id']])->result_array();
     
     if(count($rFile) > 0){
       foreach($rFile as $file){
@@ -368,6 +368,8 @@ function loginv2(){
             "workSystem" => "shift",
             "workSystemName" => $r2['name'],
             "position" => $position['name'],
+            "ffocia" => $r1['ffo_check_in_allowed'],
+            "ffocoa" => $r1['ffo_check_out_allowed'],
             "locations" => $r5,
             ...$r1,
             ...$r2
@@ -393,6 +395,8 @@ function loginv2(){
             "workSystem" => "daily",
             "locations" => $r5,
             "next" => $rNext,
+            "ffocia" => $r1['ffo_check_in_allowed'],
+            "ffocoa" => $r1['ffo_check_out_allowed'],
             ...$r1,
             ...$r2
           ];
@@ -1582,7 +1586,8 @@ function login(){
       "employee_id" => $post["employee_id"],
       "reason" => $post["reason"],
       "status" => 0,
-      "created_at" => date('Y-m-d H:i:s')
+      "created_at" => date('Y-m-d H:i:s'),
+      "type" => $post["type"]
     );
 
     $q = $this->db->insert(
@@ -1759,10 +1764,9 @@ function login(){
       }
     }
     
-    $emp['salary'] = (int) ($emp['salary'] / 26) * count($attendance) - ((int) ($e['salary'] / 26) * $offDays);
+    $emp['salary'] = (int) ($emp['salary'] / 26) * count($attendance) - ((int) ($emp['salary'] / 26) * $offDays);
     
     $alphaPenalty = $this->db->query("select sum(amount) as amt from salary_deduction where employee_id = ? and date between ? and ? and deduction_type = 'alpha-2'",[$empId,$dateX,$dateY])->row_array();
-  
    
     $deductions = $this->db->query("select * from salary_deduction where employee_id = ? and date between ? and ?",[$empId,$dateX,$dateY])->result_array();
 

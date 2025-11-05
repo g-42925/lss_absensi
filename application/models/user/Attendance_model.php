@@ -9,6 +9,8 @@ class Attendance_model extends CI_Model {
 
 	public function get_data($tgl,$statt,$isRun) {
         $data = array();
+        $today = Date('N');
+        $serverDate = new DateTime();
 
         if ($tgl==date('Y-m-d')) {
             $check_tgl = $this->db->query("SELECT * FROM tx_tanggal WHERE tanggal='$tgl'")->num_rows();
@@ -22,7 +24,7 @@ class Attendance_model extends CI_Model {
             }            
         }
 
-        $query = "SELECT a.company_id, a.pegawai_id as pid, a.nama_pegawai, a.tanggal_mulai_kerja, b.*, c.mulai_berlaku_tanggal, c.dari_hari_ke, c.is_day, c.pola_kerja_id FROM m_pegawai a
+        $query = "SELECT a.company_id, a.pegawai_id as pid, a.division_id as division_id, a.nama_pegawai, a.tanggal_mulai_kerja, b.*, c.mulai_berlaku_tanggal, c.dari_hari_ke, c.is_day, c.pola_kerja_id FROM m_pegawai a
             LEFT JOIN tx_absensi b ON a.pegawai_id=b.pegawai_id AND b.tanggal_absen='$tgl' AND b.is_pending='$statt'
             LEFT JOIN m_pegawai_pola c ON a.pegawai_id=c.pegawai_id AND c.is_selected='y'
             WHERE a.is_del='n'";
@@ -34,6 +36,11 @@ class Attendance_model extends CI_Model {
             $globalHolidays = $this->db->query("select * from global_holidays where tanggal='$tgl'")->num_rows();
 
             $q2 = $this->db->query("SELECT * FROM tx_absensi WHERE tanggal_absen='$tgl' AND pegawai_id='$row[pid]'")->num_rows();
+
+
+
+            
+
 
             if (isset($row['mulai_berlaku_tanggal'])) {
                 if ($tgl>=$row['mulai_berlaku_tanggal']) {
@@ -88,7 +95,30 @@ class Attendance_model extends CI_Model {
         $result = $this->db->query($query)->result_array();
 
         foreach ($result as $row) {
+            $division = $this->db->query("select * from divisions where id = ?",[$row['division_id']])->row_array();
+
+            $lastDefaultStatus = $this->db->query("SELECT * FROM tx_absensi where pegawai_id = ? ORDER BY tanggal_absen DESC LIMIT 1",[$row['pid']])->row_array();
+
+            $workSystem = explode("-",$division['work_system']);
+
+            if($workSystem[0] == "s"){
+                $shift = $this->db->query("select * from employee_shift es join shift_detail sd on es.shift_detail_id = sd.shift_detail_id where employee_id = ?",[$row['pid']])->row_array();
+                $dateTime1 = new DateTime($lastDefaultStatus['tanggal_absen']. ' ' . $shift['clock_in']);
+                $row['tolerance'] = (clone $dateTime1)->modify("+{$shift['tardiness_tolerance']} minutes");
+                $row['limit'] = (clone $row['tolerance'])->modify("+{$division['restriction']} minutes");
+
+            }
+            else{
+                $pattern = $this->db->query("select * from m_pola_kerja mpk join m_pola_kerja_det mpkd on mpk.pola_kerja_id = mpkd.pola_kerja_id where mpk.pola_kerja_id = ? and is_day = ?",[$workSystem[1],$today])->row_array();
+                $dateTime1 = new DateTime($lastDefaultStatus['tanggal_absen']. ' ' . $pattern['jam_masuk']);
+                $row['tolerance'] = (clone $dateTime1)->modify("+{$pattern['toleransi_terlambat']} minutes");
+                $row['limit'] = (clone $row['tolerance'])->modify("+{$division['restriction']} minutes");
+
+
+            }
+
             if ($tgl>=$row['tanggal_mulai_kerja']) {
+                
 
             $q3 = $this->db->query("SELECT * FROM tx_request_izin a JOIN tx_request_izin_pegawai b ON a.request_izin_id=b.request_izin_id WHERE b.pegawai_id='$row[pid]' AND a.is_status=1 AND (a.tanggal_request='$tgl' OR (date(a.tanggal_request) BETWEEN a.tanggal_request AND '$tgl' AND date(a.tanggal_request_end) BETWEEN '$tgl' AND a.tanggal_request_end AND a.tanggal_request_end!=''))")->row_array();
 
@@ -121,7 +151,9 @@ class Attendance_model extends CI_Model {
                 'longitude_keluar'      => $row['longitude_keluar'],
                 's_istirahat_photo'     => $row['s_istirahat_photo'],
                 's_istirahat_latitude'  => $row['s_istirahat_latitude'],
-                's_istirahat_longitude' => $row['s_istirahat_longitude']
+                's_istirahat_longitude' => $row['s_istirahat_longitude'],
+                'tolerance'             => $row['tolerance'],
+                'limit'                 => $row['limit']
             );
             }
         }
