@@ -16,10 +16,10 @@ class Req_permission_model extends CI_Model {
           if($r['tipe_request'] == "c"){
             $query[$index]['type_request'] = "cuti";
           }
-					if($r['tipe_request'] == "i"){
+		  if($r['tipe_request'] == "i"){
             $query[$index]['type_request'] = "izin";
           }
-					if($r['tipe_request'] == "s"){
+		  if($r['tipe_request'] == "s"){
             $query[$index]['type_request'] = "sakit";
           }
 
@@ -172,6 +172,8 @@ class Req_permission_model extends CI_Model {
         $jarak = $tgl2 - $tgl1;
         $jumlahhari = $jarak / 60 / 60 / 24;
 
+        $companyId = $this->session->userdata('company_id');
+
         $cek = $this->db->query("SELECT * FROM tx_request_izin WHERE request_izin_id='$id'")->row_array();
 
         $employee = $this->db->query("select * from m_pegawai where pegawai_id = ?",[$this->input->post('idp')[0]])->row_array();
@@ -187,6 +189,7 @@ class Req_permission_model extends CI_Model {
             'jumlah_cuti'           => $jumlahhari+1,
             'file_dokumen'          => $filex
         ]);
+
         $this->db->where('request_izin_id', $id);
         $res = $this->db->update('tx_request_izin');
 
@@ -208,6 +211,13 @@ class Req_permission_model extends CI_Model {
             );
           }
         }
+
+        if($this->input->post('status') == 1){
+          $this->db->where('tanggal_absen',$this->input->post('tgl1'));
+          $this->db->where('pegawai_id',$employee['pegawai_id']);
+          $this->db->update('tx_absensi',['is_status' => $this->input->post('kat')]);
+        }
+
 
         $buff = $this->db->query("SELECT * FROM tx_request_izin_pegawai WHERE request_izin_id='$id'")->result_array();
         $idp = $this->input->post('idp');

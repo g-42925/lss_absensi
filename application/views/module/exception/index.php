@@ -10,6 +10,7 @@
             <th class="w-s-n">Date</th>
             <th class="w-s-n">Requested By</th>
             <th class="w-s-n">Reason</th>
+            <th class="w-s-n">Category</th>
             <th class="w-s-n">Status</th>
           </tr>
         </thead>"
@@ -19,6 +20,8 @@
             <td><?= $r['date'];?></td>
             <td><?= $r['nama_pegawai'] ?> (<?= $r['employee_id'];?>)</td>
             <td><?= $r['reason'];?></td>
+            <td><?= $r['type'];?></td>
+
             <td>
               <?php
                 echo match($r['status']) {

@@ -52,6 +52,37 @@ class Attendance extends CI_Controller {
         $this->load->view('templates/fscript-html-end', $data);
     }
 
+    public function alpha($tgl = null){
+        cek_menu_access();
+        $data['htmlpagejs'] = 'none';
+        $data['nmenu']      = 'Kehadiran Harian';
+        $data['title']      = 'Kehadiran Harian';
+        $data['namalabel']  = $data['title'];
+        $data['auth']       = authUser();
+
+        if ($tgl=='') {
+            $data['today']  = date('Y-m-d');
+        }else{
+            $data['today']  = $tgl;
+        }
+
+        $data['maxdate'] = date("Y-m-d", strtotime(date('Y-m-d')." +3 day"));
+
+        if ($data['today']>$data['maxdate']) {
+            $data['today']  = date('Y-m-d');
+            $this->session->set_flashdata('message', '<div class="me-3 ms-3"><div class="alert alert-warning p-cg" role="alert">Maksimal 3 hari kedepan dari tanggal sekarang.</div></div>');
+        }
+
+        $data['datas']  = $this->att->get_alpha($data['today'],'n',false);
+
+        $this->load->view('templates/header', $data);
+        $this->load->view('templates/sidemenu', $data);
+        $this->load->view('templates/sidenav', $data);
+        $this->load->view('module/attendance/alpha', $data);
+        $this->load->view('templates/footer', $data);
+        $this->load->view('templates/fscript-html-end', $data);
+    }
+
     public function absensi($tgl,$tipe,$idp,$value) {
         cek_menu_access();
         $res = $this->att->absensi_proses($tgl,$tipe,$idp,$value);

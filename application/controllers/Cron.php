@@ -321,24 +321,25 @@ class Cron extends CI_Controller {
             }
           }
           if($d['is_status'] == 'hhk' && $d['jam_keluar'] == '00:00'){
-            if($div['clockout_late_penalty']){
-              $penaltyValue = $div['penalty_nominal'];
+            $e = $this->db->query("select * from m_pegawai where pegawai_id = ?",[$d['pegawai_id']])->row_array();
+            $div = $this->db->query("select * from divisions where id = ?",[$e['division_id']])->row_array();
+
+            $penaltyValue = $div['penalty_nominal'];
               
-              $data = [
-                'id' => uniqid(),
-                'employee_id' => $e['pegawai_id'],
-                'deduction_type' => $d['clockout forget'],
-                'date' => date('Y-m-d'),
-                'amount' => $penaltyValue,
-                'note' => '...'
-              ];
+            $data = [
+              'id' => uniqid(),
+              'employee_id' => $e['pegawai_id'],
+              'deduction_type' => 'clockout forget',
+              'date' => date('Y-m-d'),
+              'amount' => $penaltyValue,
+              'note' => '...'
+            ];
 
-              $this->db->insert(
-                'salary_deduction',
-                $data
-              );
+            $this->db->insert(
+              'salary_deduction',
+              $data
+            );
 
-            }
           }
         }
       }

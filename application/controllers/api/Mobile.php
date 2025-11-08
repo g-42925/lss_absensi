@@ -370,6 +370,7 @@ function loginv2(){
             "position" => $position['name'],
             "ffocia" => $r1['ffo_check_in_allowed'],
             "ffocoa" => $r1['ffo_check_out_allowed'],
+            "limit" => $r1['clockout_restriction'],
             "locations" => $r5,
             ...$r1,
             ...$r2
@@ -397,6 +398,7 @@ function loginv2(){
             "next" => $rNext,
             "ffocia" => $r1['ffo_check_in_allowed'],
             "ffocoa" => $r1['ffo_check_out_allowed'],
+            "limit" => $r1['clockout_restriction'],
             ...$r1,
             ...$r2
           ];
@@ -1587,7 +1589,8 @@ function login(){
       "reason" => $post["reason"],
       "status" => 0,
       "created_at" => date('Y-m-d H:i:s'),
-      "type" => $post["type"]
+      "type" => $post["type"],
+      "image" => $post['image']
     );
 
     $q = $this->db->insert(
@@ -2563,6 +2566,39 @@ function login(){
     $q2 = $this->db->query("select * from m_pegawai mp join position p on mp.position_id = p.id where mp.division_id = ? and is_del='n'",[$q['division_id']])->result_array();
 
     echo json_encode($q2);
+  }
+
+  public function taskEdit(){
+    $json = file_get_contents('php://input');
+    $post = json_decode($json,true);
+    
+    $data = [
+      'date' => $post['date'],
+      'description' => $post['description'],
+    ];
+
+    $this->db->where(
+      'task_id',$post['task_id']
+    );
+
+    $q = $this->db->update(
+      'task',$data
+    );
+
+    if($q){
+      echo json_encode(
+        [
+          'success' => true
+        ]
+      );
+    }
+    else{
+      echo json_encode(
+        [
+          'success' => false
+        ]
+      );
+    }
   }
 }
 
