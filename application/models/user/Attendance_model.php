@@ -113,8 +113,6 @@ class Attendance_model extends CI_Model {
                 $dateTime1 = new DateTime($lastDefaultStatus['tanggal_absen']. ' ' . $pattern['jam_masuk']);
                 $row['tolerance'] = (clone $dateTime1)->modify("+{$pattern['toleransi_terlambat']} minutes");
                 $row['limit'] = (clone $row['tolerance'])->modify("+{$division['restriction']} minutes");
-
-
             }
 
             if ($tgl>=$row['tanggal_mulai_kerja']) {

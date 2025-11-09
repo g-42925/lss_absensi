@@ -371,6 +371,7 @@ function loginv2(){
             "ffocia" => $r1['ffo_check_in_allowed'],
             "ffocoa" => $r1['ffo_check_out_allowed'],
             "limit" => $r1['clockout_restriction'],
+            "tolerance" => $r2['tardiness_tolerance'],
             "locations" => $r5,
             ...$r1,
             ...$r2
@@ -398,7 +399,9 @@ function loginv2(){
             "next" => $rNext,
             "ffocia" => $r1['ffo_check_in_allowed'],
             "ffocoa" => $r1['ffo_check_out_allowed'],
-            "limit" => $r1['clockout_restriction'],
+            "ci_limit" => $r1['restriction'],
+            "co_limit" => $r1['clockout_restriction'],
+            "tolerance" => $r2['toleransi_terlambat'],
             ...$r1,
             ...$r2
           ];
