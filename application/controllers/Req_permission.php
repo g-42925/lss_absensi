@@ -271,4 +271,53 @@ class Req_permission extends CI_Controller {
         }
     }
 
+    public function cut($employeeId,$startFrom,$until){
+      $tanggalX = new DateTime($startFrom);
+      $tanggalZ = new DateTime($until);
+      $tanggalZ->modify('+1 day');
+
+      $interval = new DateInterval('P1D');
+      $periode = new DatePeriod($tanggalX, $interval, $tanggalZ);
+
+      $employee = $this->db->query("select * from m_pegawai where pegawai_id = ?",[$employeeId])->row_array();
+
+      $amount = $employee['salary'] / 26;
+
+      $this->db->trans_begin();
+
+      if($employee['jumlah_cuti'] > 0){
+        $offDaysAmount = $employee['jumlah_cuti'];
+        $data = ['jumlah_cuti' => $offDaysAmount - 1];
+        $this->db->where('pegawai_id',$employeeId);
+        $this->db->update('m_pegawai',$data);
+      }
+      else{
+        foreach ($periode as $tanggal) {
+          $data = [
+            'id' => uniqid(),
+            'employee_id' => $employeeId,
+            'deduction_type' => 'missing medical certificate',
+            'date' => $tanggal->format('Y-m-d'),
+            'amount' => $amount,
+            'note' => '...'
+          ];
+
+          $this->db->insert(
+            'salary_deduction',
+            $data
+          );
+        }
+      }
+
+      if($this->db->trans_status() === FALSE) {
+        $this->db->trans_rollback();
+        redirect('req_permission/index?failed=true');
+
+      } 
+      else {
+        $this->db->trans_commit();
+        redirect('req_permission');
+      }
+    }
+
 }

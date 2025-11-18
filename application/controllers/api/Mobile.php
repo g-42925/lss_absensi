@@ -543,6 +543,7 @@ function login(){
       $limit = (clone $tolerance)->modify("+{$division['clockout_restriction']} minutes");
       $sDTDiff = $serverDate->diff($tolerance);
       $sDTDiffMinutes = ($sDTDiff->days * 24 * 60) + ($sDTDiff->h * 60) + $sDTDiff->i;
+      
 
       if($serverDate > $limit){
          echo json_encode(
@@ -551,7 +552,6 @@ function login(){
             "message" => "kamu sudah tidak bisa absen pulang"
           ]
         );
-
         return;
       }
       if($serverDate < $limit && $serverDate > $tolerance){
@@ -567,17 +567,17 @@ function login(){
 
           $this->db->trans_begin();
 
-          // $q1 = $this->db->insert(
-          //   'salary_deduction',
-          //   $data1
-          // );
-
           $this->db->where('absen_id',$lastDefaultStatus["absen_id"]);
+
+          $dataAbsensi = !$post['csh'] ? $data : [
+            ...$data,
+            'is_status' => 'csh'
+          ];
          
-          $q2 = $this->db->update('tx_absensi',$data);
+          $q2 = $this->db->update('tx_absensi',$dataAbsensi);
 
-
-          if($q1 && $q2){
+          
+          if($q2){
             $this->db->trans_commit();
 
             echo json_encode(
@@ -603,8 +603,13 @@ function login(){
           }
         }
         else{
+           $dataAbsensi = !$post['csh'] ? $data : [
+            ...$data,
+            'is_status' => 'csh'
+          ];
+        
           $this->db->where('absen_id',$lastDefaultStatus["absen_id"]);
-          $q2 = $this->db->update('tx_absensi',$data);
+          $q2 = $this->db->update('tx_absensi',$dataAbsensi);
 
           if($q2){
             echo json_encode(
@@ -628,9 +633,14 @@ function login(){
         }
       }
       if($serverDate < $tolerance){
+        $dataAbsensi = !$post['csh'] ? $data : [
+          ...$data,
+          'is_status' => 'csh'
+        ];
+      
         $this->db->where('pegawai_id',$post["pegawai_id"]);
         $this->db->where('tanggal_absen',$tanggalHariIni);
-        $q = $this->db->update('tx_absensi',$data);
+        $q = $this->db->update('tx_absensi',$Absensi);
 
         if($q){
           echo json_encode(
@@ -687,17 +697,17 @@ function login(){
 
           $this->db->trans_begin();
 
-          $q1 = $this->db->insert(
-            'salary_deduction',
-            $data1
-          );
+          $dataAbsensi = !$post['csh'] ? $data : [
+            ...$data,
+            'is_status' => 'csh'
+          ];
 
           $this->db->where('absen_id',$lastDefaultStatus["absen_id"]);
          
-          $q2 = $this->db->update('tx_absensi',$data);
+          $q2 = $this->db->update('tx_absensi',$dataAbsensi);
 
 
-          if($q1 && $q2){
+          if($q2){
             $this->db->trans_commit();
 
             echo json_encode(
@@ -723,8 +733,14 @@ function login(){
           }
         }
         else{
+          $dataAbsensi = !$post['csh'] ? $data : [
+            ...$data,
+            'is_status' => 'csh'
+          ];
+
           $this->db->where('absen_id',$lastDefaultStatus["absen_id"]);
-          $q2 = $this->db->update('tx_absensi',$data);
+         
+          $q2 = $this->db->update('tx_absensi',$dataAbsensi);
 
           if($q2){
             echo json_encode(
@@ -750,11 +766,16 @@ function login(){
         }
       }
       if($serverDate < $tolerance){
-        $this->db->where('pegawai_id',$post["pegawai_id"]);
-        $this->db->where('tanggal_absen',$tanggalHariIni);
-        $q = $this->db->update('tx_absensi',$data);
+          $dataAbsensi = !$post['csh'] ? $data : [
+            ...$data,
+            'is_status' => 'csh'
+          ];
+          
+          $this->db->where('pegawai_id',$post["pegawai_id"]);
+          $this->db->where('absen_id',$lastDefaultStatus["absen_id"]);
+          $q2 = $this->db->update('tx_absensi',$dataAbsensi);
 
-        if($q){
+        if($q2){
           echo json_encode(
             [
               "success" => true,
@@ -800,6 +821,8 @@ function login(){
     $division = $this->db->query("select * from divisions where id = ?",[$emp['division_id']])->row_array();
     $lastDefaultStatus = $this->db->query("SELECT * FROM tx_absensi where pegawai_id = ? ORDER BY tanggal_absen DESC LIMIT 1",[$post['pegawai_id']])->row_array();
 
+    //$data2 = !$lastDefaultStatus['htu'] ? $data2 : [...$data2,'htu' => true]; 
+
     $workSystem = explode("-",$division['work_system']);
 
     if($workSystem[0] == "s"){
@@ -814,10 +837,11 @@ function login(){
       $sDTDiffMinutes = ($sDTDiff->days * 24 * 60) + ($sDTDiff->h * 60) + $sDTDiff->i;
 
 
+
       if($serverDate > $limit){
         $exception = $this->db->query("select * from exception where employee_id = ? and date = ? and status = 1",[$emp['pegawai_id'],date('Y-m-d')])->row_array();
 
-        if($exception){
+        if($exception && ($exception['type'] == "Terlambat" || exception['is_csh'])){
           $data1 = [
             'id' => uniqid(),
             'employee_id' => $post['pegawai_id'],
@@ -831,16 +855,24 @@ function login(){
             if($division['ffo_check_in_allowed']){
               $this->db->trans_begin();
 
-              $q1 = $this->db->insert(
-                'salary_deduction',
-                $data1
-              ); 
+              if(!exception['is_csh']){
+                $q1 = $this->db->insert(
+                  'salary_deduction',
+                  $data1
+                );
+              }
 
               $this->db->where('absen_id',$lastDefaultStatus["absen_id"]);
-         
-              $q2 = $this->db->update('tx_absensi',$data2);
+              
 
-              if($q1 && $q2){
+              $dataAbsensi = !$exception['is_csh'] ? $data2: [
+                ...$data2,
+                'is_status' => 'csh'
+              ];
+         
+              $q2 = $this->db->update('tx_absensi',$dataAbsensi);
+
+              if($q2 || ($q1 && $q2)){
                 $this->db->trans_commit();
 
                 echo json_encode(
@@ -926,7 +958,6 @@ function login(){
 
           return;
         }
-
       }
       if($serverDate < $limit && $serverDate > $tolerance){
         if($division['late_penalty']){
@@ -1149,16 +1180,23 @@ function login(){
 
           $this->db->trans_begin();
 
-          $q1 = $this->db->insert(
-            'salary_deduction',
-            $data1
-          );
+          if(!$exception['is_csh']){
+            $q1 = $this->db->insert(
+              'salary_deduction',
+              $data1
+            );
+          }
 
           $this->db->where('absen_id',$lastDefaultStatus["absen_id"]);
-         
-          $q2 = $this->db->update('tx_absensi',$data2);
 
-          if($q1 && $q2){
+          $dataAbsensi = !$exception['is_csh'] ? $data2: [
+            ...$data2,
+            'is_status' => 'csh'
+          ];
+         
+          $q2 = $this->db->update('tx_absensi',$dataAbsensi);
+
+          if($q2 || ($q1 && $q2)){
             $this->db->trans_commit();
 
             echo json_encode(
@@ -1394,6 +1432,7 @@ function login(){
       "catatan_awal" => $post["catatan_awal"],
       "created_at" => date("Y-m-d H:i:s"),
       "is_status" => 0,
+      'image' => $post['image']
     );
 
     $r1 = $this->db->insert('tx_request_izin',$data1);
@@ -1593,7 +1632,8 @@ function login(){
       "status" => 0,
       "created_at" => date('Y-m-d H:i:s'),
       "type" => $post["type"],
-      "image" => $post['image']
+      "image" => $post['image'],
+      "is_csh" => $post["isCsh"]
     );
 
     $q = $this->db->insert(
@@ -1673,7 +1713,7 @@ function login(){
   }
 
   function excList($id){
-    $q = $this->db->query("select * from exception where employee_id = ? order by created_at desc",[$id])->result_array();
+    $q = $this->db->query("select * from exception where employee_id = ? and date = ? order by created_at desc",[$id,date('Y-m-d')])->result_array();
 
     if($q){
       echo json_encode(
@@ -1692,7 +1732,36 @@ function login(){
     }
   }
 
+  function exceptionEdit(){
+    $json = file_get_contents('php://input');
+    $post = json_decode($json,true);
+    $exceptionId = $post['id'];
 
+    $data = [
+      'date' => $post['date'],
+      'reason' => $post['reason'],
+      'type' => $post['type'],
+      'image' => $post['image'],
+    ];
+
+    $this->db->where('id',$exceptionId);
+    $q = $this->db->update('exception',$data);
+
+    if($q){
+      echo json_encode(
+        [
+          'success' => true
+        ]
+      );
+    }
+    else{
+      echo json_encode(
+        [
+          'success' => false
+        ]
+      );
+    }
+  }
 
   function calendar($empId,$date){
     $eventDate = explode("-",$date);

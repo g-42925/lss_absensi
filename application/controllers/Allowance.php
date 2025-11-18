@@ -319,4 +319,42 @@ class Allowance extends CI_Controller {
         $this->load->view('templates/footer', $data);
         $this->load->view('templates/fscript-html-end', $data);
     }
+
+    function monthlyDelete($allowanceId){
+      $this->db->trans_begin();  // to start db transaction
+      $this->db->delete('employee_allowance',['allowance_id' => $allowanceUd]);
+      $this->db->delete('allowance',['allowance_id' => $allowanceId]);
+      if($this->db->trans_status() === FALSE) {
+        $this->db->trans_rollback();
+        $this->session->set_flashdata(
+            'message',
+            '<div class="alert alert-danger">Proses gagal. Silakan coba lagi.</div>'
+        );
+        redirect('allowance/monthly?failed=true');
+      } 
+      else {
+        $this->db->trans_commit();
+        redirect('allowance/monthly');
+
+      }      
+    }
+
+    function delete($allowanceId){
+      $this->db->trans_begin();  // to start db transaction
+      $this->db->delete('employee_allowance',['allowance_id' => $allowanceUd]);
+      $this->db->delete('allowance',['allowance_id' => $allowanceId]);
+      if($this->db->trans_status() === FALSE) {
+        $this->db->trans_rollback();
+        $this->session->set_flashdata(
+            'message',
+            '<div class="alert alert-danger">Proses gagal. Silakan coba lagi.</div>'
+        );
+        redirect('allowance?failed=true');
+      } 
+      else {
+        $this->db->trans_commit();
+        redirect('allowance');
+
+      }
+    }
 }

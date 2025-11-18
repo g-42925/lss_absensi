@@ -59,6 +59,7 @@ class Payroll extends CI_Controller {
 
         $alphaDeductionValue = 0;
         $deductionValue = 0;
+        $missingMedicalCertificate = 0;
         $attendanceCount = 0;
         $alphaCount = 0;
         $totalAllowance = 0;
@@ -91,8 +92,11 @@ class Payroll extends CI_Controller {
         $deductions = $this->db->query("select * from salary_deduction where employee_id = ? and date between ? and ?",[$empId,$dateX,$dateY])->result_array();
 
         foreach($deductions as $d){
-          if($d['deduction_type'] == "late penalty" || $d['deduction_type'] == "after break late" || $d['deduction_type'] == "clockout late penalty" || $d['deduction_type'] == "clockout forget"){
+          if($d['deduction_type'] == "late penalty" || $d['deduction_type'] == "after break late" || $d['deduction_type'] == "clockout forget"){
             $deductionValue += $d['amount'];
+          }
+          if($d['deduction_type'] == "missing medical certificate"){
+            $missingMedicalCertificate += $d['amount'];
           }
         }
 
@@ -167,9 +171,7 @@ class Payroll extends CI_Controller {
 
           }
 
-          $salary = ($emp['salary'] - ($alphaPenalty['amt'] + $deductionValue) + $totalAllowance + $totalOverwork + $qReimburse['val']) - $totalBenefit;
-
-          
+          $salary = ($emp['salary'] - ($alphaPenalty['amt'] + $deductionValue + $missingMedicalCertificate) + $totalAllowance + $totalOverwork + $qReimburse['val']) - $totalBenefit;
 
           if((int) $alphaPenalty['amt'] > 0){
             $penalty[] = [
@@ -181,6 +183,12 @@ class Payroll extends CI_Controller {
             $penalty[] = [
               'name' => 'terlambat',
               'value' => (int) $deductionValue
+            ];
+          }
+          if((int) $missingMedicalCertificate > 0){
+            $penalty[] = [
+              'name' => 'tanpa status',
+              'value' => (int) $missingMedicalCertificate
             ];
           }
           if((int) $totalOverwork > 0){
@@ -212,7 +220,7 @@ class Payroll extends CI_Controller {
             'benefit' => $benefit,
             'penalty' => $penalty,
             'totalIncome' => $emp['salary'] + $totalAllowance + $totalOverwork + $qReimburse['val'],
-            'totalBenefit' => (int) $totalBenefit + $alphaPenalty['amt'] + $deductionValue,
+            'totalBenefit' => (int) $totalBenefit + $alphaPenalty['amt'] + $deductionValue + $missingMedicalCertificate,
             'thp' => $salary,
           ];
 

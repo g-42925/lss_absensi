@@ -64,8 +64,15 @@ class Except extends CI_Controller {
     public function edit_proses($id){
       $data = [
         'date' => $this->input->post('date'),
-        'status' => $this->input->post('status')
+        'status' => $this->input->post('status'),
+        'htu' => $this->input->post('htu')
       ];
+
+      $this->db->trans_begin(); // to start db transaction
+      
+      $exception = $this->db->query("select * from exception where id = ?",[$id])->row_array();
+      $employee = $exception['employee_id'];
+      $presence = $this->db->query("select * from tx_absensi where pegawai_id = ? and tanggal_absen = ?",[$employee,$this->input->post('date')])->row_array();
 
       $this->db->set(
         $data
@@ -74,16 +81,33 @@ class Except extends CI_Controller {
         'id', 
         $id
       );
-      $q = $this->db->update(
+      $this->db->update(
         'exception'
       );
 
-      if($q){
-        redirect('except');
+      if($this->input->post('htu')){
+        $this->db->set(
+          [
+            'htu' => true
+          ]
+        );
+        $this->db->where(
+          'absen_id', 
+          $presence['absen_id']
+        );
+        $this->db->update(
+          'tx_absensi'
+        );
       }
-      else{
+
+      if($this->db->trans_status() === FALSE) {
+        $this->db->trans_rollback();
         $this->session->set_flashdata('message', '<div class="alert alert-danger p-cg" role="alert">proses gagal, silahkan coba lagi</div>');
         redirect('except/edit/'.$id.'?failed=true');
+      } 
+      else {
+        $this->db->trans_commit();
+        redirect('except');
       }
     }
 }

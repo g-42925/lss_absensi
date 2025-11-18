@@ -53,6 +53,7 @@ class Cron extends CI_Controller {
             'longitude_masuk' => 0,
             'latitude_keluar' => 0,
             'longitude_keluar' => 0,
+            'htu' => 0
           ];
 
           $data2 = [
@@ -339,7 +340,52 @@ class Cron extends CI_Controller {
               'salary_deduction',
               $data
             );
+          }
 
+          if($d['is_status'] == 'i'){
+            $e = $this->db->query("select * from m_pegawai where pegawai_id = ?",[$d['pegawai_id']])->row_array();
+            $div = $this->db->query("select * from divisions where id = ?",[$e['division_id']])->row_array();
+
+            $offDaysAmount = $e['jumlah_cuti'];
+            
+            if($div['alpha_consequence'] == "2"){
+              if($e['jumlah_cuti'] > 0){
+                $offDaysAmount = $offDaysAmount - 1;
+                $data =  ['jumlah_cuti' => $offDaysAmount];
+                $this->db->where('pegawai_id',$e['pegawai_id']);
+                $this->db->update('m_pegawai',$data);
+              }
+              else{
+                $data = [
+                  'id' => uniqid(),
+                  'employee_id' => $e['pegawai_id'],
+                  'deduction_type' => $d['is_status'],
+                  'date' => date('Y-m-d'),
+                  'amount' => $penaltyValue,
+                  'note' => '...'
+                ];
+
+                $this->db->insert(
+                  'salary_deduction',
+                  $data
+                );
+              }
+            }
+            else{
+              $data = [
+                'id' => uniqid(),
+                'employee_id' => $e['pegawai_id'],
+                'deduction_type' => $d['is_status'],
+                'date' => date('Y-m-d'),
+                'amount' => $penaltyValue,
+                'note' => '...'
+              ];
+
+              $this->db->insert(
+                'salary_deduction',
+                $data
+              );
+            }
           }
         }
       }

@@ -52,7 +52,6 @@
               <a href="<?= base_url('payroll/filter/').$row['pegawai_id'] ?>" class="btn p-1" title="payroll">
                 <i class="ti ti-calendar"></i>
               </a>
-
               <!-- Konfirmasi Hapus -->
               <div class="modal fade" id="delRow<?=$row['pegawai_id'];?>" tabindex="-1" aria-hidden="true">
                 <div class="modal-dialog modal-simple modal-enable-otp modal-dialog-centered">

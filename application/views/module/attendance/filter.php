@@ -77,7 +77,7 @@
           <tr>
             <td class="w-s-n <?= DateTime::createFromFormat('H:i', $row['jam_masuk']) > $row['tolerance'] ? 'text-red-900':'' ?>"><?= $row['nama_pegawai'] ?></td> <!-- nama -->
             <td class="v-a-t"> <!-- status -->
-              <select class="form-control <?=$bgs;?>" name="status" id="status<?=$row['pid'];?>" required="" onchange="updateStatus('status','<?=$row['pid'];?>',this.value)" <?php if ($row['is_request']>0) { echo 'disabled'; } ?>>               
+              <select class="form-control <?=$bgs;?>" name="status" id="status<?=$row['pid'];?>" required="" onchange="updateStatus('status','<?=$row['pid'];?>',this.value)" <?php if ($row['is_request']>0) { echo 'disabled'; } ?>>
                 <option value="ts" <?php if ($row['is_status']=='ts') echo 'selected'; ?>>Belum ada status [TS]</option>
                 <option value="on duty" <?= $row['is_status'] == 'on duty' ? 'selected':'' ?> <?php if($row['is_status']) echo 'selected' ?>>Bertugas di luar</option>
                 <option value="alpha-2" <?= $row['is_status'] == 'alpha-2' ? 'selected':'' ?>>Alpha-2</option>                                

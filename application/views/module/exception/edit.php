@@ -35,6 +35,13 @@
               <option value="2" <?= $data['status'] == "2" ? 'selected':'' ?>>Rejected</option>
             </select>
           </div>
+          <div class="col-xl-6 col-md-6 col-sm-6 col-xs-6">
+            <label class="form-label" for="multicol-country">Considered As Alpha<i class="text-danger">*</i></label>
+            <select class="select2 form-select" name="htu" required>
+              <option value="0" <?= $data['htu'] == "0" ? 'selected':'' ?>>No</option> 
+              <option value="1" <?= $data['htu'] == "1" ? 'selected':'' ?>>Yes</option>
+            </select>
+          </div>
         </div>
         <div class="pt-5 text-end">
           <a href="javascript:window.history.back();" class="btn btn-label-secondary me-sm-3 me-1">Batal</a>

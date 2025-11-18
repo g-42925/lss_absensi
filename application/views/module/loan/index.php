@@ -35,6 +35,9 @@
               <a href="<?=base_url('loan/log/'.$r['loan_id']).'?failed=false';?>" class="btn p-1" title="Edit Pengajuan">
                 <i class="ti ti-note"></i>
               </a>
+              <a href="<?=base_url('loan/delete/'.$r['loan_id']).'?failed=false';?>" class="btn p-1" title="Edit Pengajuan">
+                <i class="ti ti-trash"></i>
+              </a>
             </td>
           </tr>
           

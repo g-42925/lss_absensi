@@ -26,6 +26,9 @@
               <a href="<?= base_url().'allowance/edit/'.$r['allowance_id'].'?failed=false' ?>" class="btn p-1">
                 <i class="ti ti-settings"></i>
               </a>
+              <a href="<?= base_url().'allowance/delete/'.$r['allowance_id'].'?failed=false' ?>" class="btn p-1">
+                <i class="ti ti-trash"></i>
+              </a>
             </td>
           </tr>
           <?php $no++; endforeach; ?>

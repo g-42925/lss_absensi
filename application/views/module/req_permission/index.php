@@ -36,6 +36,7 @@
             <th class="w-s-n">Date</th>
             <th class="w-s-n">Requested By</th>
             <th>Category</th>
+            <th>Photo</th>
             <th>Status</th>
             <th class="text-end">Action</th>
           </tr>
@@ -54,6 +55,9 @@
             <td class="w-s-n">
               <?= $row['tipe_request'] ?>
             </td>
+            <td class="text-capitalize">
+              <a target="_blank" href="<?= $row['image'] == "-" ? "":$row['image'] ?>"><i class="ti ti-photo"></i></a>
+            </td>  
             <td class="w-s-n">
               <?= $row['is_status'] ?>
             </td>                   
@@ -63,6 +67,9 @@
               </a>
               <a href="#" class="btn p-1" data-bs-toggle="modal" data-bs-target="#delRow<?=$row['request_izin_id'];?>">
                 <i class="ti ti-trash"></i>
+              </a>
+              <a class="<?= $row['tipe_request'] == "s" ? "":"hidden"  ?> btnp-1" href="<?= base_url('req_permission/cut/').$row['pegawai_id'].'/'.$row['tanggal_request'].'/'.$row['tanggal_request_end'] ?>" title="payroll">
+                <i class="ti ti-scissors"></i>
               </a>
               <div class="modal fade" id="delRow<?=$row['request_izin_id'];?>" tabindex="-1" aria-hidden="true">
                 <div class="modal-dialog modal-simple modal-enable-otp modal-dialog-centered">
@@ -87,7 +94,6 @@
                 </div>
               </div>
             </td>
-            
             <!-- <td><?= $row['status'];?></td>
             <td align="right">
               <a href="<?=base_url('req_permission/edit/'.$row['id']);?>" class="btn p-1">

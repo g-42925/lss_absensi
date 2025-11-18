@@ -202,4 +202,23 @@ class Reimburse extends CI_Controller {
           redirect('reimburse/edit/'.$id.'?failed=true');
         }
     }
+
+    function delete($reimburseId){
+      $this->db->trans_begin();  // to start db transaction
+      $this->db->delete('reimburse',['reimburse_id' => $reimburseId]);
+      $this->db->delete('reimburse_claim',['reimburse_id' => $reimburseId]);
+      if($this->db->trans_status() === FALSE) {
+        $this->db->trans_rollback();
+        $this->session->set_flashdata(
+            'message',
+            '<div class="alert alert-danger">Proses gagal. Silakan coba lagi.</div>'
+        );
+        redirect('reimburse?failed=true');
+      } 
+      else {
+        $this->db->trans_commit();
+        redirect('reimburse');
+
+      }      
+    }
 }

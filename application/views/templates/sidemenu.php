@@ -8,6 +8,7 @@
           <div class="app-brand demo">
             <a href="<?=base_url('dashboard');?>" class="app-brand-link">
               <img src="<?=base_url('assets/temp/assets/logo/client/logo_5.png');?>" width="65">
+              <p class="ml-3 text-md">Leryn Absensi</p>
             </a>
 
             <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto">

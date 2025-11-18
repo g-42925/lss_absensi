@@ -182,4 +182,22 @@ class Loan extends CI_Controller {
         );
       }
     }
+
+    public function delete($loanId){
+      $this->db->trans_begin();
+      $this->db->delete('loan_pay_log',['loan_id' => $loanId]);
+      $this->db->delete('loan',['loan_id' => $loanId]);
+      if($this->db->trans_status() === FALSE) {
+        $this->db->trans_rollback();
+        $this->session->set_flashdata(
+            'message',
+            '<div class="alert alert-danger">Proses gagal. Silakan coba lagi.</div>'
+        );
+        redirect('loan?failed=true');
+      } 
+      else {
+        $this->db->trans_commit();
+        redirect('loan');
+      }
+    }
 }
