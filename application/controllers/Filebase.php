@@ -19,11 +19,12 @@ class Filebase extends CI_Controller {
     public $pagination;
 
     public function upload($fileName) {
+
         $s3 = new S3Client([
             'version'     => 'latest',
             'region'      => 'us-east-1',
             'endpoint'    => 'https://s3.filebase.com',
-            'use_path_style_endpoint' => true,
+            'use_path_style_endpoint' => false,
             'credentials' => [
                 'key'    => 'B8F0135956143AE0685E',
                 'secret' => 'gKrbIZJnzLWBXZ0VGQvnlAumvngpBH35PsXN5zUp'
@@ -31,11 +32,11 @@ class Filebase extends CI_Controller {
             'Metadata' => [
               'cid' => 'true'
             ],
-            'ContentType' => mime_content_type($file),
         ]);
+        
+        $file = $_FILES['file']['tmp_name'];
 
         // file dari form android
-        $file = $_FILES['file']['tmp_name'];
 
         $result = $s3->putObject([
           'Bucket' => 'leryn-storage',
