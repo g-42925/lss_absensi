@@ -27,7 +27,11 @@ class Filebase extends CI_Controller {
             'credentials' => [
                 'key'    => 'B8F0135956143AE0685E',
                 'secret' => 'gKrbIZJnzLWBXZ0VGQvnlAumvngpBH35PsXN5zUp'
-            ]
+            ],
+            'Metadata' => [
+              'cid' => 'true'
+            ],
+            'ContentType' => mime_content_type($file),
         ]);
 
         // file dari form android

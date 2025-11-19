@@ -544,16 +544,6 @@ function login(){
       $sDTDiff = $serverDate->diff($tolerance);
       $sDTDiffMinutes = ($sDTDiff->days * 24 * 60) + ($sDTDiff->h * 60) + $sDTDiff->i;
       
-
-      if($serverDate > $limit){
-         echo json_encode(
-          [
-            "success" => false,
-            "message" => "kamu sudah tidak bisa absen pulang"
-          ]
-        );
-        return;
-      }
       if($serverDate < $limit && $serverDate > $tolerance){
         if($division['clockout_penalty']){
           $data1 = [
@@ -673,17 +663,6 @@ function login(){
       $sDTDiff = $serverDate->diff($tolerance);
       $sDTDiffMinutes = ($sDTDiff->days * 24 * 60) + ($sDTDiff->h * 60) + $sDTDiff->i;
 
-      
-      if($serverDate > $limit){
-        echo json_encode(
-          [
-            "success" => false,
-            "message" => "kamu sudah tidak bisa absen pulang"
-          ]
-        );
-
-        return;
-      }
       if($serverDate < $limit && $serverDate > $tolerance){
         if($division['clockout_penalty']){
           $data1 = [
@@ -2671,6 +2650,10 @@ function login(){
         ]
       );
     }
+  }
+
+  public function time(){
+    echo time();
   }
 }
 

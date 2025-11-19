@@ -153,7 +153,7 @@ $config['subclass_prefix'] = 'MY_';
 if (phpversion()>='7.2.5') {
 	$config['composer_autoload'] = FCPATH . 'vendor/autoload.php'; // FALSE
 }else{
-	$config['composer_autoload'] = FALSE;
+	$config['composer_autoload'] = true;
 }
 
 /*
