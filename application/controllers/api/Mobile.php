@@ -395,6 +395,7 @@ function loginv2(){
             "workDay" => $r2['is_work'] == "y" ? true : false,
             "workSystemName" => "",
             "workSystem" => "daily",
+            "position" => $position['name'],
             "locations" => $r5,
             "next" => $rNext,
             "ffocia" => $r1['ffo_check_in_allowed'],
@@ -818,9 +819,9 @@ function login(){
 
 
       if($serverDate > $limit){
-        $exception = $this->db->query("select * from exception where employee_id = ? and date = ? and status = 1",[$emp['pegawai_id'],date('Y-m-d')])->row_array();
+        $exception = $this->db->query("select * from exception where employee_id = ? and date = ? and status = 1 order by created_at desc limit 1",[$emp['pegawai_id'],date('Y-m-d')])->row_array();
 
-        if($exception && ($exception['type'] == "Terlambat" || exception['is_csh'])){
+        if($exception && (($exception['type'] == "Terlambat" || $exception['type'] == 'Terlambat dan berada di luar kantor') || exception['is_csh'])){
           $data1 = [
             'id' => uniqid(),
             'employee_id' => $post['pegawai_id'],
@@ -834,7 +835,7 @@ function login(){
             if($division['ffo_check_in_allowed']){
               $this->db->trans_begin();
 
-              if(!exception['is_csh']){
+              if($exception['type'] == "Terlambat" || $exception['type'] == "Terlambat dan berada di luar kantor"){
                 $q1 = $this->db->insert(
                   'salary_deduction',
                   $data1
@@ -844,10 +845,10 @@ function login(){
               $this->db->where('absen_id',$lastDefaultStatus["absen_id"]);
               
 
-              $dataAbsensi = !$exception['is_csh'] ? $data2: [
-                ...$data2,
-                'is_status' => 'csh'
-              ];
+        $dataAbsensi = !$exception['is_csh'] ? $data2 : [
+          ...$data2,
+          'is_status' => 'csh'
+        ];
          
               $q2 = $this->db->update('tx_absensi',$dataAbsensi);
 
@@ -897,8 +898,13 @@ function login(){
             ); 
 
             $this->db->where('absen_id',$lastDefaultStatus["absen_id"]);
+
+        $dataAbsensi = !$exception['is_csh'] ? $data2 : [
+          ...$data2,
+          'is_status' => 'csh'
+        ];
          
-            $q2 = $this->db->update('tx_absensi',$data2);
+            $q2 = $this->db->update('tx_absensi',$dataAbsensis);
 
             if($q1 && $q2){
               $this->db->trans_commit();
@@ -939,7 +945,10 @@ function login(){
         }
       }
       if($serverDate < $limit && $serverDate > $tolerance){
+        $exception = $this->db->query("select * from exception where employee_id = ? and date = ? and status = 1 order by created_at desc limit 1",[$emp['pegawai_id'],date('Y-m-d')])->row_array();
+
         if($division['late_penalty']){
+          
           $data1 = [
             'id' => uniqid(),
             'employee_id' => $post['pegawai_id'],
@@ -949,16 +958,24 @@ function login(){
             'note' => '...'
           ];
 
+
           $this->db->trans_begin();
 
-          $q1 = $this->db->insert(
-            'salary_deduction',
-            $data1
-          );
+          if(!$exception['is_csh']){
+            $q1 = $this->db->insert(
+              'salary_deduction',
+              $data1
+            );
+          }
 
           $this->db->where('absen_id',$lastDefaultStatus["absen_id"]);
+
+          $dataFinal = !$exception['is_csh'] ? $data2 : [
+            ...$data2,
+            'status' => 'is_csh'
+          ];
          
-          $q2 = $this->db->update('tx_absensi',$data2);
+          $q2 = $this->db->update('tx_absensi',$dataFinal);
 
 
           if($q1 && $q2){
@@ -1007,7 +1024,13 @@ function login(){
           if($ffoci){
             if($division['ffo_check_in_allowed']){
               $this->db->where('absen_id',$lastDefaultStatus["absen_id"]);
-              $q2 = $this->db->update('tx_absensi',$data2);
+              
+        $dataAbsensi = !$exception['is_csh'] ? $data2 : [
+          ...$data2,
+          'is_status' => 'csh'
+        ];
+
+              $q2 = $this->db->update('tx_absensi',$dataAbsensi);
 
               if($q2){
                 echo json_encode(
@@ -1040,7 +1063,13 @@ function login(){
           }
           else{
             $this->db->where('absen_id',$lastDefaultStatus["absen_id"]);
-            $q2 = $this->db->update('tx_absensi',$data2);
+            
+        $dataAbsensi = !$exception['is_csh'] ? $data2 : [
+          ...$data2,
+          'is_status' => 'csh'
+        ];
+            
+            $q2 = $this->db->update('tx_absensi',$dataAbsensi);
 
             if($q2){
               echo json_encode(
@@ -1065,11 +1094,19 @@ function login(){
         }
       }
       if($serverDate < $tolerance){
+        $exception = $this->db->query("select * from exception where employee_id = ? and date = ? and status = 1 order by created_at desc limit 1",[$emp['pegawai_id'],date('Y-m-d')])->row_array();
+
         if($ffoci){
           if($division['ffo_check_in_allowed']){
             $this->db->where('pegawai_id',$post["pegawai_id"]);
             $this->db->where('tanggal_absen',$tanggalHariIni);
-            $q = $this->db->update('tx_absensi',$data2);
+            
+        $dataAbsensi = !$exception['is_csh'] ? $data2 : [
+          ...$data2,
+          'is_status' => 'csh'
+        ];
+
+            $q = $this->db->update('tx_absensi',$dataAbsensi);
         
             if($q){
               echo json_encode(
@@ -1107,7 +1144,13 @@ function login(){
         else{
           $this->db->where('pegawai_id',$post["pegawai_id"]);
           $this->db->where('tanggal_absen',$tanggalHariIni);
-          $q = $this->db->update('tx_absensi',$data2);
+
+        $dataAbsensi = !$exception['is_csh'] ? $data2 : [
+          ...$data2,
+          'is_status' => 'csh'
+        ];
+
+          $q = $this->db->update('tx_absensi',$dataAbsensi);
         
           if($q){
             echo json_encode(
@@ -1145,9 +1188,9 @@ function login(){
       $sDTDiffMinutes = ($sDTDiff->days * 24 * 60) + ($sDTDiff->h * 60) + $sDTDiff->i;
 
       if($serverDate > $limit){
-        $exception = $this->db->query("select * from exception where employee_id = ? and date = ? and status = 1",[$emp['pegawai_id'],date('Y-m-d')])->row_array();
+        $exception = $this->db->query("select * from exception where employee_id = ? and date = ? and status = 1 order by created_at desc limit 1",[$emp['pegawai_id'],date('Y-m-d')])->row_array();
 
-        if($exception){
+        if($exception && (($exception['type'] == "Terlambat" || $exception['type'] == 'Terlambat dan berada di luar kantor') || exception['is_csh'])){
           $data1 = [
             'id' => uniqid(),
             'employee_id' => $post['pegawai_id'],
@@ -1159,19 +1202,19 @@ function login(){
 
           $this->db->trans_begin();
 
-          if(!$exception['is_csh']){
-            $q1 = $this->db->insert(
-              'salary_deduction',
-              $data1
-            );
-          }
+              if($exception['type'] == "Terlambat" || $exception['type'] == 'Terlambat dan berada di luar kantor'){
+                $q1 = $this->db->insert(
+                  'salary_deduction',
+                  $data1
+                );
+              }
 
           $this->db->where('absen_id',$lastDefaultStatus["absen_id"]);
 
-          $dataAbsensi = !$exception['is_csh'] ? $data2: [
-            ...$data2,
-            'is_status' => 'csh'
-          ];
+        $dataAbsensi = !$exception['is_csh'] ? $data2 : [
+          ...$data2,
+          'is_status' => 'csh'
+        ];
          
           $q2 = $this->db->update('tx_absensi',$dataAbsensi);
 
@@ -1213,6 +1256,8 @@ function login(){
         }
       }
       if($serverDate < $limit && $serverDate > $tolerance){
+        $exception = $this->db->query("select * from exception where employee_id = ? and date = ? and status = 1 order by created_at desc limit 1",[$emp['pegawai_id'],date('Y-m-d')])->row_array();
+
         if($division['late_penalty']){
           $data1 = [
             'id' => uniqid(),
@@ -1225,14 +1270,21 @@ function login(){
 
           $this->db->trans_begin();
 
-          $q1 = $this->db->insert(
-            'salary_deduction',
-            $data1
-          );
+          if(!$exception['is_csh']){
+            $q1 = $this->db->insert(
+              'salary_deduction',
+              $data1
+            );
+          }
 
           $this->db->where('absen_id',$lastDefaultStatus["absen_id"]);
+          
+        $dataAbsensi = !$exception['is_csh'] ? $data2 : [
+          ...$data2,
+          'is_status' => 'csh'
+        ];
          
-          $q2 = $this->db->update('tx_absensi',$data2);
+          $q2 = $this->db->update('tx_absensi',$dataAbsensi);
 
 
           if($q1 && $q2){
@@ -1263,7 +1315,13 @@ function login(){
         }
         else{
           $this->db->where('absen_id',$lastDefaultStatus["absen_id"]);
-          $q2 = $this->db->update('tx_absensi',$data2);
+
+        $dataAbsensi = !$exception['is_csh'] ? $data2 : [
+          ...$data2,
+          'is_status' => 'csh'
+        ];
+
+          $q2 = $this->db->update('tx_absensi',$dataAbsensi);
 
           if($q2){
             echo json_encode(
@@ -1289,9 +1347,17 @@ function login(){
         }
       }
       if($serverDate < $tolerance){
+        $exception = $this->db->query("select * from exception where employee_id = ? and date = ? and status = 1 order by created_at desc limit 1",[$emp['pegawai_id'],date('Y-m-d')])->row_array();
+
         $this->db->where('pegawai_id',$post["pegawai_id"]);
         $this->db->where('tanggal_absen',$tanggalHariIni);
-        $q = $this->db->update('tx_absensi',$data2);
+
+        $dataAbsensi = !$exception['is_csh'] ? $data2 : [
+          ...$data2,
+          'is_status' => 'csh'
+        ];
+
+        $q = $this->db->update('tx_absensi',$dataAbsensi);
 
         if($q){
           echo json_encode(
