@@ -321,6 +321,7 @@ class Cron extends CI_Controller {
               );
             }
           }
+          
           if($d['is_status'] == 'hhk' && $d['jam_keluar'] == '00:00'){
             $e = $this->db->query("select * from m_pegawai where pegawai_id = ?",[$d['pegawai_id']])->row_array();
             $div = $this->db->query("select * from divisions where id = ?",[$e['division_id']])->row_array();
@@ -376,6 +377,47 @@ class Cron extends CI_Controller {
                 'id' => uniqid(),
                 'employee_id' => $e['pegawai_id'],
                 'deduction_type' => $d['is_status'],
+                'date' => date('Y-m-d'),
+                'amount' => $penaltyValue,
+                'note' => '...'
+              ];
+
+              $this->db->insert(
+                'salary_deduction',
+                $data
+              );
+            }
+          }
+
+          if($d['is_status'] == 'htu'){
+            $e = $this->db->query("select * from m_pegawai where pegawai_id = ?",[$d['pegawai_id']])->row_array();
+            $div = $this->db->query("select * from divisions where id = ?",[$e['division_id']])->row_array();
+
+            if($div['alpha_penalty_type'] == "percent"){
+              $penaltyValue = $div['alpha_penalty_value'] / 100;
+              $deductionValue = ($e['salary'] / 26) * $penaltyValue;
+
+              $data = [
+                'id' => uniqid(),
+                'employee_id' => $e['pegawai_id'],
+                'deduction_type' => 'alpha-2',
+                'date' => date('Y-m-d'),
+                'amount' => $deductionValue,
+                'note' => '...'
+              ];
+
+              $this->db->insert(
+                'salary_deduction',
+                $data
+              );
+            }
+            if($div['alpha_penalty_type'] == "custom"){
+              $penaltyValue = $div['alpha_penalty_value'];
+
+              $data = [
+                'id' => uniqid(),
+                'employee_id' => $e['pegawai_id'],
+                'deduction_type' => 'alpha-2',
                 'date' => date('Y-m-d'),
                 'amount' => $penaltyValue,
                 'note' => '...'

@@ -12,6 +12,7 @@
             <th class="w-s-n">Reason</th>
             <th class="w-s-n">Category</th>
             <th class="w-s-n">Photo</th>
+            <th class="w-s-n">No fee</th>
             <th class="w-s-n">Status</th>
           </tr>
         </thead>"
@@ -24,7 +25,9 @@
             <td><?= $r['type'];?></td>
             <td class="text-capitalize">
               <a target="_blank" href="<?= $r['image'] ?>"><i class="ti ti-photo"></i></a>
-            </td>  
+            </td> 
+            <td><?= $r['htu'] ? 'yes':'no' ?></td>
+
             <td>
               <?php
                 echo match($r['status']) {

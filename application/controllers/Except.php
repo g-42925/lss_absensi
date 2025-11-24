@@ -110,4 +110,5 @@ class Except extends CI_Controller {
         redirect('except');
       }
     }
+
 }

@@ -816,12 +816,20 @@ function login(){
       $sDTDiff = $serverDate->diff($tolerance);
       $sDTDiffMinutes = ($sDTDiff->days * 24 * 60) + ($sDTDiff->h * 60) + $sDTDiff->i;
 
-
+      
 
       if($serverDate > $limit){
         $exception = $this->db->query("select * from exception where employee_id = ? and date = ? and status = 1 order by created_at desc limit 1",[$emp['pegawai_id'],date('Y-m-d')])->row_array();
+        
+        $exception = $exception ? $exception : ['is_csh' => false,'type' => ''];
 
-        if($exception && (($exception['type'] == "Terlambat" || $exception['type'] == 'Terlambat dan berada di luar kantor') || exception['is_csh'])){
+
+        if($exception && (($exception['type'] == "Terlambat" || $exception['type'] == 'Terlambat dan berada di luar kantor') || $exception['is_csh'])){
+          $data2 = !$exception['htu'] ? $data2 : [
+            ...$data2,
+            'is_status' => 'htu'
+          ];
+          
           $data1 = [
             'id' => uniqid(),
             'employee_id' => $post['pegawai_id'],
@@ -946,6 +954,9 @@ function login(){
       }
       if($serverDate < $limit && $serverDate > $tolerance){
         $exception = $this->db->query("select * from exception where employee_id = ? and date = ? and status = 1 order by created_at desc limit 1",[$emp['pegawai_id'],date('Y-m-d')])->row_array();
+        
+        $exception = $exception ? $exception : ['is_csh' => false];
+
 
         if($division['late_penalty']){
           
@@ -1025,6 +1036,7 @@ function login(){
             if($division['ffo_check_in_allowed']){
               $this->db->where('absen_id',$lastDefaultStatus["absen_id"]);
               
+              
         $dataAbsensi = !$exception['is_csh'] ? $data2 : [
           ...$data2,
           'is_status' => 'csh'
@@ -1095,6 +1107,9 @@ function login(){
       }
       if($serverDate < $tolerance){
         $exception = $this->db->query("select * from exception where employee_id = ? and date = ? and status = 1 order by created_at desc limit 1",[$emp['pegawai_id'],date('Y-m-d')])->row_array();
+        
+        $exception = $exception ? $exception : ['is_csh' => false];
+
 
         if($ffoci){
           if($division['ffo_check_in_allowed']){
@@ -1189,8 +1204,17 @@ function login(){
 
       if($serverDate > $limit){
         $exception = $this->db->query("select * from exception where employee_id = ? and date = ? and status = 1 order by created_at desc limit 1",[$emp['pegawai_id'],date('Y-m-d')])->row_array();
+        
+        $exception = $exception ? $exception : ['is_csh' => false,'type' => ''];
 
-        if($exception && (($exception['type'] == "Terlambat" || $exception['type'] == 'Terlambat dan berada di luar kantor') || exception['is_csh'])){
+
+
+        if($exception && (($exception['type'] == "Terlambat" || $exception['type'] == 'Terlambat dan berada di luar kantor') || $exception['is_csh'])){
+          $data2 = !$exception['htu'] ? $data2 : [
+            ...$data2,
+            'is_status' => 'htu'
+          ];
+          
           $data1 = [
             'id' => uniqid(),
             'employee_id' => $post['pegawai_id'],
@@ -1257,6 +1281,8 @@ function login(){
       }
       if($serverDate < $limit && $serverDate > $tolerance){
         $exception = $this->db->query("select * from exception where employee_id = ? and date = ? and status = 1 order by created_at desc limit 1",[$emp['pegawai_id'],date('Y-m-d')])->row_array();
+        
+        $exception = $exception ? $exception : ['is_csh' => false,'type' => ''];
 
         if($division['late_penalty']){
           $data1 = [
@@ -1351,8 +1377,10 @@ function login(){
 
         $this->db->where('pegawai_id',$post["pegawai_id"]);
         $this->db->where('tanggal_absen',$tanggalHariIni);
-
-        $dataAbsensi = !$exception['is_csh'] ? $data2 : [
+        
+        $exception = $exception ? $exception : ['is_csh' => false];
+        
+        $dataAbsensi = (!$exception['is_csh'] || false) ? $data2 : [
           ...$data2,
           'is_status' => 'csh'
         ];
@@ -2721,5 +2749,26 @@ function login(){
   public function time(){
     echo time();
   }
+
+  public function exceptionDelete($id){
+    $this->db->where('id', $id);
+    $q = $this->db->delete('exception');
+    
+    if($q){
+      echo json_encode(
+        [
+          'success' => true
+        ]
+      );
+    }
+    else{
+      echo json_encode(
+        [
+          'success' => false
+        ]
+      );
+    }
+  }
+
 }
 

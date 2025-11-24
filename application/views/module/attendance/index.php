@@ -78,15 +78,16 @@
             <td class="w-s-n <?= DateTime::createFromFormat('H:i', $row['jam_masuk']) > $row['tolerance'] ? 'text-red-900':'' ?>"><?= $row['nama_pegawai'] ?></td> <!-- nama -->
             <td class="v-a-t"> <!-- status -->
               <select class="form-control <?=$bgs;?>" name="status" id="status<?=$row['pid'];?>" required="" onchange="updateStatus('status','<?=$row['pid'];?>',this.value)" <?php if ($row['is_request']>0) { echo 'disabled'; } ?>>               
-                <option value="ts" <?php if ($row['is_status']=='ts') echo 'selected'; ?>>Belum ada status [TS]</option>
-                <option value="on duty" <?= $row['is_status'] == 'on duty' ? 'selected':'' ?> <?php if($row['is_status']) echo 'selected' ?>>Bertugas di luar</option>
+                <option value="ts" <?= $row['is_status'] == 'ts' ? 'selected':'' ?>>Belum ada status [TS]</option>
+                <option value="on duty" <?= $row['is_status'] == 'on duty' ? 'selected':'' ?>>Bertugas di luar</option>
                 <option value="alpha-2" <?= $row['is_status'] == 'alpha-2' ? 'selected':'' ?>>Alpha-2</option>                                
                 <option value="alpha-1" <?= $row['is_status'] == 'alpha-1' ? 'selected':'' ?>>Alpha-1</option>                
                 <option value="alpha-0" <?= $row['is_status'] == 'alpha-0' ? 'selected':'' ?>>Alpha-0</option>                
-                <option value="off" <?= $row['is_status'] == 'off' ? 'selected':'' ?>>Off</option>  
-                <option value="free" <?= $row['is_status'] == 'free' ? 'selected':'' ?>>Off</option>                                              
+                <option value="free" <?= $row['is_status'] == 'off' ? 'selected':'' ?>>Off</option>                                                             
+                <option value="free" <?= $row['is_status'] == 'free' ? 'selected':'' ?>>Free</option>                                              
                 <option value="th" <?php if ($row['is_status']=='th') echo 'selected'; ?>>Tidak hadir [TH]</option>
-                <option value="hhk" <?php if ($row['is_status']=='hhk') echo 'selected'; ?>>Hadir</option>
+                <option value="free" <?= $row['is_status'] == 'off' ? 'selected':'' ?>>Off</option>                                                             
+                <option value="free" <?= $row['is_status'] == 'hhk' ? 'selected':'' ?>>Hadir</option>                                                             z                
                 <option value="hbhk" <?php if ($row['is_status']=='hbhk') echo 'selected'; ?>>Hadir bukan dihari kerja [HBHK]</option>
                 <option value="s" <?php if ($row['is_status']=='s') echo 'selected'; ?>>Sakit [S]</option>
                 <option value="i" <?php if ($row['is_status']=='i') echo 'selected'; ?>>Izin [I]</option>
@@ -96,6 +97,8 @@
                 <option value="csh" <?php if ($row['is_status']=='csh') echo 'selected'; ?>>Cuti setengah hari [CSH]</option>
                 <option value="l" <?php if ($row['is_status']=='l') echo 'selected'; ?>>Libur [L]</option>
                 <option value="tl" <?php if ($row['is_status']=='tl') echo 'selected'; ?>>Tugas Luar [TL]</option>
+                <option value="free" <?= $row['is_status'] == 'htu' ? 'selected':'' ?>>Hadir Tanpa upah</option>                                                             z                
+
               </select>
               <?php if ($row['is_request']>0) { ?>
                 <div class="ft-12 mt-2">Status berdasarkan request yang telah disetujui, 
