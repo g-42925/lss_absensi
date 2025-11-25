@@ -7,8 +7,8 @@
         <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
           <div class="app-brand demo">
             <a href="<?=base_url('dashboard');?>" class="app-brand-link">
-              <img src="<?=base_url('assets/temp/assets/logo/client/logo_5.png');?>" width="65">
-              <p class="ml-3 text-md font-bold text-slate-700">
+              <img src="<?=base_url('assets/temp/assets/logo/client/logo_5.png');?>" width="50">
+              <p class="ml-3 text-lg font-bold text-slate-700">
   Leryn <span class="text-blue-600">Absensi</span>
 </p>
             </a>
