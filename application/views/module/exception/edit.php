@@ -1,3 +1,32 @@
+<style>
+@media print {
+  body * {
+    visibility: hidden; /* Sembunyikan semua elemen */
+  }
+
+  #printArea, #printArea * {
+    visibility: visible; /* Kecuali elemen yang ingin diprint */
+  }
+
+  #printArea {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    padding: 20px;
+  }
+
+  .no-print {
+    display: none !important; /* Hilangkan tombol print */
+  }
+
+  .no-print-alt {
+    display: none !important; /* Hilangkan tombol print */
+  }
+}
+</style>
+
+
 <!-- Content -->
 <div class="container-xxl flex-grow-1 container-p-y">
   <!-- Users List Table -->
@@ -10,7 +39,7 @@
         <?php if($failed): ?>
           <?=$this->session->flashdata('message');?>
         <?php endif; ?>
-        <div class="row g-3">
+        <div class="row g-3" id="printArea">
           <div class="col-xl-6 col-md-6 col-sm-6 col-xs-6">
             <label class="form-label">Exception Id<i class="text-danger">*</i></label>
             <input type="text" class="form-control" name="exception_id" readonly value="<?=$data['id'];?>" placeholder="..." required />
@@ -45,6 +74,7 @@
         </div>
         <div class="pt-5 text-end">
           <a href="javascript:window.history.back();" class="btn btn-label-secondary me-sm-3 me-1">Batal</a>
+          <button type="button" class="btn btn-primary" onclick="window.print()">Cetak</button>
           <button type="submit" class="btn btn-primary">Simpan Data</button>
         </div>
       </form>

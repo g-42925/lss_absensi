@@ -824,7 +824,7 @@ function login(){
         $exception = $exception ? $exception : ['is_csh' => false,'type' => ''];
 
 
-        if($exception && (($exception['type'] == "Terlambat" || $exception['type'] == 'Terlambat dan berada di luar kantor') || $exception['is_csh'])){
+        if($exception && (($exception['type'] == "Terlambat" || $exception['type'] == 'Lainnya') || $exception['is_csh'])){
           $data2 = !$exception['htu'] ? $data2 : [
             ...$data2,
             'is_status' => 'htu'
@@ -843,7 +843,7 @@ function login(){
             if($division['ffo_check_in_allowed']){
               $this->db->trans_begin();
 
-              if($exception['type'] == "Terlambat" || $exception['type'] == "Terlambat dan berada di luar kantor"){
+              if($exception['type'] == "Terlambat" || $exception['type'] == "Lainnya"){
                 $q1 = $this->db->insert(
                   'salary_deduction',
                   $data1
@@ -2767,6 +2767,72 @@ function login(){
           'success' => false
         ]
       );
+    }
+  }
+
+  public function cshList($pegawaiId){
+    $differencesPending = [];
+    $differencesApproved = [];
+    
+    $r1 = $this->db->query("SELECT * FROM m_pegawai WHERE pegawai_id = ?", array($pegawaiId))->row_array();
+    $r3 = $this->db->query("select * from exception where employee_id = ? and date = ? and (type='Cuti pulang' or type='Cuti setengah hari') order by created_at desc ",[$pegawaiId,date('Y-m-d')])->result_array();
+    $r2 = $this->db->query("SELECT * 
+        FROM tx_request_izin_pegawai x 
+        JOIN tx_request_izin y 
+          ON x.request_izin_id = y.request_izin_id 
+        WHERE x.pegawai_id = ? AND y.tipe_request = 'c'",
+        array($pegawaiId)
+    )->result_array();
+
+    
+
+    // Filter pending (status 0)
+    $filteredPending = array_filter($r2, function($row) {
+        return $row['is_status'] == 0;
+    });
+
+    // Filter approved (status 1)
+    $filteredApproved = array_filter($r2, function($row) {
+        return $row['is_status'] == 1;
+    });
+
+    // Hitung hari pending
+    foreach($filteredPending as $f){
+        $tanggalAwal = new DateTime($f['tanggal_request']);
+        $tanggalAkhir = new DateTime($f['tanggal_request_end']);
+        $difference = $tanggalAwal->diff($tanggalAkhir)->days+1;
+        $differencesPending[] = $difference;
+    }
+
+    // Hitung hari approved
+    foreach($filteredApproved as $f){
+        $tanggalAwal = new DateTime($f['tanggal_request']);
+        $tanggalAkhir = new DateTime($f['tanggal_request_end']);
+        $difference = $tanggalAwal->diff($tanggalAkhir)->days+1;
+        $differencesApproved[] = $difference;
+    }
+    
+    if($r1){
+        http_response_code(200);
+
+        $result = [
+            "list"   => $r3,
+            "quota"  => $r1['jumlah_cuti'] - array_sum($differencesPending), // quota real dikurangi pending (terkunci)
+            "used"   => array_sum($differencesApproved) + array_sum($differencesPending), // hanya approved
+            "locked" => array_sum($differencesPending)   // pending (opsional, biar user tahu ada cuti terpending)
+        ];
+
+        echo json_encode([
+            "success" => true,
+            "result"  => $result
+        ]);
+    }
+    else{
+        http_response_code(200);
+
+        echo json_encode([
+            "success" => false,
+        ]);
     }
   }
 

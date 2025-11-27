@@ -9,9 +9,12 @@
             <div class="card-body" style="padding: 1rem 2rem;">
               <!-- aplikasi ini dibuat oleh chandra gustiya tim carvellonic, nomor 08567354414 -->
               <!-- Logo -->
-              <div class="app-brand justify-content-center_ mb-3 mt-0">
-                <a href="#" class="app-brand-link gap-2">
-                  <img src="<?=base_url('assets/temp/assets/logo/client/logo_4.png');?>" width="90">
+              <div class="app-brand justify-content-center mb-3 mt-0 d-flex align-items-center">
+                <a href="#" class="app-brand-link gap-2 d-flex align-items-center">
+                <img src="<?=base_url('assets/temp/assets/logo/client/logo_4.png');?>" width="90">
+                  <span style="font-size: 28px; font-weight: bold; color: #4A4A4A; letter-spacing: 1px;">
+                    Leryn Absensi
+                  </span>
                 </a>
               </div>
               <!-- /Logo -->

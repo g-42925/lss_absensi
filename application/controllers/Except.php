@@ -65,14 +65,23 @@ class Except extends CI_Controller {
       $data = [
         'date' => $this->input->post('date'),
         'status' => $this->input->post('status'),
-        'htu' => $this->input->post('htu')
+        'htu' => false
       ];
 
       $this->db->trans_begin(); // to start db transaction
+
+      $status = $this->input->post('status');
       
       $exception = $this->db->query("select * from exception where id = ?",[$id])->row_array();
-      $employee = $exception['employee_id'];
-      $presence = $this->db->query("select * from tx_absensi where pegawai_id = ? and tanggal_absen = ?",[$employee,$this->input->post('date')])->row_array();
+      $employee = $this->db->query("select * from m_pegawai where pegawai_id = ?",[$exception['employee_id']])->row_array();
+
+      if($status == "1" && $exception['is_csh']){
+        if($employee['jumlah_cuti'] >= 0.5){
+          $this->db->set(['jumlah_cuti' => $employee['jumlah_cuti'] - 0.5]);
+          $this->db->where(['pegawai_id' => $employee['pegawai_id']]);
+          $this->db->update('m_pegawai');
+        }
+      }
 
       $this->db->set(
         $data
@@ -85,21 +94,9 @@ class Except extends CI_Controller {
         'exception'
       );
 
-      if($this->input->post('htu')){
-        $this->db->set(
-          [
-            'htu' => true
-          ]
-        );
-        $this->db->where(
-          'absen_id', 
-          $presence['absen_id']
-        );
-        $this->db->update(
-          'tx_absensi'
-        );
-      }
+      
 
+     
       if($this->db->trans_status() === FALSE) {
         $this->db->trans_rollback();
         $this->session->set_flashdata('message', '<div class="alert alert-danger p-cg" role="alert">proses gagal, silahkan coba lagi</div>');

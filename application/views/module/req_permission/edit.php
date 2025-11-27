@@ -1,3 +1,31 @@
+<style>
+@media print {
+  body * {
+    visibility: hidden; /* Sembunyikan semua elemen */
+  }
+
+  #printArea, #printArea * {
+    visibility: visible; /* Kecuali elemen yang ingin diprint */
+  }
+
+  #printArea {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    padding: 20px;
+  }
+
+  .no-print {
+    display: none !important; /* Hilangkan tombol print */
+  }
+
+  .no-print-alt {
+    display: none !important; /* Hilangkan tombol print */
+  }
+}
+</style>
+
 <!-- Content -->
 <div class="container-xxl flex-grow-1 container-p-y">
   <!-- Users List Table -->
@@ -7,11 +35,10 @@
     </div>
     <div class="card">
       <form class="card-body" action="<?=base_url('req_permission/edit_proses/'.$edit['request_izin_id']);?>" method="POST" enctype="multipart/form-data">
-        <?=$this->session->flashdata('message');?>
-        <div class="row g-3">
+        <div class="row g-3" id="printArea">
           <div class="col-xl-12 col-md-12">
-            <label class="form-label" for="multicol-country">Karyawan<i class="text-danger">*</i></label>
-            <div class="pb-2" style="position: absolute; top:15px; right:30px;">
+            <label class="no-print-alt form-label" for="multicol-country">Karyawan<i class="text-danger">*</i></label>
+            <div class="no-print pb-2" style="position: absolute; top:15px; right:30px;">
               <button type="button" class="btn btn-outline-primary btn-sm ft-11" onclick="selectAll()">Select All</button>
               <button type="button" class="btn btn-outline-warning btn-sm ft-11" onclick="deselectAll()">
                 <i class="ti ti-trash ft-12"></i>&nbsp;&nbsp;All</button>
@@ -63,22 +90,11 @@
             <label class="form-label">Catatan</label>
             <textarea type="text" class="form-control" name="catatanl" placeholder="..."><?=$edit['catatan_awal'];?></textarea>
           </div>
-          <div class="col-xl-12 col-lg-12">
-            <div class="">Optional</div>
-          </div>
-          <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6">
-            <label class="form-label">File Dokumen (jpg/png/pdf)</label>
-            <input type="file" class="form-control" name="imgpdf">
-            <?php if ($edit['file_dokumen']!='') { ?>
-            <div class="mt-2 small">
-              <a href="<?=base_url($edit['file_dokumen']);?>" target="_blank">Lihat File...</a>
-            </div>
-            <?php } ?>
-          </div>
         </div>
         <div class="pt-5 text-end">
           <a href="javascript:window.history.back();" class="btn btn-label-secondary me-sm-3 me-1">Batal</a>
-          <button type="submit" class="btn btn-primary">Simpan Data</button>
+          <button type="button" class="btn btn-primary" onclick="window.print()">Cetak</button>
+          <button type="submit" class="btn btn-primary" type="button">Simpan Data</button>
         </div>
       </form>
     </div>
