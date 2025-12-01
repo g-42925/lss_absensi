@@ -178,6 +178,8 @@ class Req_permission_model extends CI_Model {
 
         $employee = $this->db->query("select * from m_pegawai where pegawai_id = ?",[$this->input->post('idp')[0]])->row_array();
 
+        $approvedBy = $this->input->post('status') == 1 ? $this->session->userdata('nama_lengkap') : '';
+
         $this->db->set([
             'tipe_request'          => $this->input->post('kat'),
             'tanggal_request'       => $this->input->post('tgl1'),
@@ -186,8 +188,9 @@ class Req_permission_model extends CI_Model {
             'r_jam_keluar'          => $this->input->post('jkeluar'),
             'catatan_awal'          => $this->input->post('catatanl'),
             'is_status'             => $this->input->post('status'),
+            'approvedBy'            => $approvedBy,
             'jumlah_cuti'           => $jumlahhari+1,
-            'file_dokumen'          => $filex
+            'file_dokumen'          => $filex,
         ]);
 
         $this->db->where('request_izin_id', $id);

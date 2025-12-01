@@ -29,44 +29,46 @@ class Master extends CI_Controller {
 
         $data['failed'] = filter_var($this->input->get('failed'),FILTER_VALIDATE_BOOLEAN);
 
-        if($q){
-          $data = [
-            'company_id' => $q['id'],
-            'role_id' => 1,
-            'permission_id' => 1,
-            'nama_lengkap' => $q['company_name'],
-            'email_address' => $email,
-            'password' => password_hash($password, PASSWORD_BCRYPT),
-            'is_status' => 'y',
-            'is_del' => 'n',
-            'created_at' => date('Y-m-d H:i:s')
-          ];
+        print_r($q);
 
-          $q2 = $this->db->insert(
-            'm_user',$data
-          );
+    //     if($q){
+    //       $data = [
+    //         'company_id' => $q['id'],
+    //         'role_id' => 1,
+    //         'permission_id' => 1,
+    //         'nama_lengkap' => $q['company_name'],
+    //         'email_address' => $email,
+    //         'password' => password_hash($password, PASSWORD_BCRYPT),
+    //         'is_status' => 'y',
+    //         'is_del' => 'n',
+    //         'created_at' => date('Y-m-d H:i:s')
+    //       ];
 
-          if($q2){
-            redirect('auth');
-          }
-          else{
-            $this->session->set_flashdata(
-              'message','<div class="alert alert-danger">Proses gagal. Silakan coba lagi.</div>'
-            );
-            redirect(
-              'master?failed=true'
-            );
-          }
-        }
-        else{
-            $this->session->set_flashdata(
-              'message','<div class="alert alert-danger">Proses gagal. Silakan coba lagi.</div>'
-            );
-            redirect(
-              'master?failed=true'
-            );
-        }
+    //       $q2 = $this->db->insert(
+    //         'm_user',$data
+    //       );
+
+    //       if($q2){
+    //         redirect('auth');
+    //       }
+    //       else{
+    //         $this->session->set_flashdata(
+    //           'message','<div class="alert alert-danger">Proses gagal. Silakan coba lagi.</div>'
+    //         );
+    //         redirect(
+    //           'master?failed=true'
+    //         );
+    //       }
+    //     }
+    //     else{
+    //         $this->session->set_flashdata(
+    //           'message','<div class="alert alert-danger">Proses gagal. Silakan coba lagi.</div>'
+    //         );
+    //         redirect(
+    //           'master?failed=true'
+    //         );
+    //     }
         
-    }
+    // }
         
 }

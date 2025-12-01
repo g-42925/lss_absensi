@@ -71,6 +71,9 @@
               <a class="<?= $row['tipe_request'] == "s" ? "":"hidden"  ?> btnp-1" href="<?= base_url('req_permission/cut/').$row['pegawai_id'].'/'.$row['tanggal_request'].'/'.$row['tanggal_request_end'] ?>" title="payroll">
                 <i class="ti ti-scissors"></i>
               </a>
+              <a href="<?=base_url('req_permission/print/'.$row['request_izin_id']);?>" class="btn p-1">
+                <i class="ti ti-file"></i>
+              </a>
               <div class="modal fade" id="delRow<?=$row['request_izin_id'];?>" tabindex="-1" aria-hidden="true">
                 <div class="modal-dialog modal-simple modal-enable-otp modal-dialog-centered">
                   <div class="modal-content p-3 p-md-5">

@@ -286,26 +286,47 @@ class Req_permission extends CI_Controller {
       $this->db->trans_begin();
 
       if($employee['jumlah_cuti'] > 0){
-        $offDaysAmount = $employee['jumlah_cuti'];
-        $data = ['jumlah_cuti' => $offDaysAmount - 1];
-        $this->db->where('pegawai_id',$employeeId);
-        $this->db->update('m_pegawai',$data);
+        foreach($periode as $tanggal){
+            if($employee['jumlah_cuti'] > 0){
+                $offDaysAmount = $employee['jumlah_cuti'];
+                $data = ['jumlah_cuti' => $offDaysAmount - 1];
+                $this->db->where('pegawai_id',$employeeId);
+                $this->db->update('m_pegawai',$data);
+                $employee['jumlah_cuti'] = $employee['jumlah_cuti'] - 1;
+            }
+            else{
+                $data = [
+                    'id' => uniqid(),
+                    'employee_id' => $employeeId,
+                    'deduction_type' => 'missing medical certificate',
+                    'date' => $tanggal->format('Y-m-d'),
+                    'amount' => $amount,
+                    'note' => '...'
+                ];
+
+                $this->db->insert(
+                  'salary_deduction',
+                  $data
+                );
+            }
+            
+        }
       }
       else{
         foreach ($periode as $tanggal) {
-          $data = [
-            'id' => uniqid(),
-            'employee_id' => $employeeId,
-            'deduction_type' => 'missing medical certificate',
-            'date' => $tanggal->format('Y-m-d'),
-            'amount' => $amount,
-            'note' => '...'
-          ];
+            $data = [
+                'id' => uniqid(),
+                'employee_id' => $employeeId,
+                'deduction_type' => 'missing medical certificate',
+                'date' => $tanggal->format('Y-m-d'),
+                'amount' => $amount,
+                'note' => '...'
+            ];
 
-          $this->db->insert(
-            'salary_deduction',
-            $data
-          );
+            $this->db->insert(
+                'salary_deduction',
+                $data
+            );
         }
       }
 
@@ -318,6 +339,20 @@ class Req_permission extends CI_Controller {
         $this->db->trans_commit();
         redirect('req_permission');
       }
+    }
+
+    public function print($id){
+      $data['data'] = $this->db->query("select * from tx_request_izin tri join tx_request_izin_pegawai trip on tri.request_izin_id = trip.request_izin_id join m_pegawai mp on trip.pegawai_id = mp.pegawai_id join position p on p.id = mp.position_id join divisions d on mp.division_id = d.id where tri.request_izin_id = ?",[$id])->row_array();
+
+      cek_menu_access();
+      $data['htmlpagejs'] = 'none';
+      $data['nmenu']      = 'Data Request Izin';
+      $data['title']      = 'Request Izin';
+      $data['namalabel']  = $data['title'];
+      $data['auth']       = authUser();
+      
+      $this->load->view('module/req_permission/print', $data);
+
     }
 
 }

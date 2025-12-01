@@ -51,24 +51,45 @@ class Data_model extends CI_Model {
             'contract_end_date'   => $this->input->post('contract_end_date'),
             'on_training'         => $this->input->post('on_training')
         ];
+
+        $this->db->trans_begin();
         
-        return $this->db->insert(
+        $newEmployee = $this->db->insert(
             'm_pegawai', 
             $data
         );
 
-        // if($res==true){
-        //     $postData = [
-        //         'first_name'    => $this->input->post('nama'),
-        //         'designation'   => 1,
-        //         'phone'         => $this->input->post('nom'),
-        //         'email'         => $this->input->post('email'),
-        //         'id_sync'       => $idsync,
-        //         'id_pegawai'       => $this->input->post('idkar'),
-        //         'password_pegawai' => password_hash($this->input->post('password_pegawai'), PASSWORD_DEFAULT)
-        //     ];
-        //     $this->db->insert('employee_history', $postData);
-        // }
+        $txAbsensi = [
+          'absen_id' => uniqid(),
+          'company_id' => $this->session->userdata('company_id'),
+          'pegawai_id' => $this->db->insert_id(),
+          'tanggal_absen' => date('Y-m-d'),
+          'is_status' => 'alpha-2',
+          'jam_masuk' => '00:00',
+          'jam_istirahat' => '00:00',
+          'jam_sistirahat' => '00:00',
+          'jam_keluar' => '00:00',
+          'catatan_masuk' => '...',
+          'catatan_keluar' => '...',
+          'j_masuk' => '00:00',
+          'j_pulang' => '00:00',
+          'j_toleransi' => '00:00',
+          's_istirahat_photo' => ''
+        ];
+
+        $this->db->insert(
+            'tx_absensi', 
+            $txAbsensi
+        );
+
+        if($this->db->trans_status() === FALSE) {
+          $this->db->trans_rollback();
+          return false;
+        } 
+        else {
+          $this->db->trans_commit();
+          return $newEmployee;
+        }
     }
 
     public function edit_proses($id) {

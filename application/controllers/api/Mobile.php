@@ -1313,7 +1313,7 @@ function login(){
           $q2 = $this->db->update('tx_absensi',$dataAbsensi);
 
 
-          if($q1 && $q2){
+          if($q2 || ($q1 && $q2)){
             $this->db->trans_commit();
 
             echo json_encode(
