@@ -137,7 +137,7 @@ class Assignment extends CI_Controller {
     }
 
     public function edit_proccess($id){
-      $tanggal1 = new DateTime($this->inpit->post('startFrom'));
+      $tanggal1 = new DateTime($this->input->post('startFrom'));
       $tanggal2 = new DateTime($this->input->post('until'));
       
       $data = [

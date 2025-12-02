@@ -68,6 +68,7 @@ class Holiday extends CI_Controller {
     }
 
     public function edit($id){
+        $data['id']         = $id;
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Hari Libur';
         $data['title']      = 'Cuti Bersama';
@@ -75,17 +76,17 @@ class Holiday extends CI_Controller {
         $data['auth']       = authUser();
         $data['data']       = $this->db->query("SELECT * FROM global_holidays where id = ?",[$id])->row_array();
 
-        print_r($data['data']);
-        // $this->load->view('templates/header',$data);
-        // $this->load->view('templates/sidemenu',$data);
-        // $this->load->view('templates/sidenav');
-        // $this->load->view('module/holiday/edit',$data);
-        // $this->load->view('templates/footer');
-        // $this->load->view('templates/fscript-html-end');    
+        $this->load->view('templates/header',$data);
+        $this->load->view('templates/sidemenu',$data);
+        $this->load->view('templates/sidenav');
+        $this->load->view('module/holiday/edit',$data);
+        $this->load->view('templates/footer');
+        $this->load->view('templates/fscript-html-end');    
     }
 
     public function edit_proses(){
         $id = $this->input->post('id');
+        
         $this->db->where('id', $id);
         $this->db->update('global_holidays', [
             'tanggal' => $this->input->post('start'),
