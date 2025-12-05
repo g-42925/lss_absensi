@@ -55,8 +55,9 @@
                     <label class="form-check-label" for="remember-me"> Remember Me </label>
                   </div>
                 </div>
-                <div class="mb-3">
-                  <button class="btn btn-primary d-grid w-100" type="submit">Login</button>
+                <div class="mb-3 text-center">
+                  <button class="btn btn-primary d-grid w-100 mb-3" type="submit">Login</button>
+                  <a href="<?= base_url('reset') ?>">Forget password?</a>
                 </div>
               </form>
 
