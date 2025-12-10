@@ -20,7 +20,7 @@ class Task extends CI_Controller {
         $this->load->model('user/req_permission_model', 'rp');
     }
 
-    public function index() {
+    public function index($date = null) {
         cek_menu_access();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Tugas';
@@ -30,7 +30,13 @@ class Task extends CI_Controller {
 
 	    $companyId = $this->session->userdata('company_id');
 
-		$data['data'] = $this->db->query("select * from task t join task_detail td on t.task_id = td.task_id join m_pegawai mp on t.employee_id = mp.pegawai_id where mp.company_id = ? order by date desc",[$companyId])->result_array();
+        if(!$date){
+    		$data['data'] = $this->db->query("select * from task t join task_detail td on t.task_id = td.task_id join m_pegawai mp on t.employee_id = mp.pegawai_id where mp.company_id = ? order by date desc",[$companyId])->result_array();
+        }
+        else{
+            $data['data'] = $this->db->query("select * from task t join task_detail td on t.task_id = td.task_id join m_pegawai mp on t.employee_id = mp.pegawai_id where mp.company_id = ? and t.date = ? order by t.created_at desc",[$companyId,$date])->result_array();
+        }
+
 
         $this->load->view('templates/header', $data);
         $this->load->view('templates/sidemenu', $data);

@@ -9,7 +9,7 @@ class Mobile extends CI_Controller{
 
 	function __construct() {
     parent::__construct();
-    header('Access-Control-Allow-Origin: *');
+    header('Access-Control-Aw-Origin: *');
     header("Access-Control-Allow-Methods: PUT, GET, POST, DELETE, OPTIONS");
     header("Access-Control-Allow-Headers: Origin, Content-Type, Authorization, Accept, X-Requested-With, x-xsrf-token");
     header("Content-Type: application/json; charset=utf-8");
@@ -1572,9 +1572,49 @@ function login(){
   }
 
 
+  
+  function filteredTaskList($id,$filter){
+    $q = $this->db->query("select * from task t join task_detail td on t.task_id = td.task_id where t.employee_id = ? and t.date = ? order by created_at desc",[$id,$filter])->result_array();
+
+    if($q){
+      echo json_encode(
+        [
+          'success' => true,
+          'result' => $q
+        ]
+      );
+    }
+    else{
+      echo json_encode(
+        [
+          'success' => false,
+        ]
+      );
+    }
+  }
 
   function taskList($id){
-    $q = $this->db->query("select * from task where employee_id = ? order by created_at desc",[$id])->result_array();
+    $q = $this->db->query("select * from task where employee_id = ? and date >= ? order by created_at desc",[$id,date('Y-m-d')])->result_array();
+
+    if($q){
+      echo json_encode(
+        [
+          'success' => true,
+          'result' => $q
+        ]
+      );
+    }
+    else{
+      echo json_encode(
+        [
+          'success' => false,
+        ]
+      );
+    }
+  }
+  
+  function doneTaskList($id){
+    $q = $this->db->query("select * from task t join task_detail td on t.task_id = td.task_id where t.employee_id = ? and t.date = ?  order by t.created_at desc",[$id,date('Y-m-d')])->result_array();
 
     if($q){
       echo json_encode(
@@ -2835,6 +2875,5 @@ function login(){
         ]);
     }
   }
-
 }
 

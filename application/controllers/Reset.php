@@ -30,6 +30,7 @@ class Reset extends CI_Controller {
 
         if($q){
           $this->db->where('company_id',$q['id']);
+          $this->db->where('email_address',$this->input->post('email'));
           
           $data = ['password' => password_hash($password,PASSWORD_BCRYPT)];
 

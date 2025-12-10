@@ -2,7 +2,14 @@
 <div class="container-xxl flex-grow-1 container-p-y">
   <!-- Users List Table -->
   <div class="card">
-    <div class="card-datatable table-responsive">
+    <div class="card-datatable table-responsive p-3">
+          <div class="col-xl-3 col-lg-4 col-md-5 mb-4">
+            <label for="flatpickr-date" class="form-label">Filter by assignment date</label>
+            <div class="input-group">
+              <input type="text" class="form-control filtertglabsensi" placeholder="YYYY-MM-DD" id="flatpickr-date" />
+              <a href="javascript:filtertglAbsensi();" class="input-group-text btn btn-outline-primary">Terapkan</a>
+            </div>
+          </div>
        <table class="table border-top" id="dataTable">
         <thead>
           <tr class="text-center">
@@ -45,4 +52,10 @@
     </div>
   </div>
 </div>
-<!-- / Content -->
+
+<script type="text/javascript">
+  function filtertglAbsensi(){
+    var valx = $('.filtertglabsensi').val();
+    window.location.href='<?=base_url('task/index/');?>'+valx;
+  }
+</script>

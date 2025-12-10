@@ -35,6 +35,11 @@
       </div>
 
       <div class="mb-4">
+        <label for="email" class="form-label">Email</label>
+        <input type="email" class="form-control" id="email" name="email" placeholder="Masukkan Email">
+      </div>
+
+      <div class="mb-4">
         <label for="password" class="form-label">Password</label>
         <input type="password" class="form-control" id="password" name="password" placeholder="Masukkan Password Baru">
       </div>
