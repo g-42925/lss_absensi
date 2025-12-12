@@ -12,16 +12,16 @@
     <tbody>
       <?php 
       $fields = [
-        'Name' => fn($r)=> $r['division_name'],
-        'Work System' => fn($r)=> $r['work_system'],
-        'Late Penalty Nominal' => fn($r)=> number_format($r['penalty_nominal'],2),
-        'Alpha Penalty Value' => fn($r)=> is_int($r['alpha_penalty_value']) ? "Rp ".number_format($r['alpha_penalty_value'],2) : $r['alpha_penalty_value'],
-        'After Break Late Penalty Value' => fn($r)=> is_int($r['after_break_late_penalty_value']) ? number_format($r['after_break_late_penalty_value'],2) : $r['after_break_late_penalty_value'],
-        'Restriction' => fn($r) => $r['restriction']." Minute",
-        'Clockout Restriction' => fn($r) => $r['clockout_restriction']." Minute",
-        'Alpha Consequence' => fn($r) => $r['alpha_consequence'],
-        'Overwork Fee' => fn($r) => number_format($r['overwork_fee'],2),
-        'Actions' => fn($r) => "
+        'Divisi' => fn($r)=> $r['division_name'],
+        'Pola kerja' => fn($r)=> $r['work_system'],
+        'Nominal penalty terlambat' => fn($r)=> number_format($r['penalty_nominal'],2),
+        'Nominal penalty alpha' => fn($r)=> is_int($r['alpha_penalty_value']) ? "Rp ".number_format($r['alpha_penalty_value'],2) : $r['alpha_penalty_value'],
+        'Nominal penalty istirahat' => fn($r)=> is_int($r['after_break_late_penalty_value']) ? number_format($r['after_break_late_penalty_value'],2) : $r['after_break_late_penalty_value'],
+        'Restriksi' => fn($r) => $r['restriction']." Minute",
+        'Restriksi absen pulang' => fn($r) => $r['clockout_restriction']." Minute",
+        'Konsekuensi alpha' => fn($r) => $r['alpha_consequence'],
+        'Upah lembur' => fn($r) => number_format($r['overwork_fee'],2),
+        'Aksi' => fn($r) => "
           <a href='".base_url()."karyawan/division/edit/".$r['id']."?failed=false' class='btn p-1' title='Edit Divisi'>
             <i class='ti ti-edit'></i>
           </a>
