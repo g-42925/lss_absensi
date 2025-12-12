@@ -81,6 +81,22 @@ class Except extends CI_Controller {
           $this->db->where(['pegawai_id' => $employee['pegawai_id']]);
           $this->db->update('m_pegawai');
         }
+        else{
+          $oneDaySalary = $employee['salary'] / 26;
+          $halfOfOneDaySalary = $oneDaySalary / 2;
+          
+          $cshData = [
+            'id' => uniqid(),
+            'employee_id' => $exception['employee_id'],
+            'deduction_type' => 'late penalty',
+            'date' => date('Y-m-d'),
+            'amount' => $halfOfOneDaySalary,
+            'note' => '...'     
+          ];
+          
+          $this->db->insert('salary_deduction',$cshData);
+
+        }
       }
 
       $this->db->set(
@@ -94,9 +110,6 @@ class Except extends CI_Controller {
         'exception'
       );
 
-      
-
-     
       if($this->db->trans_status() === FALSE) {
         $this->db->trans_rollback();
         $this->session->set_flashdata('message', '<div class="alert alert-danger p-cg" role="alert">proses gagal, silahkan coba lagi</div>');

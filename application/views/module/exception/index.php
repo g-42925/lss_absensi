@@ -24,7 +24,7 @@
             <td><?= $r['reason'];?></td>
             <td><?= $r['type'];?></td>
             <td class="text-capitalize">
-              <a target="_blank" href="<?= $r['image'] ?>"><i class="ti ti-photo"></i></a>
+              <a target="_blank" href="<?= base_url('image/index').'/'.basename($r['image']) ?>"><i class="ti ti-photo"></i></a>
             </td> 
             <td><?= $r['htu'] ? 'yes':'no' ?></td>
 

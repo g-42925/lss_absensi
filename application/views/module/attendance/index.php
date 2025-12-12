@@ -202,7 +202,7 @@
 <script type="text/javascript">
   function filtertglAbsensi(){
     var valx = $('.filtertglabsensi').val();
-    window.location.href='<?=base_url('attendance/index/');?>'+valx;
+    window.location.href='<?=base_url('attendance/date/');?>'+valx;
   }
 
   function filterWithState(){

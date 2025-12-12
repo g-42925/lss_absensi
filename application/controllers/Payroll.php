@@ -66,6 +66,7 @@ class Payroll extends CI_Controller {
         $totalBenefit = 0;
         $totalOverwork = 0;
         $offDays = 0;
+        $lateComeOrEarlyGoHome = 0;
         $income = [];
         $benefit = [];
         $penalty = [];

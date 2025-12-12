@@ -30,9 +30,10 @@ function cek_menu_access() {
         }else{
             $segment = '';
         }
+        
 
         $query = $CI->db->query("SELECT * FROM m_role_access a JOIN m_menu b ON a.id_menu=b.menu_id JOIN m_role c ON a.id_role=c.role_id WHERE b.link_url='$segment' AND c.is_status='y' AND c.is_del='n' AND a.id_role=".$CI->session->userdata('role_id'))->num_rows();
-
+        
         if ($query<1) {
             redirect('dashboard');
         }

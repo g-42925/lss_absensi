@@ -13,7 +13,7 @@
             <div class="max-w-6xl mx-auto bg-white rounded-lg shadow-md p-6 md:p-8">
                 <!-- Judul dan deskripsi formulir -->
                 <h2 class="text-xl md:text-2xl font-semibold text-gray-800 mb-6">
-                    Edit Division
+                    Edit Divisi
                 </h2>
 
                 <!-- Bagian Formulir -->
@@ -21,7 +21,7 @@
                     <!-- Field: Division Name -->
                     <div class="flex flex-col md:flex-row md:items-center">
                         <label for="division-name" class="block text-gray-600 font-medium md:w-1/3">
-                            Division Name <span class="text-red-500">*</span>
+                            Nama <span class="text-red-500">*</span>
                         </label>
                         <div class="mt-1 md:mt-0 md:w-2/3">
                             <input type="text" value="<?= $current['division_name'] ?>" name="divisionName" id="division-name" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
@@ -30,7 +30,7 @@
 
                     <div class="flex flex-col md:flex-row md:items-center">
                         <label for="penalty-nominal" class="block text-gray-600 font-medium md:w-1/3">
-                            Late Penalty Value <span class="text-red-500">*</span>
+                            Nominal penalty terlambat <span class="text-red-500">*</span>
                         </label>
                         <div class="mt-1 md:mt-0 md:w-2/3">
                             <input type="number" value="<?= $current['penalty_nominal'] ?>" name="penaltyNominal" id="penaltyNominal" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
@@ -39,7 +39,7 @@
 
                     <div class="flex flex-col md:flex-row md:items-center">
                         <label for="penalty-nominal" class="block text-gray-600 font-medium md:w-1/3">
-                            Alpha Penalty Value <span class="text-red-500">*</span>
+                            Nominal penalty alpha <span class="text-red-500">*</span>
                         </label>
                         <div class="mt-1 md:mt-0 md:w-2/3">
                             <input type="number" value="<?= $current['alpha_penalty_value'] ?>" name="alphaPenaltyValue" id="penaltyNominal" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
@@ -48,7 +48,7 @@
 
                     <div class="flex flex-col md:flex-row md:items-center">
                         <label for="penalty-nominal" class="block text-gray-600 font-medium md:w-1/3">
-                            After Break Late Penalty Value <span class="text-red-500">*</span>
+                            Nominal penalty istirahat <span class="text-red-500">*</span>
                         </label>
                         <div class="mt-1 md:mt-0 md:w-2/3">
                             <input type="number" value="<?= $current['after_break_late_penalty_value'] ?>" name="afterBreakLatePenaltyValue" id="abLatePenaltyNominal" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
@@ -57,7 +57,7 @@
 
                     <div class="flex flex-col md:flex-row md:items-center hidden">
                         <label for="penalty-nominal" class="block text-gray-600 font-medium md:w-1/3">
-                            Work System <span class="text-red-500">*</span>
+                            Pola pekerjaan <span class="text-red-500">*</span>
                         </label>
                         <div class="mt-1 md:mt-0 md:w-2/3">
                             <input type="text" id="pattern" value="<?= $current['work_system'] ?>" name="pattern" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
@@ -66,7 +66,7 @@
 
                     <div class="flex flex-col md:flex-row md:items-center">
                         <label for="penalty-nominal" class="block text-gray-600 font-medium md:w-1/3">
-                            Restriction After Tolerance <span class="text-red-500">*</span>
+                            Restriction Absen masuk <span class="text-red-500">*</span>
                         </label>
                         <div class="mt-1 md:mt-0 md:w-2/3">
                             <input type="text" value="<?= $current['restriction'] ?>" name="restriction" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
@@ -75,7 +75,7 @@
 
                     <div class="flex flex-col md:flex-row md:items-center">
                         <label for="penalty-nominal" class="block text-gray-600 font-medium md:w-1/3">
-                            Restriction After Clockout <span class="text-red-500">*</span>
+                            Restriction Absen pulang <span class="text-red-500">*</span>
                         </label>
                         <div class="mt-1 md:mt-0 md:w-2/3">
                             <input type="text" value="<?= $current['clockout_restriction'] ?>" name="clockoutRestriction" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
@@ -84,7 +84,7 @@
 
                     <div class="flex flex-col md:flex-row md:items-center">
                         <label for="penalty-nominal" class="block text-gray-600 font-medium md:w-1/3">
-                            Overwork fee <span class="text-red-500">*</span>
+                            Upah lembur <span class="text-red-500">*</span>
                         </label>
                         <div class="mt-1 md:mt-0 md:w-2/3">
                             <input type="text" value="<?= $current['overwork_fee'] ?>" name="overworkFee" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
@@ -94,7 +94,7 @@
                     <!-- Field: Late Penalty -->
                     <div class="flex flex-col md:flex-row md:items-center">
                         <label class="block text-gray-600 font-medium md:w-1/3">
-                            Late Penalty <span class="text-red-500">*</span>
+                            Menerapkan penalty terlambat <span class="text-red-500">*</span>
                         </label>
                         <div class="mt-1 md:mt-0 md:w-2/3 flex items-center space-x-6">
                             <label class="inline-flex items-center">
@@ -110,7 +110,7 @@
 
                     <div class="flex flex-col md:flex-row md:items-center">
                         <label class="block text-gray-600 font-medium md:w-1/3">
-                            Clockout Late Penalty <span class="text-red-500">*</span>
+                            Menerapkan penalty absen pulang <span class="text-red-500">*</span>
                         </label>
                         <div class="mt-1 md:mt-0 md:w-2/3 flex items-center space-x-6">
                             <label class="inline-flex items-center">
@@ -126,7 +126,7 @@
 
                     <div class="flex flex-col md:flex-row md:items-center">
                         <label class="block text-gray-600 font-medium md:w-1/3">
-                            Alpha Penalty <span class="text-red-500">*</span>
+                            Menerapkan penalty alpha <span class="text-red-500">*</span>
                         </label>
                         <div class="mt-1 md:mt-0 md:w-2/3 flex items-center space-x-6">
                             <label class="inline-flex items-center">
@@ -142,7 +142,7 @@
                     
                     <div class="flex flex-col md:flex-row md:items-center">
                         <label class="block text-gray-600 font-medium md:w-1/3">
-                            Alpha Penalty On Holiday Date <span class="text-red-500">*</span>
+                            Cuti bersama sebagai alpha <span class="text-red-500">*</span>
                         </label>
                         <div class="mt-1 md:mt-0 md:w-2/3 flex items-center space-x-6">
                             <label class="inline-flex items-center">
@@ -158,7 +158,7 @@
 
                     <div class="flex flex-col md:flex-row md:items-center">
                         <label class="block text-gray-600 font-medium md:w-1/3">
-                            Alpha Consequence <span class="text-red-500">*</span>
+                            Konsekuensi alpha <span class="text-red-500">*</span>
                         </label>
                         <div class="mt-1 md:mt-0 md:w-2/3 flex items-center space-x-6">
                             <label class="inline-flex items-center">
@@ -174,7 +174,7 @@
 
                     <div class="flex flex-col md:flex-row md:items-center">
                         <label class="block text-gray-600 font-medium md:w-1/3">
-                            Alpha Penalty Type <span class="text-red-500">*</span>
+                            Type penalty alpha <span class="text-red-500">*</span>
                         </label>
                         <div class="mt-1 md:mt-0 md:w-2/3 flex items-center space-x-6">
                             <label class="inline-flex items-center">
@@ -194,7 +194,7 @@
 
                     <div class="flex flex-col md:flex-row md:items-center">
                         <label class="block text-gray-600 font-medium md:w-1/3">
-                            After Break Late Penalty Type <span class="text-red-500">*</span>
+                            Type penalty istirahat <span class="text-red-500">*</span>
                         </label>
                         <div class="mt-1 md:mt-0 md:w-2/3 flex items-center space-x-6">
                             <label class="inline-flex items-center">
@@ -214,7 +214,7 @@
 
                     <div class="flex flex-col md:flex-row md:items-center">
                         <label class="block text-gray-600 font-medium md:w-1/3">
-                            After Break Late Penalty <span class="text-red-500">*</span>
+                            Menerapkan penalty istirahat <span class="text-red-500">*</span>
                         </label>
                         <div class="mt-1 md:mt-0 md:w-2/3 flex items-center space-x-6">
                             <label class="inline-flex items-center">
@@ -230,7 +230,7 @@
 
                     <div class="flex flex-col md:flex-row md:items-center">
                         <label class="block text-gray-600 font-medium md:w-1/3">
-                            Work System <span class="text-red-500">*</span>
+                            Pola pekerjaan <span class="text-red-500">*</span>
                         </label>
                         <div class="mt-1 md:mt-0 md:w-2/3 flex items-center space-x-6">
                             <label class="inline-flex items-center">
@@ -266,7 +266,7 @@
 
                     <div class="flex flex-col md:flex-row md:items-center">
                         <label class="block text-gray-600 font-medium md:w-1/3">
-                            FFO Check In Allowed <span class="text-red-500">*</span>
+                            Absen masuk di luar <span class="text-red-500">*</span>
                         </label>
                         <div class="mt-1 md:mt-0 md:w-2/3 flex items-center space-x-6">
                             <label class="inline-flex items-center">
@@ -282,7 +282,7 @@
 
                     <div class="flex flex-col md:flex-row md:items-center">
                         <label class="block text-gray-600 font-medium md:w-1/3">
-                            FFO Check Out Allowed <span class="text-red-500">*</span>
+                            Absen pulang di luar <span class="text-red-500">*</span>
                         </label>
                         <div class="mt-1 md:mt-0 md:w-2/3 flex items-center space-x-6">
                             <label class="inline-flex items-center">

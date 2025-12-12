@@ -26,6 +26,7 @@ class Division extends CI_Controller {
         $this->load->model('user/karyawan/data_model', 'data');
         $this->load->model('user/patterns_model', 'patterns');
         $this->load->model('user/karyawan/timework_model', 'tw');
+        $this->lang->load('message', 'indonesian');
     }
 
     public function edit($id){

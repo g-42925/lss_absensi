@@ -31,7 +31,7 @@
             <td class="text-capitalize"><?= $r['date'];?></td>
             <td class="text-capitalize"><?= $r['description'];?></td>
             <td class="text-capitalize">
-              <a target="_blank" href="<?= $r['start_photo'] ?>"><i class="ti ti-photo"></i></a>
+              <a target="_blank" href="<?= base_url('image/index').'/'.basename($r['start_photo']) ?>"><i class="ti ti-photo"></i></a>
             </td>  
             <td class="text-capitalize"><?= $r['start_time'];?></td>
             <td class="text-capitalize">
@@ -39,7 +39,7 @@
               <a href="https://www.google.com/maps?q=<?= explode("/",$r['start_location'])[0] ?>,<?= explode("/",$r['start_location'])[1] ?>" target="_blank"><i class="ti ti-map-pin"></i></a>
             </td>
             <td class="text-capitalize">
-              <a target="_blank" href="<?= $r['finish_photo'] ?>"><i class="ti ti-photo"></i></a>
+              <a target="_blank" href="<?= base_url('image/index').'/'.basename($r['finish_photo']) ?>"><i class="ti ti-photo"></i></a>
             </td>  
             <td class="text-capitalize"><?= $r['finish_time'];?></td>
             <td class="text-capitalize">
@@ -56,6 +56,6 @@
 <script type="text/javascript">
   function filtertglAbsensi(){
     var valx = $('.filtertglabsensi').val();
-    window.location.href='<?=base_url('task/index/');?>'+valx;
+    window.location.href='<?=base_url('task/filter/');?>'+valx;
   }
 </script>

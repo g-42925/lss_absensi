@@ -56,7 +56,7 @@
               <?= $row['tipe_request'] ?>
             </td>
             <td class="text-capitalize">
-              <a target="_blank" href="<?= $row['image'] == "-" ? "":$row['image'] ?>"><i class="ti ti-photo"></i></a>
+              <a target="_blank" href="<?= $row['image'] == "-" ? "" : base_url('image/index').'/'.basename($row['image']) ?>"><i class="ti ti-photo"></i></a>
             </td>  
             <td class="w-s-n">
               <?= $row['is_status'] ?>

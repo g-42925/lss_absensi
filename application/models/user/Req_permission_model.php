@@ -201,17 +201,59 @@ class Req_permission_model extends CI_Model {
             $tanggalAwal = new DateTime($this->input->post('tgl1'));
             $tanggalAkhir = new DateTime($this->input->post('tgl2'));
             $difference = $tanggalAwal->diff($tanggalAkhir)->days+1;
-            $sisaJumlahCuti = $employee['jumlah_cuti'] - $difference;
+            if($employee['jumlah_cuti'] >= $difference){
+              $sisaJumlahCuti = $employee['jumlah_cuti'] - $difference;
 
-            $this->db->set([
-              'jumlah_cuti' => $sisaJumlahCuti,
-            ]);
-            $this->db->where(
-              'pegawai_id',$this->input->post('idp')[0]
-            );
-            $this->db->update(
-              'm_pegawai'
-            );
+              $this->db->set([
+                'jumlah_cuti' => $sisaJumlahCuti,
+              ]);
+              $this->db->where(
+                'pegawai_id',$this->input->post('idp')[0]
+              );
+              $this->db->update(
+                'm_pegawai'
+              );
+            }
+            
+            if($difference > $employee['jumlah_cuti']){
+              $tanggalX = new DateTime($this->input->post('tgl1'));
+              $tanggalZ = new DateTime($this->input->post('tgl2'));
+              $cuti = intval($employee['jumlah_cuti']);
+              $tanggalX->modify("+{$cuti} day");
+
+              $tanggalZ->modify('+1 day');
+              $interval = new DateInterval('P1D');
+              $periode = new DatePeriod($tanggalX, $interval, $tanggalZ);
+              
+              
+              $this->db->set([
+                'jumlah_cuti' => 0,
+              ]);
+              $this->db->where(
+                'pegawai_id',$this->input->post('idp')[0]
+              );
+              $this->db->update(
+                'm_pegawai'
+              );
+              
+              foreach($periode as $tanggal){
+                $data = [
+                  'id' => uniqid(),
+                  'employee_id' => $employee['pegawai_id'],
+                  'deduction_type' => 'alpha-2',
+                  'date' => $tanggal->format('Y-m-d'),
+                  'amount' => intval($employee['salary'] / 26),
+                  'note' => '...'
+                ];
+                
+                $this->db->insert(
+                  'salary_deduction',
+                  $data
+                );
+              }
+              
+              
+            }
           }
         }
 

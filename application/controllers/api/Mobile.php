@@ -9,7 +9,7 @@ class Mobile extends CI_Controller{
 
 	function __construct() {
     parent::__construct();
-    header('Access-Control-Aw-Origin: *');
+    header('Access-Control-Allow-Origin: *');
     header("Access-Control-Allow-Methods: PUT, GET, POST, DELETE, OPTIONS");
     header("Access-Control-Allow-Headers: Origin, Content-Type, Authorization, Accept, X-Requested-With, x-xsrf-token");
     header("Content-Type: application/json; charset=utf-8");
@@ -21,12 +21,13 @@ class Mobile extends CI_Controller{
 
     $data1 = array(
       "company_id" => $post["company_id"],
-      "tipe_request" => "c",
+      "tipe_request" => $post['tipe_request'],
       "tanggal_request" => $post["tanggal_request"],
       "tanggal_request_end" => $post["tanggal_request_end"],
       "catatan_awal" => $post["catatan_awal"],
       "created_at" => date("Y-m-d H:i:s"),
       "is_status" => 0,
+      'image' => $post['image']
     );
 
     $r1 = $this->db->insert('tx_request_izin',$data1);
