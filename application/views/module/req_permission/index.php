@@ -68,7 +68,7 @@
               <a href="#" class="btn p-1" data-bs-toggle="modal" data-bs-target="#delRow<?=$row['request_izin_id'];?>">
                 <i class="ti ti-trash"></i>
               </a>
-              <a href="#" data-bs-toggle="modal" data-bs-target="#cutRow<?=$row['request_izin_id'];?>" class="<?= $row['tipe_request'] == "s" ? "":"hidden"  ?> btnp-1" title="payroll">
+              <a href="#" class="<?= $row['tipe_request'] == "s" ? "":"hidden"  ?> btn p-1" data-bs-toggle="modal" data-bs-target="#cutRow<?=$row['request_izin_id'];?>" title="payroll">
                 <i class="ti ti-scissors"></i>
               </a>
               <a href="<?=base_url('req_permission/print/'.$row['request_izin_id']);?>" class="btn p-1">
@@ -97,8 +97,8 @@
                   </div>
                 </div>
               </div>
-
-
+            </td>
+            <td>
               <div class="modal fade" id="delRow<?=$row['request_izin_id'];?>" tabindex="-1" aria-hidden="true">
                 <div class="modal-dialog modal-simple modal-enable-otp modal-dialog-centered">
                   <div class="modal-content p-3 p-md-5">
@@ -118,42 +118,11 @@
                         </button>
                         <a href="<?=base_url('req_permission/hapus/'.$row['request_izin_id']);?>" class="btn btn-danger">Ya, Hapus</a>
                       </div>
-                  </div>
-                </div>
-              </div>
-            </td>
-            <!-- <td><?= $row['status'];?></td>
-            <td align="right">
-              <a href="<?=base_url('req_permission/edit/'.$row['id']);?>" class="btn p-1">
-                <i class="ti ti-edit"></i>
-              </a>
-              <a href="#" class="btn p-1" data-bs-toggle="modal" data-bs-target="#delRow<?=$row['id'];?>">
-                <i class="ti ti-trash"></i>
-              </a>
-              <div class="modal fade" id="delRow<?=$row['id'];?>" tabindex="-1" aria-hidden="true">
-                <div class="modal-dialog modal-simple modal-enable-otp modal-dialog-centered">
-                  <div class="modal-content p-3 p-md-5">
-                    <div class="modal-body">
-                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                      <div class="text-center mb-4">
-                        <h3 class="mb-2">Konfirmasi</h3>
-                        <p>Yakin ingin menghapus data ini ?</p>
-                      </div>
-                      <div class="col-12 text-center pt-3">
-                        <button
-                          type="button"
-                          class="btn btn-label-secondary me-sm-3 me-1"
-                          data-bs-dismiss="modal"
-                          aria-label="Close">
-                          Batal
-                        </button>
-                        <a href="<?=base_url('req_permission/hapus/'.$row['id']);?>" class="btn btn-danger">Ya, Hapus</a>
-                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </td> -->
+            </td>
           </tr>
           <?php $no++; endforeach; ?>
         </tbody>

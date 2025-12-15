@@ -75,7 +75,7 @@
             }
           ?>
           <tr>
-            <td class="w-s-n <?= DateTime::createFromFormat('H:i', $row['jam_masuk']) > $row['tolerance'] ? 'text-red-900':'' ?>"><?= $row['nama_pegawai'] ?></td> <!-- nama -->
+            <td class="w-s-n <?= $row['isLate'] ? 'text-red-900':'' ?>"><?= $row['nama_pegawai'] ?></td> <!-- nama -->
             <td class="v-a-t"> <!-- status -->
               <select class="form-control <?=$bgs;?>" name="status" id="status<?=$row['pid'];?>" required="" onchange="updateStatus('status','<?=$row['pid'];?>',this.value)" <?php if ($row['is_request']>0) { echo 'disabled'; } ?>>               
                 <option value="ts" <?= $row['is_status'] == 'ts' ? 'selected':'' ?>>Belum ada status [TS]</option>

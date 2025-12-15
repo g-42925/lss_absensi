@@ -820,12 +820,15 @@ function login(){
       
 
       if($serverDate > $limit){
+        $data2 = [...$data2,'isLate' => true];
+          
         $exception = $this->db->query("select * from exception where employee_id = ? and date = ? and status = 1 order by created_at desc limit 1",[$emp['pegawai_id'],date('Y-m-d')])->row_array();
         
         $exception = $exception ? $exception : ['is_csh' => false,'type' => ''];
 
 
         if($exception && (($exception['type'] == "Terlambat" || $exception['type'] == 'Lainnya') || $exception['is_csh'])){
+    
           $data2 = !$exception['htu'] ? $data2 : [
             ...$data2,
             'is_status' => 'htu'
@@ -984,7 +987,8 @@ function login(){
 
           $dataFinal = !$exception['is_csh'] ? $data2 : [
             ...$data2,
-            'status' => 'is_csh'
+            'status' => 'is_csh',
+            'isLate' => true
           ];
          
           $q2 = $this->db->update('tx_absensi',$dataFinal);
@@ -1204,6 +1208,7 @@ function login(){
       $sDTDiffMinutes = ($sDTDiff->days * 24 * 60) + ($sDTDiff->h * 60) + $sDTDiff->i;
 
       if($serverDate > $limit){
+        $data2 = [...$data2,'isLate' => true];
         $exception = $this->db->query("select * from exception where employee_id = ? and date = ? and status = 1 order by created_at desc limit 1",[$emp['pegawai_id'],date('Y-m-d')])->row_array();
         
         $exception = $exception ? $exception : ['is_csh' => false,'type' => ''];
@@ -1281,6 +1286,7 @@ function login(){
         }
       }
       if($serverDate < $limit && $serverDate > $tolerance){
+        $data2 = [...$data2,'isLate' => true];
         $exception = $this->db->query("select * from exception where employee_id = ? and date = ? and status = 1 order by created_at desc limit 1",[$emp['pegawai_id'],date('Y-m-d')])->row_array();
         
         $exception = $exception ? $exception : ['is_csh' => false,'type' => ''];

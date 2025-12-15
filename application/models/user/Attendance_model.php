@@ -152,6 +152,7 @@ class Attendance_model extends CI_Model {
                 's_istirahat_photo'     => $row['s_istirahat_photo'],
                 's_istirahat_latitude'  => $row['s_istirahat_latitude'],
                 's_istirahat_longitude' => $row['s_istirahat_longitude'],
+                'isLate'                => $row['isLate'],
                 'tolerance'             => $row['tolerance'],
                 'limit'                 => $row['limit']
             );
