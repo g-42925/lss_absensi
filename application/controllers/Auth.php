@@ -65,7 +65,9 @@ class Auth extends CI_Controller {
     private function _login() {
         $email = $this->input->post('email');
         $password = $this->input->post('password');
+        $remember = $this->input->post('remember');
         $user = $this->auth->proses_login($email);
+        $rememberDuration = $remember == "on" ? 7200 : 3600;
 
         if ($user != null) {
             if ($user['is_status']=='y') {
@@ -74,7 +76,8 @@ class Auth extends CI_Controller {
                         'u_id'          => $user['user_id'],
                         'role_id'       => $user['role_id'],
                         'company_id'    => $user['company_id'],
-                        'nama_lengkap'  => $user['nama_lengkap']
+                        'nama_lengkap'  => $user['nama_lengkap'],
+                        'login_expired' => time() + $rememberDuration
                     ];
                     $this->session->set_userdata($data);
                     redirect('auth');
@@ -86,7 +89,8 @@ class Auth extends CI_Controller {
                 $this->session->set_flashdata('message', '<div class="alert alert-warning" role="alert">"'.$email.'" tidak aktif, hubungi tim support untuk informasi lebih lanjut.</div>');
                 redirect('auth');
             }
-        } else {
+        } 
+        else {
             $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">Email "'.$email.'" tidak terdaftar.</div>');
             redirect('auth');
         }

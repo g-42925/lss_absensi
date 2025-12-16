@@ -1,11 +1,26 @@
 <?php
 
-function is_logged_in() {
+function is_logged_in(){
     $CI = get_instance();
-    if (!$CI->session->userdata('u_id')) {
+    $CI->load->library('session');
+
+    $user_id = $CI->session->userdata('u_id');
+    $expired = $CI->session->userdata('login_expired');
+
+    if (!$user_id) {
+        $CI->session->sess_destroy();
         redirect('auth');
+        exit;
+    }
+    else{
+        if(time() > $expired){
+          $CI->session->sess_destroy();
+          redirect('auth');
+          exit;
+        }
     }
 }
+
 
 function cek_menu_access() {
     $CI = get_instance();

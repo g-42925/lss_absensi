@@ -19,6 +19,7 @@ class Dashboard extends CI_Controller {
     public $menu;
     public $master;
     public $att;
+    public $auth;
     
     
     public function index() {

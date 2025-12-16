@@ -34,7 +34,7 @@ class Data extends CI_Controller {
         
         $companyId = $this->session->userdata('company_id');
 
-        $data['datas']      = $this->data->get_data($companyId);
+        $data['datas'] = $this->data->get_data($companyId);
 
         $divisions = $this->db->query("select * from divisions where company_id = ?",[$companyId])->result_array();
 

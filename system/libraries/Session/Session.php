@@ -294,12 +294,10 @@ class CI_Session {
 			TRUE // HttpOnly; Yes, this is intentional and not configurable for security reasons
 		);
 
-		if (empty($expiration))
-		{
+		if (empty($expiration)){
 			$params['expiration'] = (int) ini_get('session.gc_maxlifetime');
 		}
-		else
-		{
+		else{
 			$params['expiration'] = (int) $expiration;
 			ini_set('session.gc_maxlifetime', $expiration);
 		}
