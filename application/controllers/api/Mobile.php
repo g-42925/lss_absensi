@@ -667,14 +667,46 @@ function login(){
       }
       if($serverDate < $tolerance){
         if($serverDate < new DateTime(date('Y-m-d') . ' ' . $pattern['jam_pulang'])){
-          echo json_encode(
-            [
-             "success" => false,
-             "message" => "kamu belum bisa absen pulang sekarang"
-            ]
-          );
+          if($post['pegawai_id'] != '107'){
+            echo json_encode(
+              [
+                "success" => false,
+                "message" => "kamu belum bisa absen pulang sekarang"
+              ]
+            );
 
-          return;          
+            return;   
+          } 
+          else{
+            $dataAbsensi = !$post['csh'] ? $data : [
+              ...$data,
+              'is_status' => 'csh'
+            ];
+      
+            $this->db->where('pegawai_id',$post["pegawai_id"]);
+            $this->db->where('tanggal_absen',$tanggalHariIni);
+            $q = $this->db->update('tx_absensi',$Absensi);
+
+            if($q){
+              echo json_encode(
+                [
+                  "success" => true,
+                  "late" => false
+                ]
+              );
+
+              return;
+            }
+            else{
+              echo json_encode(
+                [
+                  "success" => false,
+                  "message" => "gagal request absen pulang"
+                ]
+              );
+              return;
+            }            
+          }      
         }
         else{
           $dataAbsensi = !$post['csh'] ? $data : [
@@ -840,13 +872,44 @@ function login(){
       }
       if($serverDate < $tolerance){
         if($serverDate < new DateTime(date('Y-m-d') . ' ' . $pattern['jam_pulang'])){
-          echo json_encode(
-            [
-              "success" => false,
-              "message" => "coba beberapa saat lagi ya"
-            ]
-          );
-          return;            
+          if($post['pegawai_id'] != '107'){
+            echo json_encode(
+              [
+                "success" => false,
+                "message" => "coba beberapa saat lagi ya"
+              ]
+            );
+            return;  
+          }
+          else{
+            $dataAbsensi = !$post['csh'] ? $data : [
+              ...$data,
+              'is_status' => 'csh'
+            ];
+          
+            $this->db->where('pegawai_id',$post["pegawai_id"]);
+            $this->db->where('absen_id',$lastDefaultStatus["absen_id"]);
+            $q2 = $this->db->update('tx_absensi',$dataAbsensi);
+            if($q2){
+              echo json_encode(
+                [
+                  "success" => true,
+                  "late" => false
+                ]
+              );
+
+              return;
+            }
+            else{
+              echo json_encode(
+                [
+                  "success" => false,
+                  "message" => "coba beberapa saat lagi"
+                ]
+              );
+              return;
+            }            
+          }         
         }
         else{
           $dataAbsensi = !$post['csh'] ? $data : [
