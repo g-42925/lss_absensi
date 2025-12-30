@@ -98,12 +98,7 @@
                 <option value="l" <?php if ($row['is_status']=='l') echo 'selected'; ?>>Libur [L]</option>
                 <option value="tl" <?php if ($row['is_status']=='tl') echo 'selected'; ?>>Tugas Luar [TL]</option>
                 <option value="free" <?= $row['is_status'] == 'htu' ? 'selected':'' ?>>Hadir Tanpa upah</option>                                                             z                
-
               </select>
-              <?php if ($row['is_request']>0) { ?>
-                <div class="ft-12 mt-2">Status berdasarkan request yang telah disetujui, 
-                  <a href="<?=base_url('attendance/req_cancel/'.$row['pid'].'/'.$today);?>">klik untuk membatalkan.</a></div>
-              <?php } ?>
             </td>
             <td class="v-a-t"> <!-- jam masuk -->
               <input type="text" class="form-control flatpickr-input text-center active" placeholder="hh:mm" id="flatpickr-time-work-a<?=$row['pegawai_id'];?>" value="<?=$row['jam_masuk'];?>" readonly="readonly" onchange="checkStatus<?=$row['pegawai_id'];?>('<?=$row['is_status'];?>');updateStatus('jmasuk','<?=$row['pegawai_id'];?>',this.value)" <?php if ($row['is_request']>0) { echo 'disabled'; } ?>>

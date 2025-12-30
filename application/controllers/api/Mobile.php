@@ -110,8 +110,8 @@ class Mobile extends CI_Controller{
         FROM tx_request_izin_pegawai x 
         JOIN tx_request_izin y 
           ON x.request_izin_id = y.request_izin_id 
-        WHERE x.pegawai_id = ? AND y.tipe_request = 'c'",
-        array($pegawaiId)
+        WHERE x.pegawai_id = ? and (y.tipe_request = 'c' or y.tipe_request = 's') order by y.created_at desc",
+        [$pegawaiId]
     )->result_array();
 
     // Filter pending (status 0)
@@ -981,8 +981,6 @@ function login(){
       $sDTDiff = $serverDate->diff($tolerance);
       $sDTDiffMinutes = ($sDTDiff->days * 24 * 60) + ($sDTDiff->h * 60) + $sDTDiff->i;
 
-      
-
       if($serverDate > $limit){
         $data2 = [...$data2,'isLate' => true];
           
@@ -1351,9 +1349,50 @@ function login(){
         $data2 = [...$data2,'isLate' => true];
         $exception = $this->db->query("select * from exception where employee_id = ? and date = ? and status = 1 order by created_at desc limit 1",[$emp['pegawai_id'],date('Y-m-d')])->row_array();
         
+        if(!$exception){
+            if($post['pegawai_id'] == '107'){
+                $this->db->trans_begin();
+                
+                $this->db->where('absen_id',$lastDefaultStatus["absen_id"]);
+                
+                $q2 = $this->db->update('tx_absensi',$data2);
+                
+                if($q2){
+                    $this->db->trans_commit();
+
+                    echo json_encode(
+                        [
+                            "success" => true,
+                            "late" => true,
+                            "late_diff" => $sDTDiffMinutes
+                        ]
+                    );
+
+                    return;
+                 }
+                 else{
+                    echo json_encode(
+                        [
+                            "success" => false,
+                            "message" => "coba beberapa saat lagi",
+                        ]
+                    );
+                    return;                       
+                 }
+            }
+            else{
+                echo json_encode(
+                    [
+                        "success" => false,
+                        "message" => "coba beberapa saat lagi",
+                    ]
+                );                
+            }
+            
+        }
+        else{
         $exception = $exception ? $exception : ['is_csh' => false,'type' => ''];
-
-
+        
 
         if($exception && (($exception['type'] == "Terlambat" || $exception['type'] == 'Terlambat dan berada di luar kantor') || $exception['is_csh'])){
           $data2 = !$exception['htu'] ? $data2 : [
@@ -1423,7 +1462,10 @@ function login(){
           );
 
           return;
+        }            
         }
+        
+
       }
       if($serverDate < $limit && $serverDate > $tolerance){
         $data2 = [...$data2,'isLate' => true];
@@ -3035,4 +3077,3 @@ function login(){
     }
   }
 }
-

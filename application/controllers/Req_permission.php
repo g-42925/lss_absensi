@@ -300,6 +300,7 @@ class Req_permission extends CI_Controller {
       if($employee['jumlah_cuti'] > 0){
         foreach($periode as $tanggal){
             if($employee['jumlah_cuti'] > 0){
+                
                 $offDaysAmount = $employee['jumlah_cuti'];
                 $data = ['jumlah_cuti' => $offDaysAmount - 1];
                 $this->db->where('pegawai_id',$employeeId);
@@ -349,7 +350,7 @@ class Req_permission extends CI_Controller {
       } 
       else {
         $this->db->trans_commit();
-        redirect('req_permission');
+        redirect('req_permission/index?failed=false');
       }
     }
 

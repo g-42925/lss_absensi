@@ -18,12 +18,24 @@ class Image extends CI_Controller {
 	  public function index($cid) {
       $fileUrl = "https://wooden-plum-woodpecker.myfilebase.com/ipfs/" . $cid;
 
-      $content = file_get_contents($fileUrl);
+      $ch = curl_init($fileUrl);
+      curl_setopt_array($ch, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_TIMEOUT => 15,
+        CURLOPT_SSL_VERIFYPEER => false,
+      ]);
+     
+      $content = curl_exec($ch);
+      $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+      curl_close($ch);
 
-      if (!$content) show_404();
+      if ($content === false || $httpCode !== 200) {
+        show_404();
+        return;
+      }
 
       header("Content-Type: image/jpeg");
-
       echo $content;
   }
 }

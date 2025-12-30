@@ -92,7 +92,7 @@
                           aria-label="Close">
                           Batal
                         </button>
-                        <a href="<?=base_url('req_permission/hapus/'.$row['request_izin_id']);?>" class="btn btn-danger">Ya, Hapus</a>
+                        <a href="<?=base_url('req_permission/cut/'.$row['pegawai_id']).'/'.$row['tanggal_request'].'/'.$row['tanggal_request_end'] ?>" class="btn btn-danger">Ya, Potong!</a>
                       </div>
                   </div>
                 </div>
@@ -116,7 +116,7 @@
                           aria-label="Close">
                           Batal
                         </button>
-                        <a href="<?=base_url('req_permission/hapus/'.$row['request_izin_id']);?>" class="btn btn-danger">Ya, Hapus</a>
+                        <a href="<?=base_url('req_permission/hapus/'.$row['request_izin_id']);?>" class="btn btn-danger">Ya, Hapus!</a>
                       </div>
                     </div>
                   </div>
