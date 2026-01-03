@@ -113,7 +113,7 @@
             </div>
             <div class="flex justify-between py-1">
               <div class="text-sm text-gray-600">Total Potongan</div>
-              <div class="font-medium"><?= $final['totalBenefit'] ?></div>
+              <div class="font-medium"><?= number_format($final['totalBenefit'],2) ?></div>
             </div>
             <div class="flex justify-between pt-3 border-t mt-3">
               <div class="text-base font-semibold">Take Home Pay</div>

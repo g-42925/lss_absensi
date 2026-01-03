@@ -69,31 +69,23 @@ class Cron extends CI_Controller {
       
           if(count($companyHolidays) > 0 || count($globalHolidays) > 0){
             if(count($globalHolidays) > 0){
-              if($division['alpha_penalty_on_holiday_date']){
-                if($globalHolidays[0]['caa']){
-                  $dataAlpha = [
-                    ...$data1,
-                    'status' => 'alpha-2'
-                  ];
-       
-                  $this->db->insert(
-                    'tx_absensi',
-                    $dataAlpha
-                  );
-                }
-                else{
-                  $this->db->insert(
-                    'tx_absensi',
-                    $data1
-                  );
-                }
-              }
-              else{
-                $this->db->insert(
-                  'tx_absensi',
-                  $data1
+              if($e['jumlah_cuti'] > 0){
+                $sisa = $e['jumlah_cuti'] - 1;
+                $update = ['jumlah_cuti' => $sisa];
+                $target = ['pegawai_id' => $e['pegawai_id']];
+                
+                $this->db->update(
+                  'm_pegawai',
+                  $update,
+                  $target
                 );
               }
+
+
+              $this->db->insert(
+                'tx_absensi',
+                $data1
+              );
             }
 
             if(count($companyHolidays) > 0 && count($globalHolidays) <  1){
@@ -281,13 +273,27 @@ class Cron extends CI_Controller {
             $this->db->where('pegawai_id', $d['pegawai_id']);
             $this->db->update('m_pegawai');
           }
+
           if($d["is_status"] == "alpha-2"){
             $e = $this->db->query("select * from m_pegawai where pegawai_id = ?",[$d['pegawai_id']])->row_array();
             $div = $this->db->query("select * from divisions where id = ?",[$e['division_id']])->row_array();
+            
+            $recapData = [
+              'recap_id' => uniqid(),
+              'date' => date('Y-m-d'),
+              'employee_id' => $e['pegawai_id'],
+              'isAlpha' => true
+            ];
+
+            $this->db->insert(
+              'recap',
+              $recapData
+            );
 
             if($div['alpha_penalty_type'] == "percent"){
               $penaltyValue = $div['alpha_penalty_value'] / 100;
               $deductionValue = ($e['salary'] / 26) * $penaltyValue;
+              
 
               $data = [
                 'id' => uniqid(),
@@ -389,46 +395,20 @@ class Cron extends CI_Controller {
             }
           }
 
-          if($d['is_status'] == 'htu'){
-            $e = $this->db->query("select * from m_pegawai where pegawai_id = ?",[$d['pegawai_id']])->row_array();
-            $div = $this->db->query("select * from divisions where id = ?",[$e['division_id']])->row_array();
+          if($d['is_status'] != 'alpha-2'){
+            $recapData = [
+              'recap_id' => uniqid(),
+              'date' => date('Y-m-d'),
+              'employee_id' => $e['pegawai_id'],
+              'isAlpha' => false
+            ];
 
-            if($div['alpha_penalty_type'] == "percent"){
-              $penaltyValue = $div['alpha_penalty_value'] / 100;
-              $deductionValue = ($e['salary'] / 26) * $penaltyValue;
-
-              $data = [
-                'id' => uniqid(),
-                'employee_id' => $e['pegawai_id'],
-                'deduction_type' => 'alpha-2',
-                'date' => date('Y-m-d'),
-                'amount' => $deductionValue,
-                'note' => '...'
-              ];
-
-              $this->db->insert(
-                'salary_deduction',
-                $data
-              );
-            }
-            if($div['alpha_penalty_type'] == "custom"){
-              $penaltyValue = $div['alpha_penalty_value'];
-
-              $data = [
-                'id' => uniqid(),
-                'employee_id' => $e['pegawai_id'],
-                'deduction_type' => 'alpha-2',
-                'date' => date('Y-m-d'),
-                'amount' => $penaltyValue,
-                'note' => '...'
-              ];
-
-              $this->db->insert(
-                'salary_deduction',
-                $data
-              );
-            }
+            $this->db->insert(
+              'recap',
+              $recapData
+            ); 
           }
+
         }
       }
     }

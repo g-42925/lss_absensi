@@ -972,6 +972,7 @@ function login(){
 
     if($workSystem[0] == "s"){
       $serverDate = new DateTime();
+      $employee = $this->db->query("select * from m_pegawai where pegawai_id = ?",[$post['pegawai_id']])->row_array();
       $shift = $this->db->query("select * from employee_shift es join shift_detail sd on es.shift_detail_id = sd.shift_detail_id where employee_id = ?",[$post['pegawai_id']])->row_array();
       $dateTime1 = new DateTime($lastDefaultStatus['tanggal_absen']. ' ' . $shift['clock_in']);
       $tolerance = (clone $dateTime1)->modify("+{$shift['tardiness_tolerance']} minutes");
@@ -1296,7 +1297,7 @@ function login(){
                 'is_status' => 'csh'
               ];
 
-              $q = $this->db->update('tx_absensi',$dataAbsensi);
+              $q = $this->db->update('tx_absensi',$dataAbsensi);           
         
               if($q){
                 echo json_encode(
@@ -1336,6 +1337,7 @@ function login(){
     }
     else{
       $serverDate = new DateTime();
+      $employee = $this->db->query("select * from m_pegawai where pegawai_id = ?",[$post['pegawai_id']])->row_array();
       $pattern = $this->db->query("select * from m_pola_kerja mpk join m_pola_kerja_det mpkd on mpk.pola_kerja_id = mpkd.pola_kerja_id where mpk.pola_kerja_id = ? and is_day = ?",[$workSystem[1],$today])->row_array();
       $dateTime1 = new DateTime($lastDefaultStatus['tanggal_absen']. ' ' . $pattern['jam_masuk']);
       $tolerance = (clone $dateTime1)->modify("+{$pattern['toleransi_terlambat']} minutes");
@@ -1356,7 +1358,7 @@ function login(){
                 $this->db->where('absen_id',$lastDefaultStatus["absen_id"]);
                 
                 $q2 = $this->db->update('tx_absensi',$data2);
-                
+
                 if($q2){
                     $this->db->trans_commit();
 
@@ -1451,7 +1453,6 @@ function login(){
 
             return;
           }
-
         }
         else{
           echo json_encode(

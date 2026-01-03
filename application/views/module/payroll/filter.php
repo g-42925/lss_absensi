@@ -1,5 +1,5 @@
 <div class="container-xxl flex-grow-1 container-p-y">
-  <form method="post" action="<?php echo site_url('payroll/check/').$id ?>" class="row mt-3 g-3">
+  <form method="post" action="<?php echo site_url('payroll/checkV2/').$id ?>" class="row mt-3 g-3">
     <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6">
       <label class="form-label">Tanggal<i class="text-danger">*</i></label>
       <input type="text" class="form-control" name="start" placeholder="YYYY-MM-DD" id="flatpickr-date" required />
