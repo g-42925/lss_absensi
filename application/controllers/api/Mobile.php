@@ -2155,7 +2155,7 @@ function login(){
       }
     }
     
-    $emp['salary'] = $recap * $e['salary'] / 26;
+    $emp['salary'] = $recap * $emp['salary'] / 26;
 
     //$emp['salary'] = (int) ($emp['salary'] / 26) * count($attendance) - ((int) ($emp['salary'] / 26) * $offDays);
     
@@ -2268,13 +2268,13 @@ function login(){
 
     echo json_encode(
       [
-        'salary' => $emp['salary'],
+        'salary' => (int) number_format($emp['salary'],3,'.',''),
         'allowance' => $income,
         'benefit' => $benefit,
         'penalty' => $penalty,
-        'totalIncome' => $emp['salary'] + $totalAllowance + $totalOverwork + $qReimburse['val'],
-        'totalBenefit' => (int) $totalBenefit + $alphaPenalty['amt'] + $deductionValue,
-        'thp' => $salary,
+        'totalIncome' => (int) number_format($emp['salary'] + $totalAllowance + $totalOverwork + $qReimburse['val'],3,'.',''),
+        'totalBenefit' => (int) number_format(($totalBenefit + $alphaPenalty['amt'] + $deductionValue),3,'.',''),
+        'thp' => (int) number_format($salary, 3, '.', '')
       ]
     );
   }
@@ -3078,5 +3078,16 @@ function login(){
             "success" => false,
         ]);
     }
+  }
+
+  public function log($empId){
+    $from = date('Y').'-'.date('m').'-'.'01';
+    $to = date('Y').'-'.date('m').'-'.'31';
+    $q = $this->db->query("select * from tx_absensi where tanggal_absen between ? and ? and pegawai_id = ?",[$from,$to,$empId])->result_array();
+    echo json_encode(
+      [
+        'r' => $q
+      ]
+    );
   }
 }
