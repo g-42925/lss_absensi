@@ -296,7 +296,7 @@ class Cron extends CI_Controller {
               
 
               $data = [
-                'id' => uniqid(),
+                'deduction_id' => uniqid(),
                 'employee_id' => $e['pegawai_id'],
                 'deduction_type' => $d['is_status'],
                 'date' => date('Y-m-d'),
@@ -313,7 +313,7 @@ class Cron extends CI_Controller {
               $penaltyValue = $div['alpha_penalty_value'];
 
               $data = [
-                'id' => uniqid(),
+                'deduction_id' => uniqid(),
                 'employee_id' => $e['pegawai_id'],
                 'deduction_type' => $d['is_status'],
                 'date' => date('Y-m-d'),
@@ -335,7 +335,7 @@ class Cron extends CI_Controller {
             $penaltyValue = $div['penalty_nominal'];
               
             $data = [
-              'id' => uniqid(),
+              'deduction_id' => uniqid(),
               'employee_id' => $e['pegawai_id'],
               'deduction_type' => 'clockout forget',
               'date' => date('Y-m-d'),
@@ -364,7 +364,7 @@ class Cron extends CI_Controller {
               }
               else{
                 $data = [
-                  'id' => uniqid(),
+                  'deduction_id' => uniqid(),
                   'employee_id' => $e['pegawai_id'],
                   'deduction_type' => $d['is_status'],
                   'date' => date('Y-m-d'),

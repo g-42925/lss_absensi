@@ -238,7 +238,7 @@ class Req_permission_model extends CI_Model {
               
               foreach($periode as $tanggal){
                 $data = [
-                  'id' => uniqid(),
+                  'deduction_id' => uniqid(),
                   'employee_id' => $employee['pegawai_id'],
                   'deduction_type' => 'alpha-2',
                   'date' => $tanggal->format('Y-m-d'),

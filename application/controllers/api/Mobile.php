@@ -187,7 +187,7 @@ function afterbreak(){
   $div = $this->db->query("select * from divisions where id = ?",[$emp['division_id']])->row_array();
   
   $data2 = [
-    'id' => uniqid(),
+    'deduction_id' => uniqid(),
     'employee_id' => $pegawaiId,
     'deduction_type' => 'after break late',
     'date' => date("Y-m-d"),
@@ -998,7 +998,7 @@ function login(){
           ];
           
           $data1 = [
-            'id' => uniqid(),
+            'deduction_id' => uniqid(),
             'employee_id' => $post['pegawai_id'],
             'deduction_type' => 'late penalty',
             'date' => date('Y-m-d'),

@@ -86,7 +86,7 @@ class Except extends CI_Controller {
           $halfOfOneDaySalary = $oneDaySalary / 2;
           
           $cshData = [
-            'id' => uniqid(),
+            'deduction_id' => uniqid(),
             'employee_id' => $exception['employee_id'],
             'deduction_type' => 'late penalty',
             'date' => date('Y-m-d'),

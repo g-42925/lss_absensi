@@ -309,7 +309,7 @@ class Req_permission extends CI_Controller {
             }
             else{
                 $data = [
-                    'id' => uniqid(),
+                    'deduction_id' => uniqid(),
                     'employee_id' => $employeeId,
                     'deduction_type' => 'missing medical certificate',
                     'date' => $tanggal->format('Y-m-d'),
@@ -328,7 +328,7 @@ class Req_permission extends CI_Controller {
       else{
         foreach ($periode as $tanggal) {
             $data = [
-                'id' => uniqid(),
+                'deduction_id' => uniqid(),
                 'employee_id' => $employeeId,
                 'deduction_type' => 'missing medical certificate',
                 'date' => $tanggal->format('Y-m-d'),
