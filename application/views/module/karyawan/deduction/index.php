@@ -3,7 +3,7 @@
   <!-- Users List Table -->
   <div class="card">
     <div class="card-header border-bottom flex flex-col gap-3">
-      <form method="get" action="<?= base_url().'/karyawan/deduction/all' ?>" class="flex flex-row w-full gap-3">
+      <form method="get" action="<?= base_url().'/karyawan/deduction/index' ?>" class="flex flex-row w-full gap-3">
         <select name="employeeId" class="w-full p-3 rounded-md border-2 border-black appearance-none">
           <option>select an employee</option>
             <?php foreach ($employees as $row): ?>

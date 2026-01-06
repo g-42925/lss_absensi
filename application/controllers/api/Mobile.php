@@ -2141,6 +2141,7 @@ function login(){
     
     $emp = $this->db->query("select * from m_pegawai where pegawai_id = ?",[$empId])->row_array();
     $attendance = $this->db->query("select * from tx_absensi where tanggal_absen between ? and ? and pegawai_id = ?",[$dateX,$dateY,$empId])->result_array();
+    $recap = $this->db->query("SELECT * FROM recap WHERE date BETWEEN ? AND ? AND employee_id = ?",[$dateX,$dateY,$empId])->num_rows();
 
     foreach($attendance as $a){
       if($a['is_status'] == 'alpha-2'){
@@ -2154,7 +2155,9 @@ function login(){
       }
     }
     
-    $emp['salary'] = (int) ($emp['salary'] / 26) * count($attendance) - ((int) ($emp['salary'] / 26) * $offDays);
+    $emp['salary'] = $recap * $e['salary'] / 26;
+
+    //$emp['salary'] = (int) ($emp['salary'] / 26) * count($attendance) - ((int) ($emp['salary'] / 26) * $offDays);
     
     $alphaPenalty = $this->db->query("select sum(amount) as amt from salary_deduction where employee_id = ? and date between ? and ? and deduction_type = 'alpha-2'",[$empId,$dateX,$dateY])->row_array();
    
@@ -2169,7 +2172,6 @@ function login(){
     $allowances = $this->db->query("select * from employee_allowance ea join allowance a on ea.allowance_id = a.allowance_id where ea.employee_id = ?",[$empId])->result_array();
     $overworks = $this->db->query("select * from employee_overwork eo join m_pegawai mp on eo.employee_id = mp.pegawai_id join divisions d on mp.division_id = d.id where mp.pegawai_id = ? and date between ? and ?",[$empId,$dateX,$dateY])->result_array();
     $qReimburse = $this->db->query("select sum(value) as val from reimburse_claim where employee_id = ? and date between ? and ? and status = 'approved'",[$empId,$dateX,$dateY])->row_array();
-
 
     foreach($overworks as $overwork){
       $start = new DateTime($overwork['start_from']);

@@ -72,7 +72,7 @@ class Payroll extends CI_Controller {
       $emp = $this->db->query("select * from m_pegawai where pegawai_id = ?",[$empId])->row_array();
       $attendance = $this->db->query("select * from tx_absensi where tanggal_absen between ? and ? and pegawai_id = ?",[$dateX,$dateY,$empId])->result_array();
 
-      $sWD = $this->db->query("SELECT * FROM recap WHERE date BETWEEN ? AND ? AND employee_id = ?",[$dateX,$dateY,$empId])->num_rows();
+      $recap = $this->db->query("SELECT * FROM recap WHERE date BETWEEN ? AND ? AND employee_id = ?",[$dateX,$dateY,$empId])->num_rows();
 
       foreach($attendance as $a){
           if($a['is_status'] == 'alpha-2'){
@@ -86,9 +86,7 @@ class Payroll extends CI_Controller {
           }
       }
 
-      $emp['salary'] = $sWD * $emp['salary'] / 26;
-
-      $emp['salary'] = floor($emp['salary'] / 1000) * 1000;
+      $emp['salary'] = $recap * $emp['salary'] / 26;
     
       $alphaPenalty = $this->db->query("select sum(amount) as amt from salary_deduction where employee_id = ? and date between ? and ? and deduction_type = 'alpha-2'",[$empId,$dateX,$dateY])->row_array();
 
@@ -179,7 +177,7 @@ class Payroll extends CI_Controller {
           if((int) $alphaPenalty['amt'] > 0){
             $penalty[] = [
               'name' => 'alpha',
-              'value' => floor((int) $alphaPenalty['amt'] / 1000) * 1000
+              'value' => (int) $alphaPenalty['amt']
             ];
           }
           if((int) $deductionValue > 0){
@@ -223,7 +221,7 @@ class Payroll extends CI_Controller {
             'benefit' => $benefit,
             'penalty' => $penalty,
             'totalIncome' => $emp['salary'] + $totalAllowance + $totalOverwork + $qReimburse['val'],
-            'totalBenefit' => floor(((int) $totalBenefit + $alphaPenalty['amt'] + $deductionValue + $missingMedicalCertificate) / 1000) * 1000,
+            'totalBenefit' => (int) $totalBenefit + $alphaPenalty['amt'] + $deductionValue + $missingMedicalCertificate,
             'thp' => $salary > 0 ? $salary : 0
           ];
 
@@ -237,7 +235,7 @@ class Payroll extends CI_Controller {
     }
 
     public function accumulationV2(){
-        cek_menu_access();
+      cek_menu_access();
     	$data['htmlpagejs'] = 'none';
     	$data['nmenu']      = 'Karyawan';
     	$data['title']      = 'Data Karyawan';
@@ -255,9 +253,9 @@ class Payroll extends CI_Controller {
     	$divisions = $this->db->query("select * from divisions where company_id = ?",[$companyId])->result_array();
 
     	foreach($divisions as $divIndex => $div){
-        	$employees = $this->db->query("select * from m_pegawai where division_id = ? and is_del='n' order by salary desc",[$div['id']])->result_array();
+        $employees = $this->db->query("select * from m_pegawai where division_id = ? and is_del='n' order by salary desc",[$div['id']])->result_array();
 
-        	foreach($employees as $empIndex => $e){
+        foreach($employees as $empIndex => $e){
             	$empId = $e['pegawai_id'];
             	$alphaDeductionValue = 0;
             	$deductionValue = 0;
@@ -272,7 +270,7 @@ class Payroll extends CI_Controller {
         		  $penalty = [];
 
           		$attendance = $this->db->query("select * from tx_absensi where tanggal_absen between ? and ? and pegawai_id = ?",[$dateX,$dateY,$empId])->result_array();
-              $sWD = $this->db->query("SELECT * FROM recap WHERE date BETWEEN ? AND ? AND employee_id = ?",[$dateX,$dateY,$empId])->num_rows();
+              $recap = $this->db->query("SELECT * FROM recap WHERE date BETWEEN ? AND ? AND employee_id = ?",[$dateX,$dateY,$empId])->num_rows();
 
             
         foreach($attendance as $a){
@@ -287,9 +285,7 @@ class Payroll extends CI_Controller {
           }
         }
 
-        $e['salary'] = $sWD * $e['salary'] / 26;
-
-        $e['salary'] = floor($e['salary'] / 1000) * 1000;
+        $e['salary'] = $recap * $e['salary'] / 26;
     
 			      $employees[$empIndex]['salaryx'] = (int) ($e['salary'] / 26) * count($attendance) - ((int) ($e['salary'] / 26) * $offDays);
 
