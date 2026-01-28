@@ -39,6 +39,8 @@ class Holiday extends CI_Controller {
         $this->load->view('templates/fscript-html-end');
     }
      public function add(){
+        cek_menu_access();
+        isCreatable();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Hari Libur';
         $data['title']      = 'Cuti Bersama';
@@ -61,13 +63,14 @@ class Holiday extends CI_Controller {
             'tanggal' => $this->input->post('start'),
             'sampai_tanggal' => $this->input->post('end'),
             'keterangan' => $this->input->post('note'),
-            'caa' => $this->input->post('caa')
         ]);
         
         redirect('holiday');
     }
 
     public function edit($id){
+        cek_menu_access();
+        isEditable();
         $data['id']         = $id;
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Hari Libur';

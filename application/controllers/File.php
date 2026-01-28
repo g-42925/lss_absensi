@@ -1,4 +1,9 @@
 <?php
+
+use Aws\S3\S3Client;
+use Aws\Credentials\Credentials;
+use Aws\Exception\AwsException;
+
 defined('BASEPATH') or exit('No direct script access allowed');
 
 class File extends CI_Controller {
@@ -42,6 +47,7 @@ class File extends CI_Controller {
 
     public function add() {
         cek_menu_access();
+        isCreatable();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'File';
         $data['title']      = '';
@@ -68,6 +74,7 @@ class File extends CI_Controller {
 
     public function edit($id) {
         cek_menu_access();
+        isEditable();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'File';
         $data['title']      = '';
@@ -94,54 +101,51 @@ class File extends CI_Controller {
 
       $this->db->where('candidate_id',$id)->delete('candidate_file');
 
-      $supabaseUrl = "https://vgbkdwivxidacojvcnbr.supabase.co";
-      $supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZnYmtkd2l2eGlkYWNvanZjbmJyIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1NDg4MDEwOCwiZXhwIjoyMDcwNDU2MTA4fQ.u4n62Z_I3mO7etIJAXpzL3ScTc9QhY04hx1_n-Tg4K4";
-
-
       foreach($this->input->post('file[]') as $index => $fileId){
         $current = $this->input->post('current[]')[$index];
 
         if($current == ''){
-          $name = $_FILES['photo']['name'][$index];
+          $cFile = $_FILES['photo']['tmp_name'][$index];
+          $name = $_FILES['photo']['name'][$index];    
           $tmpName = $_FILES['photo']['tmp_name'][$index];
           $fileName = time() . '_' . basename($name);
-          $ch = curl_init($supabaseUrl . "/storage/v1/object/storage/" . $fileName);
-          curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-          curl_setopt_array($ch, [
-              CURLOPT_RETURNTRANSFER => true,
-              CURLOPT_HTTPHEADER => [
-                'Authorization: Bearer ' . $supabaseKey,
-                'Content-Type: ' . mime_content_type($tmpName)
-              ],
-              CURLOPT_UPLOAD => true, // ✅ penting
-              CURLOPT_CUSTOMREQUEST => 'POST',
-              CURLOPT_INFILE => fopen($tmpName, 'r'),
-              CURLOPT_INFILESIZE => filesize($tmpName)
+          
+          $s3 = new S3Client([
+            'version'     => 'latest',
+            'region'      => 'us-east-1',
+            'endpoint'    => 'https://s3.filebase.com',
+            'use_path_style_endpoint' => false,
+            'credentials' => [
+              'key'    => 'B8F0135956143AE0685E',
+              'secret' => 'gKrbIZJnzLWBXZ0VGQvnlAumvngpBH35PsXN5zUp'
+            ],
+            'Metadata' => [
+              'cid' => 'true'
+            ],
           ]);
-          curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
-          curl_setopt($ch, CURLOPT_INFILE, fopen($tmpName, 'r'));
-          curl_setopt($ch, CURLOPT_INFILESIZE, filesize($tmpName));
 
-          $response = curl_exec($ch);
-          $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-          curl_close($ch);
-
-          if($httpCode === 200 || $httpCode === 201) {
-            $publicUrl = $supabaseUrl . "/storage/v1/object/public/storage/" . $fileName;
-            
-            $data = [
-              'candidate_file_id' => uniqid(),
-              'file_id' => $fileId,
-              'candidate_id' => $id,
-              'source' => $publicUrl,
-            ];
+          $result = $s3->putObject([
+            'Bucket' => 'leryn-storage',
+            'Key'    => $fileName,
+            'SourceFile' => $cFile,
+            'ContentType' => 'image/png',
+          ]);          
 
 
-            $this->db->insert(
-              'candidate_file',
-              $data
-            );
-          }
+          $cid = $result['@metadata']['headers']['x-amz-meta-cid'];
+          $r = "https://wooden-plum-woodpecker.myfilebase.com/ipfs/".$cid;
+
+          $data = [
+            'candidate_file_id' => uniqid(),
+            'file_id' => $fileId,
+            'candidate_id' => $id,
+            'source' => $r,
+          ];     
+          
+          $this->db->insert(
+            'candidate_file',
+            $data
+          );          
         }
         else{
           $data = [
@@ -154,7 +158,7 @@ class File extends CI_Controller {
           $this->db->insert(
             'candidate_file',
             $data
-          );
+          );          
         }
       }
 
@@ -255,6 +259,7 @@ class File extends CI_Controller {
 
     public function c_config($id){
       cek_menu_access();
+      isEditable();
       $data['htmlpagejs'] = 'none';
       $data['nmenu']      = 'Karyawan';
       $data['title']      = 'Data Karyawan';
@@ -267,7 +272,7 @@ class File extends CI_Controller {
 
       $companyId = $this->session->userdata('company_id');
 
-      $data['placeholder'] = 'https://vgbkdwivxidacojvcnbr.supabase.co/storage/v1/object/public/storage/placeholder.png';
+      $data['placeholder'] = 'https://wooden-plum-woodpecker.myfilebase.com/ipfs/QmaZ8pDRwt4WryRZkafPVi7ZLjBE67aptFNzH8GXFP7rm7';
 
       $data['failed'] = filter_var($this->input->get('failed'),FILTER_VALIDATE_BOOLEAN);
 

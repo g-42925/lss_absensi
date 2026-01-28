@@ -53,10 +53,6 @@ class Permission extends CI_Controller {
         cek_menu_access();
         
         $data['auth'] = authUser();
-        if($data['auth']['tambah']!='y'){
-            $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-danger p-cg" role="alert">Tidak ada akses.</div></div>');
-            redirect('company/permission/');
-        }
         
         $unama  = $this->input->post('nama');
         $this->form_validation->set_rules('nama', 'Nama', 'trim|required|xss_clean|htmlspecialchars');
@@ -90,10 +86,6 @@ class Permission extends CI_Controller {
             redirect('company/permission');
         }else{
             $data['auth'] = authUser();
-            if($data['auth']['edit']!='y'){
-                $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-danger p-cg" role="alert">Tidak ada akses.</div></div>');
-                redirect('company/permission/');
-            }
             
             $unama  = $this->input->post('nama');
             $this->form_validation->set_rules('nama', 'Nama', 'trim|required|xss_clean|htmlspecialchars');
@@ -127,10 +119,6 @@ class Permission extends CI_Controller {
             redirect('company/permission');
         }else{
             $data['auth'] = authUser();
-            if($data['auth']['hapus']!='y'){
-                $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-danger p-cg" role="alert">Tidak ada akses.</div></div>');
-                redirect('company/permission/');
-            }
 
             if($id==1){
                 $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-danger p-cg" role="alert">[DEFAULT] - Jabatan ini tidak bisa dihapus.</div></div>');

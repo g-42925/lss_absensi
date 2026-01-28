@@ -67,6 +67,7 @@ class Patterns_work extends CI_Controller {
 
     public function shift_edit($shiftId){
         cek_menu_access();
+        isEditable();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Pola Kerja';
         $data['title']      = 'Shift';
@@ -124,6 +125,7 @@ class Patterns_work extends CI_Controller {
 
     public function shift_set($id){
         cek_menu_access();
+        isEditable();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Pola Kerja';
         $data['title']      = 'Shift';
@@ -192,6 +194,7 @@ class Patterns_work extends CI_Controller {
 
     public function  shift_off_set($id){
       cek_menu_access();
+      isEditable();
       $data['htmlpagejs'] = 'none';
       $data['nmenu']      = 'Pola Kerja';
       $data['title']      = 'Shift';
@@ -265,6 +268,7 @@ class Patterns_work extends CI_Controller {
 
     public function shift_add(){
         cek_menu_access();
+        isCreatable();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Pola Kerja';
         $data['title']      = 'Shift';
@@ -287,6 +291,7 @@ class Patterns_work extends CI_Controller {
 
     public function shift_detail_add($shiftId){
         cek_menu_access();
+        isCreatable();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Pola Kerja';
         $data['title']      = 'Shift';
@@ -306,6 +311,9 @@ class Patterns_work extends CI_Controller {
     }
 
     public function shift_detail_edit_proses($shiftId,$id){
+        cek_menu_access();
+        isEditable();
+
         $data = [
           'shift_id' => $this->input->post(
             'shiftId'
@@ -476,6 +484,7 @@ class Patterns_work extends CI_Controller {
 
     public function add() {
         cek_menu_access();
+        isCreatable();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Pola Kerja';
         $data['title']      = 'Mingguan';
@@ -484,10 +493,6 @@ class Patterns_work extends CI_Controller {
 
         $data['failed'] = filter_var($this->input->get('failed'), FILTER_VALIDATE_BOOLEAN);
         
-        if($data['auth']['tambah']!='y'){
-            redirect('patterns_work/');
-        }
-
         $companyId = $this->session->userdata('company_id');
 
         $data['roles']      = $this->other->get_roles($companyId);
@@ -543,6 +548,7 @@ class Patterns_work extends CI_Controller {
 
     public function edit($id = null) {
         cek_menu_access();
+        isEditable();
         if ($id==null) { redirect('patterns_work'); }
         $check = $this->db->get_where('m_pola_kerja', ['pola_kerja_id' => $id]);
         if ($check->num_rows()==0) { 
@@ -557,12 +563,6 @@ class Patterns_work extends CI_Controller {
         $data['auth']       = authUser();
 
         $data['failed'] = filter_var($this->input->get('failed'), FILTER_VALIDATE_BOOLEAN);
-
-        
-        if($data['auth']['edit']!='y'){
-            $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-danger p-cg" role="alert">Tidak ada akses.</div></div>');
-            redirect('patterns_work/');
-        }
 
         $data['edit']       = $check->row_array();
         $data['edit_pola']  = $this->db->get_where('m_pola_kerja_det', ['pola_kerja_id' => $data['edit']['pola_kerja_id']])->result_array();
@@ -625,10 +625,7 @@ class Patterns_work extends CI_Controller {
         cek_menu_access();
         
         $data['auth'] = authUser();
-        if($data['auth']['hapus']!='y'){
-            $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-danger p-cg" role="alert">Tidak ada akses.</div></div>');
-            redirect('patterns_work/');
-        }
+
         $num = $this->db->query("SELECT * FROM m_pegawai_pola a JOIN m_pegawai b ON a.pegawai_id=b.pegawai_id WHERE a.pola_kerja_id='$id' AND b.is_del='n'")->num_rows();
         if ($num<=0) {
             $res = $this->other->hapus_data('m_pola_kerja','pola_kerja_id',$id);
@@ -680,10 +677,6 @@ class Patterns_work extends CI_Controller {
         cek_menu_access();
         
         $data['auth'] = authUser();
-        if($data['auth']['tambah']!='y'){
-            $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-danger p-cg" role="alert">Tidak ada akses.</div></div>');
-            redirect('patterns_work/assign/'.$id);
-        }
 
         if ($id==null) { redirect('patterns_work'); }
         $check = $this->db->get_where('m_pola_kerja', ['pola_kerja_id' => $id]);
@@ -716,10 +709,6 @@ class Patterns_work extends CI_Controller {
         cek_menu_access();
         
         $data['auth'] = authUser();
-        if($data['auth']['hapus']!='y'){
-            $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-danger p-cg" role="alert">Tidak ada akses.</div></div>');
-            redirect('patterns_work/assign/'.$id.'?failed=true');
-        }
 
         if ($id==null || $idx==null) { redirect('patterns_work/assign/'.$id); }
         $check = $this->db->get_where('m_pegawai_pola', ['pegawai_pola_id' => $idx]);

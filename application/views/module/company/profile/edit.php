@@ -39,7 +39,7 @@
             <div class="mt-2">
               <?php if ($profile['logo']!='') { ?>
                 <div id="targetfileimg">
-                  <img src="<?=base_url('assets/uploaded/components/'.$profile['logo']);?>" width="120" class="rounded">
+                  <img src="<?= $profile['logo'] ?>" width="120" class="rounded">
                 </div>
               <?php } else { ?>
                 <div id="targetfileimg"></div>

@@ -40,6 +40,8 @@ class Off extends CI_Controller {
     }
 
     public function add(){
+        cek_menu_access();
+        isCreatable();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Hari Libur';
         $data['title']      = 'Hari Libur Khusus';
@@ -68,6 +70,8 @@ class Off extends CI_Controller {
     }
 
     public function edit($id){
+        cek_menu_access();
+        isEditable();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Hari Libur';
         $data['title']      = 'Hari Libur Khusus';

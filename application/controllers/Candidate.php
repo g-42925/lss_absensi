@@ -1,4 +1,9 @@
 <?php
+
+use Aws\S3\S3Client;
+use Aws\Credentials\Credentials;
+use Aws\Exception\AwsException;
+
 defined('BASEPATH') or exit('No direct script access allowed');
 
 class Candidate extends CI_Controller {
@@ -30,29 +35,42 @@ class Candidate extends CI_Controller {
 
     public function accept_proccess($candidateId){
         $companyId = $this->session->userdata('company_id');
+        $totalEmployee = $this->db->query("select * from m_pegawai where company_id = ?",[$companyId])->num_rows();
+        $company = $this->db->query("select * from companies where id = ?",[$companyId])->row_array();
+        $idPegawai = str_pad($totalEmployee,3,'0',STR_PAD_LEFT);
+
+        $idsync = date('Ymdhis').$this->input->post('nom');
+
+        $initials = "";
+
+        foreach(explode(" ", $company['company_name']) as $w){
+          $initials = $initials . substr($w, 0, 1);
+        };
 
         $nik = $this->input->post('nik');
 
-        $params = [
-            'company_id' =>  $companyId,
-            'division_id' => $this->input->post('division'),
-            'position_id' => $this->input->post('position'),
-            'id_sync' => '2025100205064608120812081',
-            'id_pegawai' => $this->input->post('id_pegawai'),
-            'nik' => $nik,
-            'nama_pegawai' => $this->input->post('nama_pegawai'),
-            'email_pegawai' => $this->input->post('email_pegawai'),
-            'nomor_pegawai' => $this->input->post('nomor_pegawai'),
-            'password_pegawai' => password_hash($this->input->post('password'), PASSWORD_DEFAULT),
-            'jenis_kelamin' => $this->input->post('jeniskelamin'),
-            'tanggal_mulai_kerja' => $this->input->post('tgl_mulai'),
-            'foto_pegawai' => $this->input->post('foto_pegawai'),
-            'jumlah_cuti' => $this->input->post('jumlahCuti'),
-            'salary' => $this->input->post('salary'),
-            'is_status' => $this->input->post('status'),
-            'status_pegawai' => $this->input->post('statusPegawai'),
-            'created_at' => date('Y-m-d H:i:s'),
-            'is_del' => 'n',
+        $data = [
+            'id_sync'             => $idsync,
+            'id_pegawai'          => $initials."-".$idPegawai."-".substr($nik, -3),
+            'company_id'          => $companyId,
+            'nama_pegawai'  	  => $this->input->post('nama'),
+            'email_pegawai'  	  => $this->input->post('email'),
+            'nomor_pegawai'       => $this->input->post('nom'),
+            'jenis_kelamin'       => $this->input->post('jeniskelamin'),
+            'tanggal_mulai_kerja' => $this->input->post('tglmulai'),
+            'jumlah_cuti'         => $this->input->post('jumlahCuti'),
+            'salary'              => $this->input->post('salary'),
+            'division_id'         => $this->input->post('division'),
+            'password_pegawai'    => password_hash($this->input->post('password'), PASSWORD_DEFAULT),
+            'foto_pegawai'        => 'assets/uploaded/users/default-logo.png',
+            'is_status'  		  => $this->input->post('status'),
+            'status_pegawai'      => $this->input->post('statusPegawai'),
+            'position_id'         => $this->input->post('position'),
+            'created_at'  		  => date('Y-m-d H:i:s'),
+            'nik'                 => $this->input->post('nik'),
+            'contract_start_date' => $this->input->post('contract_start_date'),
+            'contract_end_date'   => $this->input->post('contract_end_date'),
+            'on_training'         => $this->input->post('on_training')
         ];
 
         $this->db->trans_begin();
@@ -61,9 +79,46 @@ class Candidate extends CI_Controller {
         $qByNik = $this->db->query("select * from m_pegawai where company_id = ? and nik = ?",[$companyId,$nik])->row_array();
 
         if(!$qByNik){
-            $this->db->insert('m_pegawai',$params);
+            $this->db->insert('m_pegawai',$data);
             $newInsertedId = $this->db->insert_id();
 
+            $absence = [
+                'absen_id' => uniqid(),
+                'company_id' => $companyId,
+                'pegawai_id' => $newInsertedId,
+                'tanggal_absen' => date('Y-m-d'),
+                'is_status' => 'alpha-2',
+                'jam_masuk' => '00:00',
+                'jam_istirahat' => '00:00',
+                'jam_sistirahat' => '00:00',
+                'jam_keluar' => '00:00',
+                'catatan_masuk' => '...',
+                'catatan_keluar' => '...',
+                'j_masuk' => '00:00',
+                'j_pulang' => '00:00',
+                'j_toleransi' => '00:00',
+                's_istirahat_photo' => 'no',
+                's_istirahat_latitude' => '',
+                's_istirahat_longitude' => '',
+                'foto_absen_masuk' => 'no',
+                'foto_absen_keluar' => 'no',
+                'point_latitude' => 0,
+                'point_longitude' => 0,
+                'latitude_masuk' => 0,
+                'longitude_masuk' => 0,
+                'latitude_keluar' => 0,
+                'longitude_keluar' => 0,
+                'is_point_masuk' => 'n',
+                'is_point_keluar' => 'n',
+                'is_request' => 0,
+                'acc_masuk' => 'y',
+                'acc_keluar' => 'y',
+                'is_pending' => 'n',
+                'htu' => 0,
+                'isLate' => 0
+            ];
+
+            $this->db->insert('tx_absensi',$absence);
             $this->db->where('candidate_id', $candidateId);
             $this->db->delete('candidate');
 
@@ -112,10 +167,6 @@ class Candidate extends CI_Controller {
         $data['namalabel']  = $data['title'];
         $data['auth']       = authUser();
        
-        // if($data['auth']['tambah']!='y'){
-        //     $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-danger p-cg" role="alert">Tidak ada akses.</div></div>');
-        //     redirect('karyawan/data/');
-        // }
  
         $companyId = $this->session->userdata('company_id');
 
@@ -166,6 +217,7 @@ class Candidate extends CI_Controller {
         $data['failed'] = filter_var($this->input->get('failed'),FILTER_VALIDATE_BOOLEAN);
         
         cek_menu_access();
+        isCreatable();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Karyawan';
         $data['title']      = 'Recruitment';
@@ -186,6 +238,7 @@ class Candidate extends CI_Controller {
 
     public function edit($candidateId){        
         cek_menu_access();
+        isEditable();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Karyawan';
         $data['title']      = 'Recruitment';
@@ -209,86 +262,73 @@ class Candidate extends CI_Controller {
 
     public function edit_proccess($candidateId){
        $file = $_FILES['photo'];
-       $supabaseUrl = "https://vgbkdwivxidacojvcnbr.supabase.co";
-       $supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZnYmtkd2l2eGlkYWNvanZjbmJyIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1NDg4MDEwOCwiZXhwIjoyMDcwNDU2MTA4fQ.u4n62Z_I3mO7etIJAXpzL3ScTc9QhY04hx1_n-Tg4K4";
+       $cFile = $_FILES['photo']['tmp_name'];
+       $fileName = time() . '_' . basename($file['name']);
 
-       if($this->input->post('changeMarker') == 1){
+
+        if($this->input->post('changeMarker') == 1){
             if (!$file || $file['error'] !== UPLOAD_ERR_OK) {
-                $this->session->set_flashdata(
-                    'message','<div class="alert alert-danger">Proses gagal. Silakan coba lagi.</div>'
-                );
-                redirect(
-                    'candidate/edit/'.$candidateId.'?failed=true'
-                );
+                $this->session->set_flashdata('message','<div class="alert alert-danger">Proses gagal. Silakan coba lagi.</div>');
+                redirect('candidate/edit/'.$candidateId.'?failed=true');
             }
             else{
-                $fileName = time() . '_' . basename($file['name']);
-                $ch = curl_init($supabaseUrl . "/storage/v1/object/storage/" . $fileName);
-
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                curl_setopt_array($ch, [
-                    CURLOPT_RETURNTRANSFER => true,
-                    CURLOPT_HTTPHEADER => [
-                        'Authorization: Bearer ' . $supabaseKey,
-                        'Content-Type: ' . mime_content_type($file['tmp_name'])
-                   ],
-                   CURLOPT_UPLOAD => true, // ✅ penting
-                   CURLOPT_CUSTOMREQUEST => 'POST',
-                   CURLOPT_INFILE => fopen($file['tmp_name'], 'r'),
-                   CURLOPT_INFILESIZE => filesize($file['tmp_name'])
+                $s3 = new S3Client([
+                    'version'     => 'latest',
+                    'region'      => 'us-east-1',
+                    'endpoint'    => 'https://s3.filebase.com',
+                    'use_path_style_endpoint' => false,
+                    'credentials' => [
+                    'key'    => 'B8F0135956143AE0685E',
+                    'secret' => 'gKrbIZJnzLWBXZ0VGQvnlAumvngpBH35PsXN5zUp'
+                    ],
+                    'Metadata' => [
+                    'cid' => 'true'
+                    ],
                 ]);
-          
-                curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
-                curl_setopt($ch, CURLOPT_INFILE, fopen($file['tmp_name'], 'r'));
-                curl_setopt($ch, CURLOPT_INFILESIZE, filesize($file['tmp_name']));
 
-                $response = curl_exec($ch);
-                $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-                curl_close($ch);
+                $result = $s3->putObject([
+                    'Bucket' => 'leryn-storage',
+                    'Key'    => $fileName,
+                    'SourceFile' => $cFile,
+                    'ContentType' => 'image/png',
+                ]);
 
-                if ($httpCode === 200 || $httpCode === 201) {
-                    $publicUrl = $supabaseUrl . "/storage/v1/object/public/storage/" . $fileName;
-                    $data = [
-                        'nik' => $this->input->post('nik'),
-                        'phone_number' => $this->input->post('phone_number'),
-                        'email' => $this->input->post('email'),
-                        'sex' => $this->input->post('sex'),
-                        'candidate_picture' => $publicUrl,
-                        'candidate_name' => $this->input->post('name'),
-                        'position_id' => $this->input->post('position_id')
-                    ];
+                $cid = $result['@metadata']['headers']['x-amz-meta-cid'];
+                $r = "https://wooden-plum-woodpecker.myfilebase.com/ipfs/".$cid;
 
-                    $this->db->set(
-                        $data
-                    );
-                    $this->db->where(
-                        'candidate_id', 
-                        $candidateId
-                    );
-                    $q = $this->db->update(
-                        'candidate'
-                    );
 
-                    if(!$q){
-                        $this->session->set_flashdata(
-                            'message','<div class="alert alert-danger">Proses gagal. Silakan coba lagi.</div>'
-                        );
-                        redirect(
-                            'candidate/edit/'.$candidateId.'?failed=true'
-                        );
-                    }
-                    else{
-                        redirect(
-                            'candidate'
-                        );
-                    }
-                } 
-                else {
+                $data = [
+                    'nik' => $this->input->post('nik'),
+                    'phone_number' => $this->input->post('phone_number'),
+                    'email' => $this->input->post('email'),
+                    'sex' => $this->input->post('sex'),
+                    'candidate_picture' => $r,
+                    'candidate_name' => $this->input->post('name'),
+                    'position_id' => $this->input->post('position_id')
+                ];
+
+                $this->db->set(
+                    $data
+                );
+                $this->db->where(
+                    'candidate_id', 
+                    $candidateId
+                );
+                $q = $this->db->update(
+                    'candidate'
+                );
+
+                if(!$q){
                     $this->session->set_flashdata(
                         'message','<div class="alert alert-danger">Proses gagal. Silakan coba lagi.</div>'
                     );
                     redirect(
                         'candidate/edit/'.$candidateId.'?failed=true'
+                    );
+                }
+                else{
+                    redirect(
+                        'candidate'
                     );
                 }
             }
@@ -328,17 +368,15 @@ class Candidate extends CI_Controller {
                 );
             }
         }
-
-        
     }
 
     public function add_proccess(){
        $file = $_FILES['photo'];
-       $supabaseUrl = "https://vgbkdwivxidacojvcnbr.supabase.co";
-       $supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZnYmtkd2l2eGlkYWNvanZjbmJyIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1NDg4MDEwOCwiZXhwIjoyMDcwNDU2MTA4fQ.u4n62Z_I3mO7etIJAXpzL3ScTc9QhY04hx1_n-Tg4K4";
+       $cFile = $_FILES['photo']['tmp_name'];
+       $fileName = time() . '_' . basename($file['name']);
        
 
-        if (!$file || $file['error'] !== UPLOAD_ERR_OK) {
+        if(!$file || $file['error'] !== UPLOAD_ERR_OK) {
             $this->session->set_flashdata(
                 'message','<div class="alert alert-danger">Proses gagal. Silakan coba lagi.</div>'
             );
@@ -347,69 +385,58 @@ class Candidate extends CI_Controller {
             );
         }
         else{
-            $fileName = time() . '_' . basename($file['name']);
-            $ch = curl_init($supabaseUrl . "/storage/v1/object/storage/" . $fileName);
-
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt_array($ch, [
-                CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_HTTPHEADER => [
-                   'Authorization: Bearer ' . $supabaseKey,
-                   'Content-Type: ' . mime_content_type($file['tmp_name'])
+            $s3 = new S3Client([
+                'version'     => 'latest',
+                'region'      => 'us-east-1',
+                'endpoint'    => 'https://s3.filebase.com',
+                'use_path_style_endpoint' => false,
+                'credentials' => [
+                'key'    => 'B8F0135956143AE0685E',
+                'secret' => 'gKrbIZJnzLWBXZ0VGQvnlAumvngpBH35PsXN5zUp'
                 ],
-                CURLOPT_UPLOAD => true, // ✅ penting
-                CURLOPT_CUSTOMREQUEST => 'POST',
-                CURLOPT_INFILE => fopen($file['tmp_name'], 'r'),
-                CURLOPT_INFILESIZE => filesize($file['tmp_name'])
+                'Metadata' => [
+                'cid' => 'true'
+                ],
             ]);
-          
-            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
-            curl_setopt($ch, CURLOPT_INFILE, fopen($file['tmp_name'], 'r'));
-            curl_setopt($ch, CURLOPT_INFILESIZE, filesize($file['tmp_name']));
 
-            $response = curl_exec($ch);
-            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-            curl_close($ch);
+            $result = $s3->putObject([
+                'Bucket' => 'leryn-storage',
+                'Key'    => $fileName,
+                'SourceFile' => $cFile,
+                'ContentType' => 'image/png',
+            ]);
 
-            if ($httpCode === 200 || $httpCode === 201) {
-                $publicUrl = $supabaseUrl . "/storage/v1/object/public/storage/" . $fileName;
-                $data = [
-                    'candidate_id' => uniqid(),
-                    'company_id' => $companyId = $this->session->userdata('company_id'),
-                    'nik' => $this->input->post('nik'),
-                    'phone_number' => $this->input->post('phone_number'),
-                    'email' => $this->input->post('email'),
-                    'sex' => $this->input->post('sex'),
-                    'candidate_picture' => $publicUrl,
-                    'candidate_name' => $this->input->post('name'),
-                    'position_id' => $this->input->post('position_id')
-                ];
+            $cid = $result['@metadata']['headers']['x-amz-meta-cid'];
+            $r = "https://wooden-plum-woodpecker.myfilebase.com/ipfs/".$cid;
 
-                $q = $this->db->insert(
-                 'candidate',
-                  $data
-                );
+            $data = [
+                'candidate_id' => uniqid(),
+                'company_id' => $companyId = $this->session->userdata('company_id'),
+                'nik' => $this->input->post('nik'),
+                'phone_number' => $this->input->post('phone_number'),
+                'email' => $this->input->post('email'),
+                'sex' => $this->input->post('sex'),
+                'candidate_picture' => $r,
+                'candidate_name' => $this->input->post('name'),
+                'position_id' => $this->input->post('position_id')
+            ];
 
-                if(!$q){
-                    $this->session->set_flashdata(
-                     'message','<div class="alert alert-danger">Proses gagal. Silakan coba lagi.</div>'
-                    );
-                    redirect(
-                      'candidate/add?failed=true'
-                    );
-                }
-                else{
-                    redirect(
-                      'candidate'
-                    );
-                }
-            } 
-            else {
+            $q = $this->db->insert(
+                'candidate',
+                $data
+            );
+
+            if(!$q){
                 $this->session->set_flashdata(
                     'message','<div class="alert alert-danger">Proses gagal. Silakan coba lagi.</div>'
                 );
                 redirect(
                     'candidate/add?failed=true'
+                );
+            }
+            else{
+                redirect(
+                    'candidate'
                 );
             }
         }

@@ -1,4 +1,9 @@
 <?php
+
+use Aws\S3\S3Client;
+use Aws\Credentials\Credentials;
+use Aws\Exception\AwsException;
+
 defined('BASEPATH') or exit('No direct script access allowed');
 
 class Profile extends CI_Controller {
@@ -44,6 +49,8 @@ class Profile extends CI_Controller {
 
     public function edit($failed) {
         cek_menu_access();
+        isEditable();
+        
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Perusahaan';
         $data['title']      = 'Profil';
@@ -53,10 +60,6 @@ class Profile extends CI_Controller {
         $params = array($this->session->userdata('company_id'));
         $data['profile'] = $this->db->query("select * from companies where id = ?",$params)->row_array();
         $data['status'] = $this->session->flashdata('success');
-        if($data['auth']['edit']!='y'){
-            $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-danger p-cg" role="alert">Tidak ada akses.</div></div>');
-            redirect('company/profile/');
-        }
 
         $this->load->view('templates/header', $data);
         $this->load->view('templates/sidemenu', $data);
@@ -89,40 +92,52 @@ class Profile extends CI_Controller {
 					$config['upload_path']  = './assets/uploaded/components/';
           $config['allowed_types'] = 'gif|jpg|jpeg|png';
           $config['max_size'] = 500;
-					
-          $this->upload->initialize($config);
-          $upload = $this->upload->do_upload('logo');
 
-          if($upload){
-            $this->db->set([
-              'id' => $companyId,
-              'company_name' => $this->input->post('name'),
-              'address' => $this->input->post('address'),
-              'phone' => $this->input->post('phone'),
-              'email' => $this->input->post('email'),
-              'logo' => $config['file_name'],
-              'salary_date' => $this->input->post('salary_date')
-            ]);
+          $file = $_FILES['logo']['tmp_name'];
 
-            $this->db->where('id',$companyId);
+          $s3 = new S3Client([
+            'version'     => 'latest',
+            'region'      => 'us-east-1',
+            'endpoint'    => 'https://s3.filebase.com',
+            'use_path_style_endpoint' => false,
+            'credentials' => [
+              'key'    => 'B8F0135956143AE0685E',
+              'secret' => 'gKrbIZJnzLWBXZ0VGQvnlAumvngpBH35PsXN5zUp'
+            ],
+            'Metadata' => [
+              'cid' => 'true'
+            ],
+          ]);
 
-            $this->db->update('companies');
+          $result = $s3->putObject([
+            'Bucket' => 'leryn-storage',
+            'Key'    => $fileName,
+            'SourceFile' => $file,
+            'ContentType' => 'image/png',
+          ]);
 
-						$this->session->set_flashdata('success','yes');
+          $cid = $result['@metadata']['headers']['x-amz-meta-cid'];
 
-            redirect('company/profile');
-					}
-          else{
-            $this->session->set_flashdata('success','not');
+          $logo = "https://wooden-plum-woodpecker.myfilebase.com/ipfs/".$cid;
 
-            $this->session->set_flashdata(
-							'message', 
-							'<div class="alert alert-danger p-cg" role="alert">
-							  Proses gagal, silahkan coba lagi.
-							</div>'
-						);
-						redirect('company/profile/edit/1');
-          }
+          $this->db->set([
+            'id' => $companyId,
+            'company_name' => $this->input->post('name'),
+            'address' => $this->input->post('address'),
+            'phone' => $this->input->post('phone'),
+            'email' => $this->input->post('email'),
+            'logo' => $logo,
+            'salary_date' => $this->input->post('salary_date')
+          ]);
+
+          $this->db->where('id',$companyId);
+
+          $this->db->update('companies');
+
+					$this->session->set_flashdata('success','yes');
+
+          redirect('company/profile');
+
         }
         else{
           $this->db->set([
@@ -143,30 +158,6 @@ class Profile extends CI_Controller {
 
           redirect('company/profile');
         }
-        
-
-        // if ($this->form_validation->run() == false) {
-        //     $this->session->set_flashdata('message', '<div class="alert alert-danger p-cg" role="alert">'.validation_errors().'</div>');
-        //     redirect('company/profile/edit/');
-        // } 
-        // else {
-        //     $ceklogo = $_FILES['logo']['name'];
-        //     $upload = $this->other->upload_gambar('gambar','xxx','logo','logo_');
-        //     if($upload['result'] == "success" || $ceklogo==''){
-        //         $res = $this->profile->edit_proses($ceklogo,$upload);
-        //         if ($res==true) {
-        //             $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-success p-cg" role="alert">Data berhasil diperbarui.</div></div>');
-        //             redirect('company/profile');
-        //         }else{
-        //             unlink(FCPATH.$upload['path'].$upload['file']['file_name']);
-        //             $this->session->set_flashdata('message', '<div class="alert alert-danger p-cg" role="alert">Proses gagal, silahkan coba lagi.</div>');
-        //                 redirect('company/profile/edit/');
-        //         }
-        //     }else{
-        //         $this->session->set_flashdata('message', '<div class="alert alert-danger p-cg" role="alert">'.$upload['error'].'</div>');
-        //         redirect('company/profile/edit/');
-        //     } 
-        // }
     }
 
 }

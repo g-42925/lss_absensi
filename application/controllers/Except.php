@@ -41,7 +41,7 @@ class Except extends CI_Controller {
     }
 
     public function edit($id){
-        cek_menu_access();
+        isEditable();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Data Request Izin';
         $data['title']      = 'Pengecualian';
@@ -62,6 +62,8 @@ class Except extends CI_Controller {
     }
 
     public function edit_proses($id){
+      cek_menu_access();
+
       $data = [
         'date' => $this->input->post('date'),
         'status' => $this->input->post('status'),

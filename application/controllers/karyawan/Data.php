@@ -53,17 +53,12 @@ class Data extends CI_Controller {
 
     public function add($failed) {
         cek_menu_access();
+        isCreatable();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Karyawan';
         $data['title']      = 'Data Karyawan';
         $data['namalabel']  = $data['title'];
         $data['auth']       = authUser();
-
-        
-        if($data['auth']['tambah']!='y'){
-            $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-danger p-cg" role="alert">Tidak ada akses.</div></div>');
-            redirect('karyawan/data/');
-        }
  
         $companyId = $this->session->userdata('company_id');
         $data['roles'] = $this->other->get_roles($companyId);
@@ -130,6 +125,7 @@ class Data extends CI_Controller {
 
     public function edit($id = null) {
         cek_menu_access();
+        isEditable();
         if ($id==null) { redirect('karyawan/data'); }
         $check = $this->db->get_where('m_pegawai', ['pegawai_id' => $id]);
         $data['failed'] = filter_var($this->input->get('failed'),FILTER_VALIDATE_BOOLEAN);
@@ -149,11 +145,6 @@ class Data extends CI_Controller {
         $data['divisions'] = $this->db->query("select * from divisions where company_id = ?",[$companyId])->result_array();
 
         $data['position'] = $this->db->query("select * from position where company_id = ?",[$companyId])->result_array();
-        
-        if($data['auth']['edit']!='y'){
-            $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-danger p-cg" role="alert">Tidak ada akses.</div></div>');
-            redirect('karyawan/data/');
-        }
 
         $data['edit']       = $check->row_array();
         $data['mindate'] = date("Y-m-d", strtotime(date('Y-m-d')." -7 day"));
@@ -212,11 +203,7 @@ class Data extends CI_Controller {
         cek_menu_access();
         
         $data['auth']       = authUser();
-        if($data['auth']['hapus']!='y'){
-            $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-danger p-cg" role="alert">Tidak ada akses.</div></div>');
-            redirect('karyawan/data/');
-        }
-            
+        
         $res = $this->other->hapus_data('m_pegawai','pegawai_id',$id);
         if ($res==true) {
             $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-success p-cg" role="alert">Data berhasil dihapus.</div></div>');

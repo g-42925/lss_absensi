@@ -30,6 +30,10 @@ class Dashboard extends CI_Controller {
                 $data['title'] = 'Dashboard';
                 $data['auth'] = authUser();
 
+                // $data['role'] = $this->session->userdata('role_id');
+                // $data['rolename'] = $this->session->userdata('role_name');
+                // $data['namalengkap'] = $this->session->userdata('nama_lengkap');
+
                 $companyId = $this->session->userdata('company_id');
 
                 $data['t_pegawai'] = $this->db->get_where('m_pegawai', ['is_del' => 'n','company_id' => $companyId])->num_rows();
@@ -37,8 +41,6 @@ class Dashboard extends CI_Controller {
                 $data['t_izin'] = $this->db->query("select * from tx_request_izin where is_status = 0 and company_id = ?",[$companyId])->num_rows();
 
                 $data['t_pending'] = count_pending();
-
-
 
                 $data['a_masuk'] = $this->db->query("SELECT * FROM tx_absensi WHERE (is_status='hhk' OR is_status='hbhk') AND tanggal_absen='$today' AND company_id = ?",[$companyId])->num_rows();
                 $data['a_sakit'] = $this->db->query("SELECT * FROM tx_request_izin WHERE tipe_request='s' AND is_status=1 AND tanggal_request_end>='$today' and company_id = ?",[$companyId])->num_rows();

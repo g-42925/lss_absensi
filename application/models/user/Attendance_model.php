@@ -105,10 +105,17 @@ class Attendance_model extends CI_Model {
 
             if($workSystem[0] == "s"){
                 $shift = $this->db->query("select * from employee_shift es join shift_detail sd on es.shift_detail_id = sd.shift_detail_id where employee_id = ?",[$row['pid']])->row_array();
-                $dateTime1 = new DateTime($lastDefaultStatus['tanggal_absen']. ' ' . $shift['clock_in']);
-                $row['tolerance'] = (clone $dateTime1)->modify("+{$shift['tardiness_tolerance']} minutes");
-                $row['limit'] = (clone $row['tolerance'])->modify("+{$division['restriction']} minutes");
-
+                $base = new DateTime($lastDefaultStatus['tanggal_absen'].' 00:00:00');
+                
+                if (!$shift || empty($shift['clock_in'])) {
+                    $row['tolerance'] = clone $base;
+                    $row['limit'] = clone $base;
+                }
+                else{
+                    $dateTime1 = new DateTime($lastDefaultStatus['tanggal_absen']. ' ' . $shift['clock_in']);
+                    $row['tolerance'] = (clone $dateTime1)->modify("+{$shift['tardiness_tolerance']} minutes");
+                    $row['limit'] = (clone $row['tolerance'])->modify("+{$division['restriction']} minutes");
+                }
             }
             else{
                 $pattern = $this->db->query("select * from m_pola_kerja mpk join m_pola_kerja_det mpkd on mpk.pola_kerja_id = mpkd.pola_kerja_id where mpk.pola_kerja_id = ? and is_day = ?",[$workSystem[1],$today])->row_array();

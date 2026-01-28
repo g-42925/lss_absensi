@@ -44,6 +44,7 @@ class Roles extends CI_Controller {
 
     public function add($failed) {
         cek_menu_access();
+        isCreatable();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Perusahaan';
         $data['nmenusub']   = 'Jabatan & Izin';
@@ -51,11 +52,6 @@ class Roles extends CI_Controller {
         $data['namalabel']  = $data['title'];
         $data['auth']       = authUser();
         $data['failed']     = $failed;
-        
-        if($data['auth']['tambah']!='y'){
-            $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-danger p-cg" role="alert">Tidak ada akses.</div></div>');
-            redirect('company/roles/');
-        }
         
         $data['menu'] = $this->menu->getMenu();
 
@@ -103,6 +99,7 @@ class Roles extends CI_Controller {
 
     public function edit($id = null) {
         cek_menu_access();
+        isEditable();
         if ($id==null) { redirect('user/company/roles'); }
         $check = $this->db->get_where('m_role', ['role_id' => $id]);
         if ($check->num_rows()==0) { 
@@ -116,11 +113,6 @@ class Roles extends CI_Controller {
         $data['title']      = 'Jabatan';
         $data['namalabel']  = $data['title'];
         $data['auth']       = authUser();
-        
-        if($data['auth']['edit']!='y'){
-            $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-danger p-cg" role="alert">Tidak ada akses.</div></div>');
-            redirect('company/roles/');
-        }
 
         $data['menu'] = $this->menu->getMenu();
         $data['edit'] = $check->row_array();
@@ -180,12 +172,9 @@ class Roles extends CI_Controller {
         if($id==1){
             $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-danger p-cg" role="alert">Jabatan Super Admin ini tidak bisa dihapus ya.</div></div>');
             redirect('company/roles');
-        }else{
+        }
+        else{
             $data['auth'] = authUser();
-            if($data['auth']['hapus']!='y'){
-                $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-danger p-cg" role="alert">Tidak ada akses.</div></div>');
-                redirect('company/roles/');
-            }
 
             if($id==1){
                 $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-danger p-cg" role="alert">[DEFAULT] - Jabatan ini tidak bisa dihapus.</div></div>');

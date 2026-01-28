@@ -20,29 +20,6 @@ class Auth extends CI_Controller {
         $this->load->model('user/sliders_model', 'slid');
     }
 
-    // public function index() {
-    //     if ($this->session->userdata('u_id')){
-    //         redirect('dashboard');
-    //     }
-    //     $this->form_validation->set_rules('email', 'Email', 'trim|required|xss_clean|htmlspecialchars');
-    //     $this->form_validation->set_rules('password', 'Password', 'trim|required|xss_clean|htmlspecialchars');
-
-    //     if ($this->form_validation->run() == false) {
-    //         $data['htmlpagejs'] = 'auth';
-    //         $data['htmlclasstemp'] = 'customizer-hide';
-    //         $data['title'] = 'Mentari Islamic School';
-
-    //         $data['datas'] = $this->news->get_berita();
-    //         $data['sliders'] = $this->slid->get_sliders();
-
-    //         $this->load->view('templates/header', $data);
-    //         $this->load->view('module/auth/signin', $data);
-    //         $this->load->view('templates/fscript-html-end', $data);
-    //     } else {
-    //         $this->_login();
-    //     }
-    // }
-
     public function index() {
         if ($this->session->userdata('u_id')){
             redirect('dashboard');
@@ -72,9 +49,13 @@ class Auth extends CI_Controller {
         if ($user != null) {
             if ($user['is_status']=='y') {
                 if (password_verify($password, $user['password'])) {
+                    $role = $this->db->query("select * from m_role where role_id = ?",[$user['role_id']])->row_array();
+
                     $data = [
                         'u_id'          => $user['user_id'],
                         'role_id'       => $user['role_id'],
+                        'role_name'     => $role['nama_role'],
+                        'permission_id' => $user['permission_id'],
                         'company_id'    => $user['company_id'],
                         'nama_lengkap'  => $user['nama_lengkap'],
                         'login_expired' => time() + $rememberDuration

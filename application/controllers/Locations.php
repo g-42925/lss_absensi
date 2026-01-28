@@ -43,6 +43,7 @@ class Locations extends CI_Controller {
 
     public function add() {
         cek_menu_access();
+        isCreatable();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Lokasi Kehadiran';
         $data['title']      = 'Lokasi Kehadiran';
@@ -51,9 +52,6 @@ class Locations extends CI_Controller {
 
         $data['failed'] = filter_var($this->input->get('failed'), FILTER_VALIDATE_BOOLEAN);
         
-        if($data['auth']['tambah']!='y'){
-            redirect('locations/');
-        }
 
         $this->load->view('templates/header', $data);
         $this->load->view('templates/sidemenu', $data);
@@ -101,6 +99,7 @@ class Locations extends CI_Controller {
 
     public function edit($id = null) {
         cek_menu_access();
+        isEditable();
         if ($id==null) { redirect('locations'); }
         $check = $this->db->get_where('m_lokasi', ['lokasi_id' => $id]);
         if ($check->num_rows()==0) { 
@@ -113,11 +112,6 @@ class Locations extends CI_Controller {
         $data['title']      = 'Lokasi Kehadiran';
         $data['namalabel']  = $data['title'];
         $data['auth']       = authUser();
-        
-        if($data['auth']['edit']!='y'){
-            $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-danger p-cg" role="alert">Tidak ada akses.</div></div>');
-            redirect('locations/');
-        }
 
         $data['edit']       = $check->row_array();
         $data['failed'] = filter_var($this->input->get('failed'), FILTER_VALIDATE_BOOLEAN);
@@ -174,10 +168,7 @@ class Locations extends CI_Controller {
         cek_menu_access();
 
         $data['auth']       = authUser();
-        if($data['auth']['hapus']!='y'){
-            $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-danger p-cg" role="alert">Tidak ada akses.</div></div>');
-            redirect('locations/');
-        }
+
         $num = $this->db->query("SELECT * FROM m_pegawai_lokasi a JOIN m_pegawai b ON a.pegawai_id=b.pegawai_id WHERE a.lokasi_id='$id' AND b.is_del='n'")->num_rows();
         if ($num<=0) {
             $res = $this->other->hapus_data('m_lokasi','lokasi_id',$id);
@@ -231,10 +222,6 @@ class Locations extends CI_Controller {
         cek_menu_access();
         
         $data['auth']       = authUser();
-        if($data['auth']['tambah']!='y'){
-            $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-danger p-cg" role="alert">Tidak ada akses.</div></div>');
-            redirect('locations/assign/'.$id.'?failed=true');
-        }
 
         if ($id==null) { redirect('locations'); }
         $check = $this->db->get_where('m_lokasi', ['lokasi_id' => $id]);
@@ -264,10 +251,6 @@ class Locations extends CI_Controller {
         cek_menu_access();
         
         $data['auth']       = authUser();
-        if($data['auth']['hapus']!='y'){
-            $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-danger p-cg" role="alert">Tidak ada akses.</div></div>');
-            redirect('locations/assign/'.$id);
-        }
 
         if ($id==null || $idx==null) { redirect('locations/assign/'.$id); }
         $check = $this->db->get_where('m_pegawai_lokasi', ['pegawai_lokasi_id' => $idx]);

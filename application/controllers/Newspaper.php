@@ -37,11 +37,6 @@ class Newspaper extends CI_Controller {
         $data['title']      = 'Berita';
         $data['namalabel']  = $data['title'];
         $data['auth']       = authUser();
-        
-        if($data['auth']['tambah']!='y'){
-            $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-danger p-cg" role="alert">Tidak ada akses.</div></div>');
-            redirect('newspaper/');
-        }
 
         $this->load->view('templates/header', $data);
         $this->load->view('templates/sidemenu', $data);
@@ -96,11 +91,6 @@ class Newspaper extends CI_Controller {
         $data['title']      = 'Berita';
         $data['namalabel']  = $data['title'];
         $data['auth']       = authUser();
-        
-        if($data['auth']['edit']!='y'){
-            $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-danger p-cg" role="alert">Tidak ada akses.</div></div>');
-            redirect('newspaper');
-        }
 
         $data['edit'] = $check->row_array();
 
@@ -155,10 +145,6 @@ class Newspaper extends CI_Controller {
         cek_menu_access();
 
         $data['auth'] = authUser();
-        if($data['auth']['hapus']!='y'){
-            $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-danger p-cg" role="alert">Tidak ada akses.</div></div>');
-            redirect('newspaper');
-        }
 
         $check = $this->db->get_where('m_berita', ['berita_id' => $id])->row_array();
         $res = $this->db->delete('m_berita', ['berita_id' => $id]);

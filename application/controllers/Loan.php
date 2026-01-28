@@ -42,6 +42,7 @@ class Loan extends CI_Controller {
 
     public function add(){
       cek_menu_access();
+      isCreatable();
       $data['htmlpagejs'] = 'none';
       $data['nmenu']      = 'Hutang & Potongan';
       $data['title']      = 'Hutang';
@@ -64,6 +65,7 @@ class Loan extends CI_Controller {
 
     public function edit($id){
       cek_menu_access();
+      isEditable();
       $data['htmlpagejs'] = 'none';
       $data['nmenu']      = 'Hutang & Potongan';
       $data['title']      = 'Hutang';

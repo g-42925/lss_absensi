@@ -40,16 +40,13 @@ class Admin extends CI_Controller {
 
     public function add($failed) {
         cek_menu_access();
+        isCreatable();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Perusahaan';
         $data['title']      = 'Admin';
         $data['namalabel']  = $data['title'];
         $data['auth']       = authUser();
         
-        if($data['auth']['tambah']!='y'){
-            $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-danger p-cg" role="alert">Tidak ada akses.</div></div>');
-            redirect('company/admin/');
-        }
 
         $data['company_id'] = $this->session->userdata('company_id');
         $data['roles']      = $this->other->get_roles($data['company_id']);
@@ -100,6 +97,7 @@ class Admin extends CI_Controller {
 
     public function edit($id = null) {
         cek_menu_access();
+        isEditable();
         if ($id==null) { redirect('company/admin'); }
         $check = $this->db->get_where('m_user', ['user_id' => $id]);
         if ($check->num_rows()==0) { 
@@ -115,11 +113,6 @@ class Admin extends CI_Controller {
 
         $companyId = $this->session->userdata('company_id');
         $data['failed'] = filter_var($this->input->get('failed'), FILTER_VALIDATE_BOOLEAN);
-        
-        if($data['auth']['edit']!='y'){
-            $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-danger p-cg" role="alert">Tidak ada akses.</div></div>');
-            redirect('company/admin/');
-        }
 
         $data['edit']       = $check->row_array();
         $data['roles']      = $this->other->get_roles($companyId);
@@ -184,18 +177,16 @@ class Admin extends CI_Controller {
         if($id==1){
             $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-danger p-cg" role="alert">Akun Admin ini tidak bisa dihapus ya.</div></div>');
             redirect('company/admin');
-        }else{
+        }
+        else{
             $data['auth'] = authUser();
-            if($data['auth']['hapus']!='y'){
-                $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-danger p-cg" role="alert">Tidak ada akses.</div></div>');
-                redirect('company/admin/');
-            }
-            
+
             $res = $this->other->hapus_data('m_user','user_id',$id);
             if ($res==true) {
                 $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-success p-cg" role="alert">Data berhasil dihapus.</div></div>');
                 redirect('company/admin');
-            }else{
+            }
+            else{
                 $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-danger p-cg" role="alert">Proses gagal, silahkan coba lagi.</div></div>');
                 redirect('company/admin');
             }

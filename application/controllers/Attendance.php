@@ -86,6 +86,10 @@ class Attendance extends CI_Controller {
         $data['namalabel']  = $data['title'];
         $data['auth']       = authUser();
 
+        $data['role'] = $this->session->userdata('role_id');
+        $data['rolename'] = $this->session->userdata('role_name');
+        $data['namalengkap'] = $this->session->userdata('nama_lengkap');
+
         if ($tgl=='') {
             $data['today']  = date('Y-m-d');
         }else{

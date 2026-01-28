@@ -6,7 +6,7 @@
  *
  * This content is released under the MIT License (MIT)
  *
- * Copyright (c) 2014 - 2019, British Columbia Institute of Technology
+ * Copyright (c) 2019 - 2022, CodeIgniter Foundation
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,6 +30,7 @@
  * @author	EllisLab Dev Team
  * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc. (https://ellislab.com/)
  * @copyright	Copyright (c) 2014 - 2019, British Columbia Institute of Technology (https://bcit.ca/)
+ * @copyright	Copyright (c) 2019 - 2022, CodeIgniter Foundation (https://codeigniter.com/)
  * @license	https://opensource.org/licenses/MIT	MIT License
  * @link	https://codeigniter.com
  * @since	Version 1.0.0
@@ -46,48 +47,47 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * @subpackage	Libraries
  * @category	Loader
  * @author		EllisLab Dev Team
- * @link		https://codeigniter.com/user_guide/libraries/loader.html
+ * @link		https://codeigniter.com/userguide3/libraries/loader.html
  */
 class CI_Loader {
-	public $benchmark;
-	public $hooks;
-	public $config;
-	public $log;
-	public $utf8;
-	public $uri;
-	public $router;
-	public $output;
-	public $security;
-	public $input;
-	public $lang;
-	public $db;
-	public $load;
-	public $email;
-	public $session;
-	public $form_validation;
-	public $upload;
-	public $pagination;
-	public $auth;
-	public $news;
-	public $slid;
-	public $menu;
-	public $master;
-	public $other;
-	public $data;
-	public $att;
-	public $patterns;
-	public $tw;
-	public $form;
-	public $attr;
-	public $rp;
-	public $profile;
-	public $admin;
-	public $roles;
-	public $izin;
-	public $lokasi;
-	public $terkini;
-	public $validation;
-
+    public $hooks;
+    public $config;
+    public $benchmark;
+    public $utf8;
+    public $log;
+    public $router;
+    public $output;
+    public $security;
+    public $dashboard;
+    public $lang;
+    public $db;
+    public $uri;
+    public $input;
+    public $load;
+    public $email;
+    public $session;
+    public $form_validation;
+    public $upload;
+    public $pagination;
+    public $menu;
+    public $master;
+    public $att;
+    public $auth;
+    public $other;
+    public $data;
+    public $profile;
+    public $admin;
+    public $roles;
+    public $izin;
+    public $patterns;
+    public $form;
+    public $tw;
+    public $validation;
+    public $lokasi;
+    public $rp;
+    public $attr;
+    public $slid;
+    public $news;
 	// All these are set automatically. Don't mess with them.
 	/**
 	 * Nesting level of the output buffering mechanism

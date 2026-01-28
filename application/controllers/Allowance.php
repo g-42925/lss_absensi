@@ -62,6 +62,7 @@ class Allowance extends CI_Controller {
 
     public function add(){
         cek_menu_access();
+        isCreatable();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Bonus & Tunjangan';
         $data['title']      = 'Harian';
@@ -80,6 +81,7 @@ class Allowance extends CI_Controller {
 
      public function monthly_add(){
         cek_menu_access();
+        isCreatable();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Bonus & Tunjangan';
         $data['title']      = 'Bulanan';
@@ -98,6 +100,7 @@ class Allowance extends CI_Controller {
 
     public function monthly_edit($id){
         cek_menu_access();
+        isEditable();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Bonus & Tunjangan';
         $data['title']      = 'Bulanan';
@@ -120,6 +123,7 @@ class Allowance extends CI_Controller {
 
     public function edit($id){
         cek_menu_access();
+        isEditable();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Bonus & Tunjangan';
         $data['title']      = 'Harian';

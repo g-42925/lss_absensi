@@ -55,7 +55,7 @@ class Overwork extends CI_Controller {
 
         $data['employeeOverworkId'] = $employeeOverworkId;
 
-        $data['data'] = $this->db->query("select * from employee_overwork order by date desc where employee_overwork_id = ?",[$employeeOverworkId])->row_array();
+        $data['data'] = $this->db->query("select * from employee_overwork  where employee_overwork_id = ? order by date desc",[$employeeOverworkId])->row_array();
 
         $this->load->view('templates/header', $data);
         $this->load->view('templates/sidemenu', $data);

@@ -57,10 +57,7 @@ class Timework extends CI_Controller {
         $data['auth']       = authUser();
         
         $data['auth']       = authUser();
-        if($data['auth']['tambah']!='y'){
-            $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-danger p-cg" role="alert">Tidak ada akses.</div></div>');
-            redirect('karyawan/timework/');
-        }
+
 
         $data['pola']      = $this->patterns->get_data($this->session->userdata('company_id'));
         $data['karyawan']  = $this->db->get_where('m_pegawai', ['pegawai_id' => $id])->row_array();
@@ -119,11 +116,6 @@ class Timework extends CI_Controller {
         $data['title']      = 'Waktu Kerja';
         $data['namalabel']  = $data['title'];
         $data['auth']       = authUser();
-        
-        if($data['auth']['edit']!='y'){
-            $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-danger p-cg" role="alert">Tidak ada akses.</div></div>');
-            redirect('karyawan/timework/');
-        }
 
         $companyId = $this->session->userdata('company_id');
         $data['failed'] = filter_var($this->input->get('failed'), FILTER_VALIDATE_BOOLEAN);
@@ -176,11 +168,7 @@ class Timework extends CI_Controller {
         cek_menu_access();
         
         $data['auth']       = authUser();
-        if($data['auth']['hapus']!='y'){
-            $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-danger p-cg" role="alert">Tidak ada akses.</div></div>');
-            redirect('karyawan/timework/');
-        }
-        
+
         $res = $this->other->hapus_data('m_pegawai_pola','pegawai_pola_id',$id);
         if ($res==true) {
             $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-success p-cg" role="alert">Data berhasil dihapus.</div></div>');
@@ -224,10 +212,6 @@ class Timework extends CI_Controller {
         cek_menu_access();
         
         $data['auth']       = authUser();
-        if($data['auth']['hapus']!='y'){
-            $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-danger p-cg" role="alert">Tidak ada akses.</div></div>');
-            redirect('karyawan/timework/');
-        }
 
         if ($id==null || $idx==null) { redirect('karyawan/timework/record/'.$id); }
         $check = $this->db->get_where('m_pegawai_pola', ['pegawai_pola_id' => $idx]);

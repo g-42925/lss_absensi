@@ -32,9 +32,6 @@
               <a href="<?=base_url('candidate/edit/'.$r['candidate_id']).'?failed=false';?>" class="btn p-1" title="Edit Pengajuan">
                 <i class="ti ti-edit"></i>
               </a>
-              <a href="<?= base_url('file/c_config/').$r['candidate_id'] ?>" class="btn p-1" title="Edit Pengajuan">
-                <i class="ti ti-file"></i>
-              </a>
               <a href="<?=base_url('candidate/accept/'.$r['candidate_id']).'?failed=false';?>" class="btn p-1" title="Setujui kandidat">
                 <i class="ti ti-check"></i>
               </a>

@@ -43,8 +43,7 @@ class Recruitment extends CI_Controller {
 
         $data['candidate'] = $this->db->query("select * from candidate where company_id = ?",[$companyId])->result_array();
 
-        $data['interview'] = $this->db->query("select * from interview i join candidate c on i.candidate_id = c.candidate_id join job j on j.job_id = i.job_id join position p on p.id = j.position_id where c.company_id = ?",[$companyId])->result_array();
-
+        $data['interview'] = $this->db->query("select * from interview i join candidate c on i.candidate_id = c.candidate_id join position p on c.position_id = p.id where c.company_id = ?",[$companyId])->result_array();
         
         $this->load->view('templates/header', $data);
         $this->load->view('templates/sidemenu', $data);

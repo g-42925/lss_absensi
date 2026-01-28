@@ -53,12 +53,26 @@ class Mutation extends CI_Controller {
 
     public function proses(){
       $this->db->trans_begin();
-    
+
+      $target = $this->input->post('target');
+     
       foreach($this->input->post('idp[]') as $e){
-        $this->db->set(['company_id' => $this->input->post('target')]);
-        $this->db->where('pegawai_id', $e);
+        $data = [
+          'premutation_id' => uniqid(),
+          'company_id' => $target,
+          'employee_id' =>  $e
+        ];
+
+        $this->db->set(['is_del' => 'y']);
+        $this->db->where('pegawai_id',$e);
         $this->db->update('m_pegawai');
+
+        $this->db->insert(
+          'premutation',
+          $data
+        );
       }
+
 
       if($this->db->trans_status() === FALSE) {
         $this->db->trans_rollback();
@@ -71,8 +85,7 @@ class Mutation extends CI_Controller {
       else {
         $this->db->trans_commit();
         redirect('karyawan/data');
-      }
-
+      }      
     }
 
     

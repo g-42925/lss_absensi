@@ -60,11 +60,7 @@ class Terkini extends CI_Controller {
         cek_menu_access();
 
         $data['auth'] = authUser();
-        if($data['auth']['hapus']!='y'){
-            $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-danger p-cg" role="alert">Tidak ada akses.</div></div>');
-            redirect('terkini');
-        }
-
+        
         $check = $this->db->get_where('tx_lokasi_terkini', ['lt_id' => $id])->row_array();
         $res = $this->db->delete('tx_lokasi_terkini', ['lt_id' => $id]);
         if ($res==true) {

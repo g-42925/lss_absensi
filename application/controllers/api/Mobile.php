@@ -333,7 +333,7 @@ function break(){
 }
 
 function loginv2(){
-  $today = Date('N');
+  $today = date('N');
   $nextDay = $today % 7 + 1;
   $input = file_get_contents('php://input');
   $post = json_decode($input,true);
@@ -371,7 +371,8 @@ function loginv2(){
             "position" => $position['name'],
             "ffocia" => $r1['ffo_check_in_allowed'],
             "ffocoa" => $r1['ffo_check_out_allowed'],
-            "limit" => $r1['clockout_restriction'],
+            "ci_limit" => $r1['restriction'],
+            "co_limit" => $r1['clockout_restriction'],
             "tolerance" => $r2['tardiness_tolerance'],
             "locations" => $r5,
             ...$r1,
@@ -432,7 +433,7 @@ function loginv2(){
 }
 
 function login(){
-    $today = Date('N');
+    $today = date('N');
     $differences1 = [];
     $differences2 = [];
 		$json = file_get_contents('php://input');
@@ -518,7 +519,7 @@ function login(){
   }
 
   function signout(){
-    $today = Date('N');
+    $today = date('N');
     $tanggalHariIni = date('Y-m-d');
     $json = file_get_contents('php://input');
     $post = json_decode($json,true);
@@ -852,7 +853,7 @@ function login(){
               [
                 "success" => true,
                 "late" => true,
-                "late" => $sDTDiffMinutes
+                "late_diff" => $sDTDiffMinutes
               ]
             );
 
@@ -943,9 +944,10 @@ function login(){
       }
     }
   }
+  
 
   function signin(){
-    $today = Date('N');
+    $today = date('N');
     $tanggalHariIni = date('Y-m-d');
     $json = file_get_contents('php://input');
     $post = json_decode($json,true);
@@ -959,8 +961,6 @@ function login(){
       "latitude_masuk" => $post["latitude_masuk"],
       "longitude_masuk" => $post["longitude_masuk"],
     );
-
-    $ffoci = $post['ffoci'];
 
     $emp = $this->db->query("select * from m_pegawai where pegawai_id = ?",[$post['pegawai_id']])->row_array();
     $division = $this->db->query("select * from divisions where id = ?",[$emp['division_id']])->row_array();
@@ -983,20 +983,43 @@ function login(){
       $sDTDiffMinutes = ($sDTDiff->days * 24 * 60) + ($sDTDiff->h * 60) + $sDTDiff->i;
 
       if($serverDate > $limit){
+        $empId = $post['pegawai_id'];
+        $params = [$empId,1,date('Y-m-d'),1];
+        $data2 = [...$data2,'isLate' => false];
+
+        $e = $this->db->query("select * from exception where employee_id = ? and status = ? and date = ? and is_csh = ?",$params)->row_array();  
+        
+        if($e){
+          $this->db->where('absen_id',$lastDefaultStatus["absen_id"]);
+          $this->db->update('tx_absensi',$data2);
+
+          echo json_encode(
+            [
+                "success" => true,
+                "late" => false,
+                "late_diff" => 0
+             ]
+          );
+
+        }
+        else{
+          echo json_encode(
+            [
+              "success" => false,
+              "message" => "coba beberapa saat lagi"
+            ]
+          );   
+        }
+
+        return;
+      }
+      if($serverDate < $limit && $serverDate > $tolerance){
         $data2 = [...$data2,'isLate' => true];
-          
         $exception = $this->db->query("select * from exception where employee_id = ? and date = ? and status = 1 order by created_at desc limit 1",[$emp['pegawai_id'],date('Y-m-d')])->row_array();
         
         $exception = $exception ? $exception : ['is_csh' => false,'type' => ''];
 
-
-        if($exception && (($exception['type'] == "Terlambat" || $exception['type'] == 'Lainnya') || $exception['is_csh'])){
-    
-          $data2 = !$exception['htu'] ? $data2 : [
-            ...$data2,
-            'is_status' => 'htu'
-          ];
-          
+        if($division['late_penalty']){
           $data1 = [
             'deduction_id' => uniqid(),
             'employee_id' => $post['pegawai_id'],
@@ -1005,137 +1028,6 @@ function login(){
             'amount' => $division['penalty_nominal'],
             'note' => '...'
           ];
-
-          if($ffoci){
-            if($division['ffo_check_in_allowed']){
-              $this->db->trans_begin();
-
-              if($exception['type'] == "Terlambat" || $exception['type'] == "Lainnya"){
-                $q1 = $this->db->insert(
-                  'salary_deduction',
-                  $data1
-                );
-              }
-
-              $this->db->where('absen_id',$lastDefaultStatus["absen_id"]);
-              
-
-        $dataAbsensi = !$exception['is_csh'] ? $data2 : [
-          ...$data2,
-          'is_status' => 'csh'
-        ];
-         
-              $q2 = $this->db->update('tx_absensi',$dataAbsensi);
-
-              if($q2 || ($q1 && $q2)){
-                $this->db->trans_commit();
-
-                echo json_encode(
-                  [
-                    "success" => true,
-                    "late" => true,
-                    "late_diff" => $sDTDiffMinutes
-                  ]
-                );
-
-                return;
-              }
-              else{
-                $this->db->trans_rollback();
-                echo json_encode(
-                  [
-                    "success" => false,
-                    "message" => "coba beberapa saat lagi"
-                  ]
-                );
-
-                return;
-              }
-            }
-            else{
-              echo json_encode(
-                [
-                  "success" => false, // hanya agar pesan error ditampilkan
-                  "message" => "kamu tidak bisa absen di luar lokasi kantor", // tidak bisa absesn masuk lagi
-                  "late" => false // agar client tidak menghitung keterlambatan karena tidak ada query yang diproses
-                ]
-              );
-
-              return;
-            }
-          }
-          else{
-            $this->db->trans_begin();
-
-            $q1 = $this->db->insert(
-              'salary_deduction',
-              $data1
-            ); 
-
-            $this->db->where('absen_id',$lastDefaultStatus["absen_id"]);
-
-        $dataAbsensi = !$exception['is_csh'] ? $data2 : [
-          ...$data2,
-          'is_status' => 'csh'
-        ];
-         
-            $q2 = $this->db->update('tx_absensi',$dataAbsensis);
-
-            if($q1 && $q2){
-              $this->db->trans_commit();
-
-              echo json_encode(
-                [
-                  "success" => true,
-                  "late" => true,
-                  "late_diff" => $sDTDiffMinutes
-                ]
-              );
-
-              return;
-            }
-            else{
-              $this->db->trans_rollback();
-              echo json_encode(
-                [
-                  "success" => false,
-                  "message" => "coba beberapa saat lagi"
-                ]
-              );
-
-              return;
-            }
-          }
-        }
-        else{
-          echo json_encode(
-            [
-              "success" => false, // hanya agar pesan error ditampilkan
-              "message" => "kamu sudah tidak bisa absen masuk", // tidak bisa absesn masuk lagi
-              "late" => false // agar client tidak menghitung keterlambatan karena tidak ada query yang diproses
-            ]
-          );
-
-          return;
-        }
-      }
-      if($serverDate < $limit && $serverDate > $tolerance){
-        $exception = $this->db->query("select * from exception where employee_id = ? and date = ? and status = 1 order by created_at desc limit 1",[$emp['pegawai_id'],date('Y-m-d')])->row_array();
-        
-        $exception = $exception ? $exception : ['is_csh' => false];
-
-
-        if($division['late_penalty']){
-          
-          $data1 = [
-            'id' => uniqid(),
-            'employee_id' => $post['pegawai_id'],
-            'deduction_type' => 'late penalty',
-            'date' => date('Y-m-d'),
-            'amount' => $division['penalty_nominal'],
-            'note' => '...'
-          ];
-
 
           $this->db->trans_begin();
 
@@ -1147,287 +1039,14 @@ function login(){
           }
 
           $this->db->where('absen_id',$lastDefaultStatus["absen_id"]);
-
-          $dataFinal = !$exception['is_csh'] ? $data2 : [
-            ...$data2,
-            'status' => 'is_csh',
-            'isLate' => true
-          ];
-         
-          $q2 = $this->db->update('tx_absensi',$dataFinal);
-
-
-          if($q1 && $q2){
-            if($ffoci){
-              if($division['ffo_check_in_allowed']){
-                $this->db->trans_commit();
-
-                echo json_encode(
-                  [
-                    "success" => true,
-                    "late" => true,
-                    "late_diff" => $sDTDiffMinutes
-                  ]
-                );
-
-                return;
-              }
-            }
-            else{
-              $this->db->trans_commit();
-
-              echo json_encode(
-                [
-                  "success" => true,
-                  "late" => true,
-                  "late_diff" => $sDTDiffMinutes
-                ]
-              );
-
-              return;
-            }
-          }
-          else{
-            $this->db->trans_rollback();
-            echo json_encode(
-              [
-                "success" => false,
-                "message" => "coba beberapa saat lagi"
-              ]
-            );
-
-            return;
-          }
-        }
-        else{
-          if($ffoci){
-            if($division['ffo_check_in_allowed']){
-              $this->db->where('absen_id',$lastDefaultStatus["absen_id"]);
-              
-              
-        $dataAbsensi = !$exception['is_csh'] ? $data2 : [
-          ...$data2,
-          'is_status' => 'csh'
-        ];
-
-              $q2 = $this->db->update('tx_absensi',$dataAbsensi);
-
-              if($q2){
-                echo json_encode(
-                  [
-                    "success" => true,
-                    "late" => true,
-                    "late_diff" => $sDTDiffMinutes
-                  ]
-                );
-              }
-              else{
-                echo json_encode(
-                  [
-                    "success" => false,
-                    "message" => "coba beberapa saat lagi"
-                  ]
-                );
-
-                return;
-              }
-            }
-            else{
-              echo json_encode(
-                [
-                  "success" => false,
-                  "message" => "coba beberapa saat lagi"
-                ]
-              );
-            }
-          }
-          else{
-            $this->db->where('absen_id',$lastDefaultStatus["absen_id"]);
-            
-        $dataAbsensi = !$exception['is_csh'] ? $data2 : [
-          ...$data2,
-          'is_status' => 'csh'
-        ];
-            
-            $q2 = $this->db->update('tx_absensi',$dataAbsensi);
-
-            if($q2){
-              echo json_encode(
-                [
-                  "success" => true,
-                  "late" => true,
-                  "late_diff" => $sDTDiffMinutes
-                ]
-              );
-            }
-            else{
-              echo json_encode(
-                [
-                  "success" => false,
-                  "message" => "coba beberapa saat lagi"
-                ]
-              );
-
-              return;
-            }
-          }
-        }
-      }
-      if($serverDate < $tolerance){
-        if($serverDate < $dateTime1->modify('-1 hour') && $post['pegawai_id'] != '107'){
-          echo json_encode(
-            [
-             "success" => false,
-             "message" => "tidak bisa absen masuk sebelum waktunya",
-            ]
-          );
           
-          return;
-        }
-        else{
-          $exception = $this->db->query("select * from exception where employee_id = ? and date = ? and status = 1 order by created_at desc limit 1",[$emp['pegawai_id'],date('Y-m-d')])->row_array();
-          $exception = $exception ? $exception : ['is_csh' => false];
-          if($ffoci){
-            if($division['ffo_check_in_allowed']){
-              $this->db->where('pegawai_id',$post["pegawai_id"]);
-              $this->db->where('tanggal_absen',$tanggalHariIni);
-            
-              $dataAbsensi = !$exception['is_csh'] ? $data2 : [
-                ...$data2,
-                'is_status' => 'csh'
-              ];
-
-              $q = $this->db->update('tx_absensi',$dataAbsensi);           
-        
-              if($q){
-                echo json_encode(
-                  [
-                    "success" => true,
-                    "late" => false,
-                    "ffoci" => $ffoci
-                  ]
-                );
-
-                return;
-              }
-              else{
-                echo json_encode(
-                  [
-                    "success" => false,
-                    "message" => "coba beberapa saat lagi",
-                  ]
-                );
-
-                return;
-              }
-            }
-            else{
-              echo json_encode(
-                [
-                  "success" => false,
-                  "message" => "coba beberapa saat lagi",
-                ]
-              );
-
-              return;
-            }
-          }
-        }
-      }
-    }
-    else{
-      $serverDate = new DateTime();
-      $employee = $this->db->query("select * from m_pegawai where pegawai_id = ?",[$post['pegawai_id']])->row_array();
-      $pattern = $this->db->query("select * from m_pola_kerja mpk join m_pola_kerja_det mpkd on mpk.pola_kerja_id = mpkd.pola_kerja_id where mpk.pola_kerja_id = ? and is_day = ?",[$workSystem[1],$today])->row_array();
-      $dateTime1 = new DateTime($lastDefaultStatus['tanggal_absen']. ' ' . $pattern['jam_masuk']);
-      $tolerance = (clone $dateTime1)->modify("+{$pattern['toleransi_terlambat']} minutes");
-      $limit = (clone $tolerance)->modify("+{$division['restriction']} minutes");
-      $sDLDiff = $serverDate->diff($limit);
-      $sDLDiffMinutes = ($sDLDiff->days * 24 * 60) + ($sDLDiff->h * 60) + $sDLDiff->i;
-      $sDTDiff = $serverDate->diff($tolerance);
-      $sDTDiffMinutes = ($sDTDiff->days * 24 * 60) + ($sDTDiff->h * 60) + $sDTDiff->i;
-
-      if($serverDate > $limit){
-        $data2 = [...$data2,'isLate' => true];
-        $exception = $this->db->query("select * from exception where employee_id = ? and date = ? and status = 1 order by created_at desc limit 1",[$emp['pegawai_id'],date('Y-m-d')])->row_array();
-        
-        if(!$exception){
-            if($post['pegawai_id'] == '107'){
-                $this->db->trans_begin();
-                
-                $this->db->where('absen_id',$lastDefaultStatus["absen_id"]);
-                
-                $q2 = $this->db->update('tx_absensi',$data2);
-
-                if($q2){
-                    $this->db->trans_commit();
-
-                    echo json_encode(
-                        [
-                            "success" => true,
-                            "late" => true,
-                            "late_diff" => $sDTDiffMinutes
-                        ]
-                    );
-
-                    return;
-                 }
-                 else{
-                    echo json_encode(
-                        [
-                            "success" => false,
-                            "message" => "coba beberapa saat lagi",
-                        ]
-                    );
-                    return;                       
-                 }
-            }
-            else{
-                echo json_encode(
-                    [
-                        "success" => false,
-                        "message" => "coba beberapa saat lagi",
-                    ]
-                );                
-            }
-            
-        }
-        else{
-        $exception = $exception ? $exception : ['is_csh' => false,'type' => ''];
-        
-
-        if($exception && (($exception['type'] == "Terlambat" || $exception['type'] == 'Terlambat dan berada di luar kantor') || $exception['is_csh'])){
-          $data2 = !$exception['htu'] ? $data2 : [
-            ...$data2,
-            'is_status' => 'htu'
-          ];
-          
-          $data1 = [
-            'id' => uniqid(),
-            'employee_id' => $post['pegawai_id'],
-            'deduction_type' => 'late penalty',
-            'date' => date('Y-m-d'),
-            'amount' => $division['penalty_nominal'],
-            'note' => '...'
-          ];
-
-          $this->db->trans_begin();
-
-              if($exception['type'] == "Terlambat" || $exception['type'] == 'Terlambat dan berada di luar kantor'){
-                $q1 = $this->db->insert(
-                  'salary_deduction',
-                  $data1
-                );
-              }
-
-          $this->db->where('absen_id',$lastDefaultStatus["absen_id"]);
-
         $dataAbsensi = !$exception['is_csh'] ? $data2 : [
           ...$data2,
           'is_status' => 'csh'
         ];
          
           $q2 = $this->db->update('tx_absensi',$dataAbsensi);
+
 
           if($q2 || ($q1 && $q2)){
             $this->db->trans_commit();
@@ -1455,18 +1074,129 @@ function login(){
           }
         }
         else{
+          $this->db->where('absen_id',$lastDefaultStatus["absen_id"]);
+
+        $dataAbsensi = !$exception['is_csh'] ? $data2 : [
+          ...$data2,
+          'is_status' => 'csh'
+        ];
+
+          $q2 = $this->db->update('tx_absensi',$dataAbsensi);
+
+          if($q2){
+            echo json_encode(
+              [
+                "success" => true,
+                "late" => true,
+                "late_diff" => $sDTDiffMinutes
+              ]
+            );
+
+            return;
+          }
+          else{
+            echo json_encode(
+              [
+                "success" => true,
+                "message" => "coba beberapa saat lagi"
+              ]
+            );
+
+            return;
+          }
+        }
+      }
+      if($serverDate < $tolerance){
+        if($serverDate < $dateTime1->modify('-1 hour') && $post['pegawai_id'] != '107'){
+          echo json_encode(
+            [
+             "success" => false,
+             "message" => "tidak bisa absen masuk sebelum waktunya",
+            ]
+          );
+          
+          return;
+        }
+        else{
+          $exception = $this->db->query("select * from exception where employee_id = ? and date = ? and status = 1 order by created_at desc limit 1",[$emp['pegawai_id'],date('Y-m-d')])->row_array();
+
+          $this->db->where('pegawai_id',$post["pegawai_id"]);
+          $this->db->where('tanggal_absen',$tanggalHariIni);
+        
+          $exception = $exception ? $exception : ['is_csh' => false];
+        
+          $dataAbsensi = (!$exception['is_csh'] || false) ? $data2 : [
+            ...$data2,
+            'is_status' => 'csh'
+          ];
+
+          $q = $this->db->update('tx_absensi',$dataAbsensi);
+
+          if($q){
+            echo json_encode(
+              [
+                "success" => true,
+                "late" => false,
+              ]
+            );
+
+            return;
+          }
+          else{
+            echo json_encode(
+              [
+                "success" => false,
+                "message" => "coba beberapa saat lagi",
+              ]
+            );
+          
+            return;
+          }
+        }
+      }
+    }
+    else{
+      $serverDate = new DateTime();
+      $employee = $this->db->query("select * from m_pegawai where pegawai_id = ?",[$post['pegawai_id']])->row_array();
+      $pattern = $this->db->query("select * from m_pola_kerja mpk join m_pola_kerja_det mpkd on mpk.pola_kerja_id = mpkd.pola_kerja_id where mpk.pola_kerja_id = ? and is_day = ?",[$workSystem[1],$today])->row_array();
+      $dateTime1 = new DateTime($lastDefaultStatus['tanggal_absen']. ' ' . $pattern['jam_masuk']);
+      $tolerance = (clone $dateTime1)->modify("+{$pattern['toleransi_terlambat']} minutes");
+      $limit = (clone $tolerance)->modify("+{$division['restriction']} minutes");
+      $sDLDiff = $serverDate->diff($limit);
+      $sDLDiffMinutes = ($sDLDiff->days * 24 * 60) + ($sDLDiff->h * 60) + $sDLDiff->i;
+      $sDTDiff = $serverDate->diff($tolerance);
+      $sDTDiffMinutes = ($sDTDiff->days * 24 * 60) + ($sDTDiff->h * 60) + $sDTDiff->i;
+      
+   
+      if($serverDate > $limit){
+        $empId = $post['pegawai_id'];
+        $params = [$empId,1,date('Y-m-d'),1];
+        $data2 = [...$data2,'isLate' => false];
+
+        $e = $this->db->query("select * from exception where employee_id = ? and status = ? and date = ? and is_csh = ?",$params)->row_array();  
+        
+        if($e){
+          $this->db->where('absen_id',$lastDefaultStatus["absen_id"]);
+          $this->db->update('tx_absensi',$data2);
+          echo json_encode(
+            [
+                "success" => true,
+                "late" => false,
+                "late_diff" => 0
+             ]
+          );
+
+        }
+        else{
           echo json_encode(
             [
               "success" => false,
-              "message" => "kamu sudah tidak bisa absen masuk"
+              "message" => "coba beberapa saat lagi"
             ]
-          );
-
-          return;
-        }            
+          );   
         }
-        
 
+        return;
       }
       if($serverDate < $limit && $serverDate > $tolerance){
         $data2 = [...$data2,'isLate' => true];
@@ -1476,7 +1206,7 @@ function login(){
 
         if($division['late_penalty']){
           $data1 = [
-            'id' => uniqid(),
+            'deduction_id' => uniqid(),
             'employee_id' => $post['pegawai_id'],
             'deduction_type' => 'late penalty',
             'date' => date('Y-m-d'),
@@ -1509,7 +1239,6 @@ function login(){
             echo json_encode(
               [
                 "success" => true,
-                "late" => true,
                 "late" => true,
                 "late_diff" => $sDTDiffMinutes
               ]
@@ -1796,7 +1525,9 @@ function login(){
   }
 
   function taskList($id){
-    $q = $this->db->query("select * from task where employee_id = ? and date >= ? order by created_at desc",[$id,date('Y-m-d')])->result_array();
+    $yesterday =  date('Y-m-d', strtotime('-1 day')); 
+      
+    $q = $this->db->query("select * from task where employee_id = ? and date between ? and ? order by created_at desc",[$id,$yesterday,date('Y-m-d')])->result_array();
 
     if($q){
       echo json_encode(
@@ -2301,7 +2032,7 @@ function login(){
 
   public function alphaList($companyId){
     $result = [];
-    $today = Date('N');
+    $today = date('N');
     $date = date("Y-m-d");
     $employees = $this->db->query("select * from tx_absensi ta join m_pegawai mp on ta.pegawai_id = mp.pegawai_id where mp.company_id = ? and ta.is_status = 'alpha-2' and tanggal_absen = ?",[$companyId,$date])->result_array();
     
@@ -2362,39 +2093,13 @@ function login(){
 
     $q = $this->db->query("select * from employee_overwork_detail where employee_overwork_detail_id = ?",[$post['employee_overwork_detail_id']])->row_array();
     
+    $this->db->where('employee_overwork_detail_id',$post['employee_overwork_detail_id']);
     
-    if($q['finish_location'] == '-'){
-      if($q['start_location '] != '-'){
-        $this->db->where('employee_overwork_detail_id',$post['employee_overwork_detail_id']);
-        $this->db->update('employee_overwork_detail',$data);
-      }
-      else{
-        echo json_encode ([
-          'success' => false,
-        ]);
-      }
-    }
+    $this->db->update('employee_overwork_detail',$data);
 
-    if($q['finish_location'] == '-' && $q['start_location'] != '-'){
-      if($this->db->trans_status() === false) {
-        $this->db->trans_rollback();
-        echo json_encode ([
-          'success' => false,
-        ]);
-      }
-      else {
-        $this->db->trans_commit();
-        echo json_encode ([
-          'success' => true,
-        ]);
-      }
-    }
-
-    if($q['finish_location'] != '-'){
-      echo json_encode ([
-        'success' => false,
-      ]);
-    }
+    echo json_encode ([
+      'success' => true,
+    ]);
   }
 
   public function overworkstart(){
@@ -2547,7 +2252,7 @@ function login(){
 
     $workSystem = explode("-",$division['work_system']);
 
-    $today = Date('N');
+    $today = date('N');
     $tanggalHariIni = date('Y-m-d');
 
     if($workSystem[0] == "s"){

@@ -21,6 +21,21 @@ function is_logged_in(){
     }
 }
 
+function isCreatable(){
+  $CI = get_instance();
+  $permittedPermissionId = [1,9,11];
+  if(!in_array($CI->session->userdata('permission_id'),$permittedPermissionId)){
+    redirect('dashboard');
+  }
+}
+
+function isEditable(){
+  $CI = get_instance();
+  $permittedPermissionId = [1,10,11];
+  if(!in_array($CI->session->userdata('permission_id'),$permittedPermissionId)){
+    redirect('dashboard');
+  }
+}
 
 function cek_menu_access() {
     $CI = get_instance();
@@ -68,6 +83,11 @@ function authUser(){
         JOIN m_permission c ON a.permission_id=c.permission_id 
         WHERE a.user_id='$pid' AND a.is_del='n'
     ")->row_array();
+    
+    $query['role_id'] = $CI->session->userdata('role_id');
+    $query['nama_role'] = $CI->session->userdata('role_name');
+    $query['nama_lengkap'] = $CI->session->userdata('nama_lengkap');
+
     return ($query);
 }
 

@@ -3,31 +3,33 @@
   <!-- Users List Table -->
   <div class="card">
     <div class="card-header border-bottom">
-      <h5 class="card-title mb-0">Tambah Data</h5>
+      <h5 class="card-title mb-0">Edit Data</h5>
     </div>
     <div class="card">
-      <form class="card-body" enctype="multipart/form-data" id="formTarget" action="<?=base_url('candidate/edit_proccess/').$id ?>" method="POST">
+      <form class="card-body" enctype="multipart/form-data" id="formTarget" action="<?=base_url('candidate/edit_proccess/').$candidate['candidate_id'] ?>" method="POST">
         <?php if($failed): ?>
           <?=$this->session->flashdata('message');?>
         <?php endif; ?>
         <div class="row g-3">
           <div class="col-xl-12 col-md-12 col-sm-12 col-xs-12">
+            <label class="form-label">Candidate Id<i class="text-danger">*</i></label>
+            <input type="text" id="candidateId" class="form-control" name="candidate_id" readonly />
+          </div>
+          <div class="col-xl-12 col-md-12 col-sm-12 col-xs-12">
             <label class="form-label">Nik<i class="text-danger">*</i></label>
-            <input value="<?= $candidate['nik'] ?>"type="text" class="form-control" name="nik" required />
-            <input type="hidden" id="changeMarker" class="form-control" name="changeMarker" value="0" />
-
+            <input value="<?= $candidate['nik'] ?>" type="text" class="form-control" name="nik" required />
           </div>
           <div class="col-xl-12 col-md-12 col-sm-12 col-xs-12">
             <label class="form-label">Name<i class="text-danger">*</i></label>
-            <input value="<?= $candidate['candidate_name'] ?>"t type="text" class="form-control" name="name" required />
+            <input value="<?= $candidate['candidate_name'] ?>" type="text" class="form-control" name="name" required />
           </div>
           <div class="col-xl-12 col-md-12 col-sm-12 col-xs-12">
             <label class="form-label">Nomor Ponsel<i class="text-danger">*</i></label>
-            <input value="<?= $candidate['phone_number'] ?>"t type="text" class="form-control" name="phone_number" required />
+            <input value="<?= $candidate['phone_number'] ?>" type="text" class="form-control" name="phone_number" required />
           </div>
           <div class="col-xl-12 col-md-12 col-sm-12 col-xs-12">
             <label class="form-label">Email<i class="text-danger">*</i></label>
-            <input value="<?= $candidate['email'] ?>"t type="text" class="form-control" name="email" required />
+            <input value="<?= $candidate['email'] ?>" type="text" class="form-control" name="email" required />
           </div>
           <div class="col-xl-12 col-md-12 col-sm-12 col-xs-12">
             <label class="form-label" for="multicol-country">Jenis kelamin<i class="text-danger">*</i></label>
@@ -69,6 +71,7 @@
     const formTarget = document.getElementById("formTarget");
     const photo = document.getElementById("photo");
     const candidateId = document.getElementById('candidateId');
+    const changeMarker = document.getElementById("changeMarker");
 
     let currentObjectURL = null;
     
@@ -95,12 +98,9 @@
       
       currentObjectURL = URL.createObjectURL(file)
       previewTarget.src = currentObjectURL
-      changeMarker.value = 1;
-
     });
 
     candidateId.value = Date.now()
-
   });
 
 

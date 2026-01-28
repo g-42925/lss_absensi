@@ -53,16 +53,13 @@ class Req_permission extends CI_Controller {
 
     public function add() {
         cek_menu_access();
+        isCreatable();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Data Request Izin';
         $data['title']      = 'Data Request Izin';
         $data['namalabel']  = $data['title'];
         $data['auth']       = authUser();
         
-        if($data['auth']['tambah']!='y'){
-            $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-danger p-cg" role="alert">Tidak ada akses.</div></div>');
-            redirect('req_permission/');
-        }
 
         $data['karyawan']   = dataKaryawan();
         $data['thismonth'] = date('Y-m-t');
@@ -124,6 +121,7 @@ class Req_permission extends CI_Controller {
 
     public function edit($id = null) {
         cek_menu_access();
+        isEditable();
         if ($id==null) { redirect('req_permission'); }
         $check = $this->db->get_where('tx_request_izin', ['request_izin_id' => $id]);
         if ($check->num_rows()==0) { 
@@ -136,15 +134,9 @@ class Req_permission extends CI_Controller {
         $data['title']      = 'Data Request Izin';
         $data['namalabel']  = $data['title'];
         $data['auth']       = authUser();
-        
-        if($data['auth']['edit']!='y'){
-            $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-danger p-cg" role="alert">Tidak ada akses.</div></div>');
-            redirect('req_permission/');
-        }
 
         $data['karyawan'] = $this->db->query("select * from tx_request_izin_pegawai trip join m_pegawai mp on mp.pegawai_id = trip.pegawai_id where trip.request_izin_id = ?",[$id])->row_array();
 
-        //$data['karyawan']   = $this->rp->get_karyawan($id);
         $data['edit']       = $check->row_array();
         $data['thismonth'] = date('Y-m-t');
 
@@ -231,10 +223,6 @@ class Req_permission extends CI_Controller {
         cek_menu_access();
         
         $data['auth'] = authUser();
-        if($data['auth']['hapus']!='y'){
-            $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-danger p-cg" role="alert">Tidak ada akses.</div></div>');
-            redirect('req_permission/');
-        }
 
         if ($id==null) { redirect('req_permission'); }
         $check = $this->db->get_where('tx_request_izin', ['request_izin_id' => $id]);

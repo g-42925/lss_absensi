@@ -38,10 +38,6 @@ class Overtime extends CI_Controller {
         $data['namalabel']  = $data['title'];
         $data['auth']       = authUser();
         
-        if($data['auth']['tambah']!='y'){
-            $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-danger p-cg" role="alert">Tidak ada akses.</div></div>');
-            redirect('overtime/');
-        }
 
         $data['karyawan']   = dataKaryawan();
         $data['thismonth'] = date('Y-m-t');
@@ -97,11 +93,6 @@ class Overtime extends CI_Controller {
         $data['title']      = 'Data Lembur';
         $data['namalabel']  = $data['title'];
         $data['auth']       = authUser();
-        
-        if($data['auth']['edit']!='y'){
-            $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-danger p-cg" role="alert">Tidak ada akses.</div></div>');
-            redirect('overtime/');
-        }
 
         $data['karyawan']   = $this->rp->get_karyawan($id);
         $data['edit']       = $check->row_array();
@@ -165,11 +156,7 @@ class Overtime extends CI_Controller {
         cek_menu_access();
         
         $data['auth']       = authUser();
-        if($data['auth']['hapus']!='y'){
-            $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-danger p-cg" role="alert">Tidak ada akses.</div></div>');
-            redirect('overtime/');
-        }
-
+        
         if ($id==null) { redirect('overtime'); }
         $check = $this->db->get_where('tx_lembur', ['lembur_id' => $id]);
         if ($check->num_rows()==0) {
