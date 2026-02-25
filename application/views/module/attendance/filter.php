@@ -21,9 +21,9 @@
           <option <?= $status == 'i' ? 'selected':'' ?> value="i">Izin</option>
           <option <?= $status == 'c' ? 'selected':'' ?> value="c">Cuti</option>
           <option <?= $status == 'l' ? 'selected':'' ?> value="l">Cuti</option>
- 
         </select>
         <input value="<?= $date ?>" name="date" type="date" class="w-full p-3 rounded-md border-2 border-black"/>
+        <input value="<?= $key ?>" name="keyword" type="text" placeholder="nik or name" class="w-full p-3 rounded-md border-2 border-black"/> 
         <button class="bg-black text-white p-3 rounded-md">search</button>
       </form>
     </div>
@@ -59,7 +59,7 @@
             }
           ?>
           <tr>
-            <td class="w-s-n <?= DateTime::createFromFormat('H:i', $row['jam_masuk']) > $row['tolerance'] ? 'text-red-900':'' ?>"><?= $row['nama_pegawai'] ?></td> <!-- nama -->
+            <td class="w-s-n <?= $row['isLate'] == '1' ? 'text-red-900':'' ?>"><?= $row['nama_pegawai'] ?></td> <!-- nama -->
             <td class="v-a-t"> <!-- status -->
               <select class="form-control <?=$bgs;?>" name="status" id="status<?=$row['pid'];?>" required="" onchange="updateStatus('status','<?=$row['pid'];?>',this.value)" <?php if ($row['is_request']>0) { echo 'disabled'; } ?>>
                 <option value="ts" <?php if ($row['is_status']=='ts') echo 'selected'; ?>>Belum ada status [TS]</option>

@@ -23,25 +23,45 @@ class Attendance_record extends CI_Controller {
 
     public function index($awal = null, $akhir = null) {
         cek_menu_access();
+        
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Rekap Kehadiran';
         $data['title']      = 'Rekap Kehadiran';
         $data['namalabel']  = $data['title'];
         $data['auth']       = authUser();
 
-        $data['tglawal'] = date('Y-m-01');
-        if ($awal!=null) {
-            $data['tglawal'] = $awal;
-        }
+        $companyId = $this->session->userdata('company_id');
 
-        $data['today'] = date('Y-m-d');
-        $data['tglakhir'] = date('Y-m-d');
-        if ($akhir!=null) {
-            $data['tglakhir'] = $akhir;
-        }
+        $data['from'] = '';
+
+        $data['to'] = '';
+        
+        $data['datas'] = $this->attr->get_data($companyId,date('Y-m-01'),date('Y-m-d'));
+
+        $this->load->view('templates/header', $data);
+        $this->load->view('templates/sidemenu', $data);
+        $this->load->view('templates/sidenav', $data);
+        $this->load->view('module/attendance_record/index', $data);
+        $this->load->view('templates/footer', $data);
+        $this->load->view('templates/fscript-html-end', $data);
+    }
+
+    public function filter() {
+        cek_menu_access();
+        
+        $data['htmlpagejs'] = 'none';
+        $data['nmenu']      = 'Rekap Kehadiran';
+        $data['title']      = 'Rekap Kehadiran';
+        $data['namalabel']  = $data['title'];
+        $data['auth']       = authUser();
 
         $companyId = $this->session->userdata('company_id');
-        $data['datas'] = $this->attr->get_data($companyId,$data['tglawal'],$data['tglakhir']);
+
+        $data['from'] = $this->input->get('from');
+
+        $data['to'] = $this->input->get('to');
+        
+        $data['datas'] = $this->attr->get_data($companyId,$data['from'],$data['to']);
 
         $this->load->view('templates/header', $data);
         $this->load->view('templates/sidemenu', $data);

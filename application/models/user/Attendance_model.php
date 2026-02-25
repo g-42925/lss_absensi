@@ -327,6 +327,7 @@ class Attendance_model extends CI_Model {
         $tgl = $date;
         $div = $filter['div'];
         $status = $filter['status'];
+				$key = $filter['key'];
 
         if ($tgl==date('Y-m-d')) {
             $check_tgl = $this->db->query("SELECT * FROM tx_tanggal WHERE tanggal='$tgl'")->num_rows();
@@ -346,18 +347,18 @@ class Attendance_model extends CI_Model {
           if($status == ''){
             $query = "SELECT a.company_id, a.pegawai_id as pid, a.division_id as division_id, a.nama_pegawai, a.tanggal_mulai_kerja, b.*, c.mulai_berlaku_tanggal, c.dari_hari_ke, c.is_day, c.pola_kerja_id FROM m_pegawai a
 							LEFT JOIN tx_absensi b ON a.pegawai_id=b.pegawai_id AND b.tanggal_absen='$tgl' AND b.is_pending='$statt' LEFT JOIN m_pegawai_pola c ON a.pegawai_id=c.pegawai_id AND c.is_selected='y'
-							WHERE a.is_del='n' and a.company_id ='$companyId'";
+							WHERE a.is_del='n' and a.company_id ='$companyId' and (a.nama_pegawai like '%$key%' or a.nik= '$key')";
 					}
           else{
 						if($status == 'l'){
               $query = "SELECT a.company_id, a.pegawai_id as pid, a.division_id as division_id, a.nama_pegawai, a.tanggal_mulai_kerja, b.*, c.mulai_berlaku_tanggal, c.dari_hari_ke, c.is_day, c.pola_kerja_id FROM m_pegawai a
 							  LEFT JOIN tx_absensi b ON a.pegawai_id=b.pegawai_id AND b.tanggal_absen='$tgl' AND b.is_pending='$statt' LEFT JOIN m_pegawai_pola c ON a.pegawai_id=c.pegawai_id AND c.is_selected='y'
-							  WHERE a.is_del='n' and b.isLate='1' and a.company_id ='$companyId'";
+							  WHERE a.is_del='n' and b.isLate='1' and a.company_id ='$companyId' and (a.nama_pegawai like '%$key%' or a.nik= '$key')";
 						}
 						else{
               $query = "SELECT a.company_id, a.pegawai_id as pid, a.division_id as division_id, a.nama_pegawai, a.tanggal_mulai_kerja, b.*, c.mulai_berlaku_tanggal, c.dari_hari_ke, c.is_day, c.pola_kerja_id FROM m_pegawai a
 							  LEFT JOIN tx_absensi b ON a.pegawai_id=b.pegawai_id AND b.tanggal_absen='$tgl' AND b.is_pending='$statt' LEFT JOIN m_pegawai_pola c ON a.pegawai_id=c.pegawai_id AND c.is_selected='y'
-							  WHERE a.is_del='n' and b.is_status='$status' and a.company_id ='$companyId'";
+							  WHERE a.is_del='n' and b.is_status='$status' and a.company_id ='$companyId' and (a.nama_pegawai like '%$key%' or a.nik= '$key')";
 						}
 
           }
@@ -366,7 +367,7 @@ class Attendance_model extends CI_Model {
 					if($status == ''){
             $query = "SELECT a.company_id, a.pegawai_id as pid, a.division_id as division_id, a.nama_pegawai, a.tanggal_mulai_kerja, b.*, c.mulai_berlaku_tanggal, c.dari_hari_ke, c.is_day, c.pola_kerja_id FROM m_pegawai a
 							LEFT JOIN tx_absensi b ON a.pegawai_id=b.pegawai_id AND b.tanggal_absen='$tgl' AND b.is_pending='$statt' LEFT JOIN m_pegawai_pola c ON a.pegawai_id=c.pegawai_id AND c.is_selected='y'
-							WHERE a.is_del='n' and a.division_id = '$div' and a.company_id ='$companyId'";     						
+							WHERE a.is_del='n' and a.division_id = '$div' and a.company_id ='$companyId' and (a.nama_pegawai like '%$key%' or a.nik= '$nik')";     						
 					}
 					else{
 						if($status == 'l'){
@@ -507,7 +508,8 @@ class Attendance_model extends CI_Model {
                 's_istirahat_latitude'  => $row['s_istirahat_latitude'],
                 's_istirahat_longitude' => $row['s_istirahat_longitude'],
                 'tolerance'             => $row['tolerance'],
-                'limit'                 => $row['limit']
+                'limit'                 => $row['limit'],
+								'isLate'                => $row['isLate'],
             );
             }
         }

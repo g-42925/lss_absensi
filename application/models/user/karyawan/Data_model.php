@@ -23,7 +23,7 @@ class Data_model extends CI_Model {
             $query = $this->db->query("SELECT * FROM m_pegawai WHERE is_del='n' and company_id=$companyId ")->result_array();
           }
           else{
-            $query = $this->db->query("SELECT * FROM m_pegawai WHERE is_del='n' and company_id=$companyId and nik='$nik'")->result_array();
+            $query = $this->db->query("SELECT * FROM m_pegawai WHERE is_del='n' and company_id=$companyId and (nik='$nik' or nama_pegawai like '%$nik%')")->result_array();
           }
         }
         else{
@@ -31,7 +31,7 @@ class Data_model extends CI_Model {
             $query = $this->db->query("SELECT * FROM m_pegawai WHERE is_del='n' and company_id=$companyId and division_id='$div' ")->result_array();
           }
           else{
-            $query = $this->db->query("SELECT * FROM m_pegawai WHERE is_del='n' and company_id=$companyId and division_id='$div' and nik='$nik' ")->result_array();
+            $query = $this->db->query("SELECT * FROM m_pegawai WHERE is_del='n' and company_id=$companyId and division_id='$div' and (nik='$nik' or nama_pegawai like'%$nik%')")->result_array();
           }         
         }
 

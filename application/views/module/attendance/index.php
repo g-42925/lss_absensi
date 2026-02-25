@@ -19,10 +19,11 @@
           <option value="s">Sakit</option>
           <option value="i">Izin</option>
           <option value="c">Cuti</option>
-          <option value="l">Cuti</option>
-
+          <option value="l">Terlambat</option>
         </select>
         <input value="<?= date('Y-m-d') ?>" name="date" type="date" class="w-full p-3 rounded-md border-2 border-black"/>
+        <input value="" name="keyword" type="text" placeholder="card id or name" class="w-full p-3 rounded-md border-2 border-black"/>
+
         <button class="bg-black text-white p-3 rounded-md">search</button>
       </form>
     </div>
@@ -58,7 +59,7 @@
             }
           ?>
           <tr>
-            <td class="w-s-n <?= $row['isLate'] ? 'text-red-900':'' ?>"><?= $row['nama_pegawai'] ?></td> <!-- nama -->
+            <td class="w-s-n <?= $row['isLate'] == '1' ? 'text-red-900':'' ?>"><?= $row['nama_pegawai'] ?></td> <!-- nama -->
             <td class="v-a-t"> <!-- status -->
               <select class="form-control <?=$bgs;?>" name="status" id="status<?=$row['pid'];?>" required="" onchange="updateStatus('status','<?=$row['pid'];?>',this.value)" <?php if ($row['is_request']>0) { echo 'disabled'; } ?>>               
                 <option value="ts" <?= $row['is_status'] == 'ts' ? 'selected':'' ?>>Belum ada status [TS]</option>

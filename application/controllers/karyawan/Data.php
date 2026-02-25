@@ -31,7 +31,7 @@ class Data extends CI_Controller {
 			$data['namalabel']  = $data['title'];
 			$data['auth']       = authUser();
 
-      $div = $this->input->get('divisionId');
+            $div = $this->input->get('divisionId');
 			$nik = $this->input->get('nik');
 
 			$div = $div == 'all' ? '' : $div;

@@ -92,12 +92,14 @@ class Attendance extends CI_Controller {
         $filter = [
           'date' => $date,
           'div' => $div,
-          'status' => $status
+          'status' => $status,
+          'key' => $this->input->get('keyword')
         ];
 
         $data['status'] = $status;
         $data['date'] = $date;
         $data['div'] = $div;
+        $data['key'] = $this->input->get('keyword');
 
         $companyId = $this->session->userdata('company_id');
 

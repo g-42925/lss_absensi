@@ -12,7 +12,7 @@
             </option>
           <?php endforeach; ?>
         </select>
-        <input value="<?= $nik ?>" name="nik" placeholder="search by nik" type="text" class="p-3 border-2 border-black rounded-md" placeholder=""/>
+        <input value="<?= $nik ?>" name="nik" placeholder="card id or name" type="text" class="p-3 border-2 border-black rounded-md" placeholder=""/>
         <button class="bg-black text-white p-3 rounded-md">search</button>
       </form>
       <a class="bg-black text-white p-3 rounded-md" href="<?=base_url('karyawan/data/add/0');?>">New</a>

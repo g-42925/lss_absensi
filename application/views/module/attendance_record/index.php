@@ -2,25 +2,12 @@
 <div class="container-xxl flex-grow-1 container-p-y">
   <!-- Users List Table -->
   <div class="card">
-    <div class="card-header border-bottom">
-      <h5 class="card-title mb-2"><?=$namalabel;?></h5>
-      <div class="row">
-        <div class="col-xl-3 col-lg-4 col-md-5 col-sm-6 col-xs-5">
-          <label class="form-label">Tanggal Mulai</label>
-            <input type="text" class="form-control filtertglrkp" placeholder="YYYY-MM-DD" value="<?=$tglawal;?>" id="flatpickr-date" />
-        </div>
-        <div class="col-xl-4 col-lg-4 col-md-5 col-sm-6 col-xs-7">
-          <label class="form-label">Akhir</label>
-          <div class="input-group">
-            <input type="text" class="form-control filtertglrkp2" placeholder="YYYY-MM-DD" id="flatpickr-date2" value="<?=$tglakhir;?>" />
-            <a href="javascript:filtertglRkp();" class="input-group-text btn btn-outline-primary">Terapkan</a>
-          </div>
-        </div>
-        <div class="col-xl-2 col-lg-4 col-md-2 col-sm-12">
-          <label class="form-label">&nbsp;</label>
-          <a href="<?=base_url('attendance_record/toCsv/'.$tglawal.'/'.$tglakhir);?>" class="form-control btn btn-outline-primary">Download</a>
-        </div>
-      </div>
+    <div class="card-header border-bottom flex flex-col gap-3">
+      <form method="get" action="<?= base_url().'/attendance_record/filter' ?>" class="flex flex-row w-full gap-3">
+        <input name="from" value="<?= date('Y-m-01') ?>" name="date" type="date" class="w-full p-3 rounded-md border-2 border-black"/>
+        <input value="<?= $to == '' ? date('Y-m-d') : $to ?>" name="to" value="<?= $to == '' ? date('Y-m-d') : $to ?>" name="date" type="date" class="w-full p-3 rounded-md border-2 border-black"/>
+        <button class="bg-black text-white p-3 rounded-md">search</button>
+      </form>
     </div>
     <div class="card-datatable table-responsive">
       <table class="table border-top" id="dataTableatt2">
