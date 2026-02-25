@@ -20,6 +20,8 @@
           <option <?= $status == 's' ? 'selected':'' ?> value="s">Sakit</option>
           <option <?= $status == 'i' ? 'selected':'' ?> value="i">Izin</option>
           <option <?= $status == 'c' ? 'selected':'' ?> value="c">Cuti</option>
+          <option <?= $status == 'l' ? 'selected':'' ?> value="l">Cuti</option>
+ 
         </select>
         <input value="<?= $date ?>" name="date" type="date" class="w-full p-3 rounded-md border-2 border-black"/>
         <button class="bg-black text-white p-3 rounded-md">search</button>

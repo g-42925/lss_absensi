@@ -87,6 +87,7 @@ class Attendance extends CI_Controller {
         $date = $date ?: date('Y-m-d');
         $div = $div == 'all' ? '' : $div;
         $status = $status == 'all' ? '' : $status;
+        
 
         $filter = [
           'date' => $date,

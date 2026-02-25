@@ -19,6 +19,8 @@
           <option value="s">Sakit</option>
           <option value="i">Izin</option>
           <option value="c">Cuti</option>
+          <option value="l">Cuti</option>
+
         </select>
         <input value="<?= date('Y-m-d') ?>" name="date" type="date" class="w-full p-3 rounded-md border-2 border-black"/>
         <button class="bg-black text-white p-3 rounded-md">search</button>
