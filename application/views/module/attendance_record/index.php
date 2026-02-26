@@ -18,6 +18,7 @@
             <th>Tidak Hadir</th> <!-- alpha-1 / alpha-2 -->
             <th>Tugas&nbsp;Luar Kantor</th> <!-- on duty -->
             <th>Cuti</th> <!-- c -->
+            <th>Cuti setengah hari</th> <!-- i/s -->
             <th>Izin/Sakit</th> <!-- i/s -->
             <!-- <th width="">&nbsp;Action&nbsp;</th> -->
           </tr>
@@ -30,6 +31,7 @@
             <td><?=$row['alpha'];?></td>
             <td><?=$row['onDuty'];?></td>
             <td><?=$row['c'];?></td>
+            <td><?=$row['csh'];?></td>
             <td><?=$row['lL'];?></td>
             <!-- <td>
               <a href="<?=base_url('attendance_record/detail/'.$row['pegawai_id']);?>" class="btn p-1 text-primary">
