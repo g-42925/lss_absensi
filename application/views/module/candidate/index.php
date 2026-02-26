@@ -16,6 +16,7 @@
             <th class="w-s-n">Jenis kelamin</th>
             <th class="w-s-n">Nomor Ponsel</th>
             <th class="w-s-n">Email</th>
+            <th class="w-s-n">Rejected</th>
             <th class="w-s-n">Action</th>
           </tr>
         </thead>
@@ -28,6 +29,8 @@
             <td><?= $r['sex'] = 'l' ? 'laki-laki':'perempuan' ?></td>
             <td><?= $r['phone_number'] ?></td>
             <td><?= $r['email'] ?></td>
+            <td><?= $r['status'] == 'rejected' ? 'Yes':'No' ?></td>
+
             <td>
               <a href="<?=base_url('candidate/edit/'.$r['candidate_id']).'?failed=false';?>" class="btn p-1" title="Edit Pengajuan">
                 <i class="ti ti-edit"></i>

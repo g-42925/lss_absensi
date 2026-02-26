@@ -46,6 +46,17 @@
               <?php endforeach; ?>
             </select>
           </div>
+          <div class="col-xl-6 col-md-6 col-sm-6 col-xs-6">
+            <label class="form-label" for="multicol-country">Rejected<i class="text-danger">*</i></label>
+            <select class="select2 form-select" name="status" required>
+              <option <?= $candidate['status'] == 'waiting' ? 'selected':'' ?> value="waiting">
+                No
+              </option>
+              <option <?= $candidate['status'] == 'rejected' ? 'selected':'' ?>  value="rejected">
+                Yes
+              </option>
+            </select>
+          </div>
           <div class="col-xl-12 col-md-12 col-sm-12 mb-2">
             <label class="form-label">Foto kandidat</label>
             <input type="file" class="form-control" name="photo" id="photo" />

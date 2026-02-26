@@ -47,6 +47,7 @@
             <th class="w-s-n">Name</th>
             <th class="w-s-n">Position</th>
             <th class="w-s-n">Date</th>
+
           </tr>
         </thead>
         <tbody class="text-center">
@@ -57,6 +58,7 @@
             <td><?= $r['candidate_name'];?></td> 
             <td><?= $r['name'];?></td> 
             <td><?= $r['date'];?></td> 
+
           </tr>
           
           <?php $no++; endforeach; ?>
@@ -74,7 +76,7 @@
             <th class="w-s-n">No. Telefon</th>
             <th class="w-s-n">Email</th>
             <th class="w-s-n">Jenis kelamin</th>
-
+            <td class="w-s-n">Rejected</th>
           </tr>
         </thead>
         <tbody class="text-center">
@@ -86,8 +88,7 @@
             <td><?= $r['phone_number'];?></td> 
             <td><?= $r['email'];?></td> 
             <td><?= $r['sex'] == 'l' ? 'laki-laki':'perempuan' ?></td> 
-
-
+            <td><?= $r['status'] == 'rejected' ? 'Yes':'No' ?></td> 
           </tr>
           
           <?php $no++; endforeach; ?>

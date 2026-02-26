@@ -304,7 +304,8 @@ class Candidate extends CI_Controller {
                     'sex' => $this->input->post('sex'),
                     'candidate_picture' => $r,
                     'candidate_name' => $this->input->post('name'),
-                    'position_id' => $this->input->post('position_id')
+                    'position_id' => $this->input->post('position_id'),
+                    'status' => $this->input->post('status')
                 ];
 
                 $this->db->set(
@@ -340,7 +341,8 @@ class Candidate extends CI_Controller {
                 'email' => $this->input->post('email'),
                 'sex' => $this->input->post('sex'),
                 'candidate_name' => $this->input->post('name'),
-                'position_id' => $this->input->post('position_id')
+                'position_id' => $this->input->post('position_id'),
+                'status' => $this->input->post('status')
             ];
 
             $this->db->set(
