@@ -42,6 +42,8 @@ class Req_permission extends CI_Controller {
         $companyId = $this->session->userdata('company_id');
 
         $data['datas']  = $this->rp->get_data($data['tglawal'],$data['tglakhir']);
+        $data['divisions'] = $this->db->query("select * from divisions where company_id = ?",[$companyId])->result_array();
+
 
         $this->load->view('templates/header', $data);
         $this->load->view('templates/sidemenu', $data);
@@ -49,6 +51,41 @@ class Req_permission extends CI_Controller {
         $this->load->view('module/req_permission/index', $data);
         $this->load->view('templates/footer', $data);
         $this->load->view('templates/fscript-html-end', $data);
+    }
+
+    public function filter(){
+        cek_menu_access();
+        $data['htmlpagejs'] = 'none';
+        $data['nmenu']      = 'Data Request Izin';
+        $data['title']      = 'Request Izin';
+        $data['namalabel']  = $data['title'];
+        $data['auth']       = authUser();
+
+        $div = $this->input->get('divisionId');
+        $status = $this->input->get('status');
+        $start = $this->input->get('start');
+        $until = $this->input->get('until');
+
+        $companyId = $this->session->userdata('company_id');
+       
+        $data['divisions'] = $this->db->query("select * from divisions where company_id = ?",[$companyId])->result_array();  
+        
+        $data['div'] = $div == 'all' ? '' : $div;
+        $data['status'] = $status == 'all' ? '' : $status;
+        $data['tglawal'] = $start ?: date('Y-m-01');
+        $data['tglakhir'] = $until ?: date('Y-m-d');
+        $data['keyword'] = $this->input->get('keyword');
+
+
+        $data['datas']  = $this->rp->withFilter($data['tglawal'],$data['tglakhir'],$data);
+
+        $this->load->view('templates/header', $data);
+        $this->load->view('templates/sidemenu', $data);
+        $this->load->view('templates/sidenav', $data);
+        $this->load->view('module/req_permission/filter', $data);
+        $this->load->view('templates/footer', $data);
+        $this->load->view('templates/fscript-html-end', $data);
+         
     }
 
     public function add() {

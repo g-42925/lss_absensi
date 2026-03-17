@@ -4,7 +4,7 @@
   <div class="card">
     <div class="card-header border-bottom flex flex-col gap-3">
       <form method="get" action="<?= base_url().'/attendance_record/filter' ?>" class="flex flex-row w-full gap-3">
-        <input name="from" value="<?= date('Y-m-01') ?>" name="date" type="date" class="w-full p-3 rounded-md border-2 border-black"/>
+        <input value="<?= $from == '' ? date('Y-m-d') : $from ?>" name="from" value="<?= date('Y-m-01') ?>" name="date" type="date" class="w-full p-3 rounded-md border-2 border-black"/>
         <input value="<?= $to == '' ? date('Y-m-d') : $to ?>" name="to" value="<?= $to == '' ? date('Y-m-d') : $to ?>" name="date" type="date" class="w-full p-3 rounded-md border-2 border-black"/>
         <button class="bg-black text-white p-3 rounded-md">search</button>
       </form>

@@ -260,7 +260,49 @@ class Cron extends CI_Controller {
         } 
       }
     }
-  
+
+    public function recap(){
+      $companies = $this->db->query("select * from companies")->result_array();
+
+      foreach($companies as $company){
+        $data = $this->db->query("select * from tx_absensi where company_id = ? and tanggal_absen = curdate()",[$company['id']])->result_array();
+      
+        foreach($data as $d){
+          if($d["is_status"] == "alpha-2"){
+            $e = $this->db->query("select * from m_pegawai where pegawai_id = ?",[$d['pegawai_id']])->row_array();
+            
+            $recapData = [
+              'recap_id' => uniqid(),
+              'date' => date('Y-m-d'),
+              'employee_id' => $e['pegawai_id'],
+              'isAlpha' => true
+            ];
+
+            $this->db->insert(
+              'recap',
+              $recapData
+            );
+          }
+
+          if($d['is_status'] != 'alpha-2' && $d['is_status'] != 'off'){
+            $e = $this->db->query("select * from m_pegawai where pegawai_id = ?",[$d['pegawai_id']])->row_array();
+
+            $recapData = [
+              'recap_id' => uniqid(),
+              'date' => date('Y-m-d'),
+              'employee_id' => $e['pegawai_id'],
+              'isAlpha' => false
+            ];
+
+            $this->db->insert(
+              'recap',
+              $recapData
+            ); 
+          }
+        }
+      }
+    }
+    
     public function deduction(){
       $companies = $this->db->query("select * from companies")->result_array();
 
@@ -277,18 +319,6 @@ class Cron extends CI_Controller {
           if($d["is_status"] == "alpha-2"){
             $e = $this->db->query("select * from m_pegawai where pegawai_id = ?",[$d['pegawai_id']])->row_array();
             $div = $this->db->query("select * from divisions where id = ?",[$e['division_id']])->row_array();
-            
-            $recapData = [
-              'recap_id' => uniqid(),
-              'date' => date('Y-m-d'),
-              'employee_id' => $e['pegawai_id'],
-              'isAlpha' => true
-            ];
-
-            $this->db->insert(
-              'recap',
-              $recapData
-            );
 
             if($div['alpha_penalty_type'] == "percent"){
               $penaltyValue = $div['alpha_penalty_value'] / 100;
@@ -393,22 +423,6 @@ class Cron extends CI_Controller {
                 $data
               );
             }
-          }
-
-          if($d['is_status'] != 'alpha-2' && $d['is_status'] != 'off'){
-            $e = $this->db->query("select * from m_pegawai where pegawai_id = ?",[$d['pegawai_id']])->row_array();
-
-            $recapData = [
-              'recap_id' => uniqid(),
-              'date' => date('Y-m-d'),
-              'employee_id' => $e['pegawai_id'],
-              'isAlpha' => false
-            ];
-
-            $this->db->insert(
-              'recap',
-              $recapData
-            ); 
           }
 
         }

@@ -2,31 +2,27 @@
   <!-- Users List Table -->
   <div class="card">
     <div class="card-header border-bottom">
-      <h5 class="card-title"><?=$namalabel;?></h5>
-      <div class="text-start">
-        <a href="<?=base_url('req_permission/add');?>" class="btn btn-secondary btn-primary btn-sm"><i class="ti ti-plus me-md-1"></i> Tambah Data</a>
-      </div>
       <div class="row mt-3">
-        <div class="col-xl-3 col-lg-4 col-md-5 col-sm-6 col-xs-5">
-          <label class="form-label">Tanggal Mulai</label>
-            <input type="text" class="form-control filtertglrkp" placeholder="YYYY-MM-DD" value="<?=$tglawal;?>" id="flatpickr-date" />
-        </div>
-        <div class="col-xl-4 col-lg-4 col-md-5 col-sm-6 col-xs-7">
-          <label class="form-label">Akhir</label>
-          <div class="input-group">
-            <input type="text" class="form-control filtertglrkp2" placeholder="YYYY-MM-DD" id="flatpickr-date2" value="<?=$tglakhir;?>" />
-            <a href="javascript:filtertglRkp();" class="input-group-text btn btn-outline-primary">Terapkan</a>
-          </div>
-        </div>
-        <div class="col-xl-2 col-lg-4 col-md-2 col-sm-12">
-          <label class="form-label">&nbsp;</label>
-          <a href="<?=base_url('req_permission/download_laporan/'.$tglawal.'/'.$tglakhir);?>" class="form-control btn btn-outline-primary">Download</a>
-        </div>
-        <div class="col-xl-12 col-lg-12 pt-2">
-          <small>
-            *Set.Masuk dan Set.Keluar berlaku untuk kategori cuti s/hari dan tugas luar.
-          </small>
-        </div>
+        <form method="get" action="<?= base_url().'/req_permission/filter' ?>" class="flex flex-row w-full gap-3">
+          <select name="divisionId" class="w-full p-3 rounded-md border-2 border-black appearance-none">
+            <option value="all">All</option>            
+            <?php foreach ($divisions as $row): ?>
+              <option value="<?= $row['id']; ?>">
+                <?= $row['division_name']; ?>
+              </option>
+            <?php endforeach; ?>
+          </select>
+          <select name="status" class="w-full p-3 rounded-md border-2 border-black appearance-none">
+            <option value="all">All</option>   
+            <option value="s">Sakit</option>
+            <option value="i">Izin</option>
+            <option value="c">Cuti</option>
+          </select>
+          <input value="" name="keyword" type="text" placeholder="card id or name" class="w-full p-3 rounded-md border-2 border-black"/>
+          <input value="<?= date('Y-m-01') ?>" name="start" type="date" class="w-full p-3 rounded-md border-2 border-black"/>
+          <input value="<?= date('Y-m-t') ?>" name="until" type="date" class="w-full p-3 rounded-md border-2 border-black"/>
+          <button class="bg-black text-white p-3 rounded-md">search</button>
+        </form>
       </div>
     </div>
     <div class="card-datatable table-responsive">

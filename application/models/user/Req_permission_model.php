@@ -7,6 +7,60 @@ class Req_permission_model extends CI_Model {
         parent::__construct();
     }
 
+	public function withFilter($tglawal,$tglakhr,$filter) {
+        $data = array();
+        $query = null;
+        $div = $filter['div'];
+        $status = $filter['status'];
+        $key = $filter['keyword'];
+        $companyId = $this->session->userdata('company_id');
+
+        if($div == ''){
+          if($status == ''){
+		    $query = $this->db->query(" SELECT x.*, y.*, z.pegawai_id, z.nama_pegawai, z.is_del FROM tx_request_izin x JOIN tx_request_izin_pegawai y ON x.request_izin_id = y.request_izin_id JOIN m_pegawai z ON y.pegawai_id = z.pegawai_id WHERE x.company_id = ? AND z.is_del = 'n' AND DATE(x.tanggal_request) BETWEEN ? AND ? and (z.nama_pegawai like ? or z.nik = ?) ORDER BY created_at DESC ",[$companyId,$tglawal,$tglakhr,"%$key%",$key])->result_array();
+          }
+          else{
+            $query = $this->db->query(" SELECT x.*, y.*, z.pegawai_id, z.nama_pegawai, z.is_del FROM tx_request_izin x JOIN tx_request_izin_pegawai y ON x.request_izin_id = y.request_izin_id JOIN m_pegawai z ON y.pegawai_id = z.pegawai_id WHERE x.company_id = ? AND z.is_del = 'n' AND DATE(x.tanggal_request) BETWEEN ? AND ? and (z.nama_pegawai like ? or z.nik = ?) and x.tipe_request = ? ORDER BY created_at DESC ",[$companyId,$tglawal,$tglakhr,"%$key%",$key,$status])->result_array();
+          }
+        }
+        else{
+          if($status == ''){
+		    $query = $this->db->query(" SELECT x.*, y.*, z.pegawai_id, z.nama_pegawai, z.is_del FROM tx_request_izin x JOIN tx_request_izin_pegawai y ON x.request_izin_id = y.request_izin_id JOIN m_pegawai z ON y.pegawai_id = z.pegawai_id WHERE x.company_id = ? AND z.is_del = 'n' AND DATE(x.tanggal_request) BETWEEN ? AND ? and (z.nama_pegawai like ? or z.nik = ?) and z.division_id = ? ORDER BY created_at DESC ",[$companyId,$tglawal,$tglakhr,"%$key%",$key,$div])->result_array();
+          }
+          else{
+            $query = $this->db->query(" SELECT x.*, y.*, z.pegawai_id, z.nama_pegawai, z.is_del FROM tx_request_izin x JOIN tx_request_izin_pegawai y ON x.request_izin_id = y.request_izin_id JOIN m_pegawai z ON y.pegawai_id = z.pegawai_id WHERE x.company_id = ? AND z.is_del = 'n' AND DATE(x.tanggal_request) BETWEEN ? AND ? and (z.nama_pegawai like ? or z.nik = ?) and x.tipe_request = ? and z.division_id = ? ORDER BY created_at DESC ",[$companyId,$tglawal,$tglakhr,"%$key%",$key,$status,$div])->result_array();
+          }
+        }
+
+        $companyId = $this->session->userdata('company_id');
+		
+        foreach($query as $index => $r){
+          if($r['tipe_request'] == "c"){
+            $query[$index]['type_request'] = "cuti";
+          }
+		  if($r['tipe_request'] == "i"){
+            $query[$index]['type_request'] = "izin";
+          }
+		  if($r['tipe_request'] == "s"){
+            $query[$index]['type_request'] = "sakit";
+          }
+
+          if($r['is_status'] == 1){
+            $query[$index]['is_status'] = "approved";
+          }
+          if($r['is_status'] == 0){
+            $query[$index]['is_status'] = "pending";
+          }
+          if($r['is_status'] == 2){
+            $query[$index]['is_status'] = "rejected";
+          }
+        }
+
+        
+
+        return $query;
+    }
+
 	public function get_data($tglawal,$tglakhr) {
         $data = array();
         $companyId = $this->session->userdata('company_id');

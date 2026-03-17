@@ -61,11 +61,13 @@ class Menu_model extends CI_Model {
             return []; // ⬅️ PENTING: hindari IN()
         }
 
-        $akses_menu = array_column($hak_a, 'id_menu');
-        $this->db->where_in('menu_id', $akses_menu);
+        $this->db->select('*');
+        $this->db->from('m_menu');
+        $this->db->where_in('menu_id', array_column($hak_a, 'menu_id'));
+        $this->db->order_by('urutan', 'ASC');
       }
 
-      $this->db->order_by('urutan', 'ASC');
+
       return $this->db->get()->result_array();
     }
 }

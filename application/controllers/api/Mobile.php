@@ -1856,19 +1856,6 @@ function login(){
     $income = [];
     $benefit = [];
     $penalty = [];
-  
-    // $salaryDate = explode("-",$date);
-    // $dt1 = new DateTime($salaryDate[0] . '-' . $salaryDate[1] . '-01');
-    // $dt2 = new DateTime($salaryDate[0] . '-' . $salaryDate[1] . '-' . $salaryDate[2]);
-    
-    // $from1 = (clone $dt1)->modify("-1 month")->format('Y-m-d');
-    // $to1 = (clone $dt1)->modify("-1 month")->format('Y-m-t');
-
-    // $from2 = (clone $dt2)->modify("-1 month")->format("Y-m-d");
-    // $to2 = (clone $dt2)->modify("-1 day")->format("Y-m-d");
-
-    // $from = $salaryDate[2] == 1 ? $from1 : $from2;
-    // $to = $salaryDate[2] == 1 ? $to1 : $to2;
     
     $emp = $this->db->query("select * from m_pegawai where pegawai_id = ?",[$empId])->row_array();
     $attendance = $this->db->query("select * from tx_absensi where tanggal_absen between ? and ? and pegawai_id = ?",[$dateX,$dateY,$empId])->result_array();
@@ -1886,9 +1873,15 @@ function login(){
       }
     }
     
-    $emp['salary'] = $recap * $emp['salary'] / 26;
+    if($emp['salary_config'] == 'full_month'){
+      if(date('d') != $company['salary_date']){
+        $emp['salary'] = $recap * $emp['salary'] / 26;
+      }
+    }
+    else{
+      $emp['salary'] = $recap * $emp['salary'] / 26;
+    }
 
-    //$emp['salary'] = (int) ($emp['salary'] / 26) * count($attendance) - ((int) ($emp['salary'] / 26) * $offDays);
     
     $alphaPenalty = $this->db->query("select sum(amount) as amt from salary_deduction where employee_id = ? and date between ? and ? and deduction_type = 'alpha-2'",[$empId,$dateX,$dateY])->row_array();
    
