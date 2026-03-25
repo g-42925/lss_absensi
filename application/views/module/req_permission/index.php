@@ -63,9 +63,8 @@ foreach ($datas as $row):
               <?= $row['tipe_request']?>
             </td>
             <td class="text-capitalize">
-              <a target="_blank" href="<?= $row['image'] == " -" ? "" :
-    base_url('image/index') . '/' .
-                basename($row['image'])?>"><i class="ti ti-photo"></i></a>
+              <a target="_blank" href="<?= $row['image'] == " -" ? "" : base_url('image/index') . '/' .
+    basename($row['image'])?>"><i class="ti ti-photo"></i></a>
             </td>
             <td class="w-s-n">
               <?= $row['is_status']?>
@@ -78,7 +77,7 @@ foreach ($datas as $row):
                 data-bs-target="#delRow<?= $row['request_izin_id']; ?>">
                 <i class="ti ti-trash"></i>
               </a>
-              <a href="#" class="<?= $row['tipe_request'] == " s" ? "" : "hidden" ?> btn p-1" data-bs-toggle="modal"
+              <a href="#" class="<?= $row['tipe_request'] == " s" ? "" : "hidden"?> btn p-1" data-bs-toggle="modal"
                 data-bs-target="#cutRow
                 <?= $row['request_izin_id']; ?>" title="payroll">
                 <i class="ti ti-scissors"></i>
