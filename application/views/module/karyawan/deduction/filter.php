@@ -3,14 +3,14 @@
   <!-- Users List Table -->
   <div class="card">
     <div class="card-header border-bottom flex flex-col gap-3">
-      <form method="get" action="<?= base_url().'karyawan/deduction/filter' ?>" class="flex flex-row w-full gap-3">
+      <form method="get" action="<?= base_url('karyawan/deduction/filter') ?>" class="flex flex-row w-full gap-3">
         <select name="divisionId" class="w-full p-3 rounded-md border-2 border-black appearance-none">
           <option value="all">all</option>
           <?php foreach ($divisions as $row): ?>
-            <option value="<?= $row['id']; ?>"><?= $row['division_name']; ?></option>
+            <option <?= $div == $row['id'] ? 'selected' : '' ?> value="<?= $row['id']; ?>"><?= $row['division_name']; ?></option>
           <?php endforeach; ?>
         </select>
-        <input value="" name="keyword" type="text" placeholder="card id or name" class="w-full p-3 rounded-md border-2 border-black"/>
+        <input value="<?= $keyword ?>" name="keyword" type="text" placeholder="card id or name" class="w-full p-3 rounded-md border-2 border-black"/>
         <input value="<?= $from ?>" name="from" type="date" class="w-full p-3 rounded-md border-2 border-black" placeholder="from"/>
         <input value="<?= $to ?>" name="to" type="date" class="w-full p-3 rounded-md border-2 border-black"/>
         <button class="bg-black text-white p-3 rounded-md">search</button>
