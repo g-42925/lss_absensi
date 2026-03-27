@@ -20,6 +20,7 @@
             <th>Cuti</th> <!-- c -->
             <th>Cuti setengah hari</th> <!-- i/s -->
             <th>Izin/Sakit</th> <!-- i/s -->
+            <th>Sisa Cuti</th> <!-- c -->
             <!-- <th width="">&nbsp;Action&nbsp;</th> -->
           </tr>
         </thead>
@@ -33,6 +34,7 @@
             <td><?=$row['c'];?></td>
             <td><?=$row['csh'];?></td>
             <td><?=$row['lL'];?></td>
+            <td><?=$row['jumlah_cuti'];?></td>
             <!-- <td>
               <a href="<?=base_url('attendance_record/detail/'.$row['pegawai_id']);?>" class="btn p-1 text-primary">
                 Lihat&nbsp;Detail

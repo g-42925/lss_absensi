@@ -38,6 +38,13 @@ class Attendance_record extends CI_Controller {
         
         $data['datas'] = $this->attr->get_data($companyId,date('Y-m-01'),date('Y-m-d'));
 
+
+        foreach ($data['datas'] as $key => $value) {
+          $emp = $this->db->get_where('m_pegawai', ['pegawai_id' => $value['pegawai_id']])->result_array();
+          $data['datas'][$key]['jumlah_cuti'] = $emp[0]['jumlah_cuti'];
+        }
+
+
         $this->load->view('templates/header', $data);
         $this->load->view('templates/sidemenu', $data);
         $this->load->view('templates/sidenav', $data);
@@ -63,12 +70,13 @@ class Attendance_record extends CI_Controller {
         
         $data['datas'] = $this->attr->get_data($companyId,$data['from'],$data['to']);
 
-        $this->load->view('templates/header', $data);
-        $this->load->view('templates/sidemenu', $data);
-        $this->load->view('templates/sidenav', $data);
-        $this->load->view('module/attendance_record/index', $data);
-        $this->load->view('templates/footer', $data);
-        $this->load->view('templates/fscript-html-end', $data);
+
+        // $this->load->view('templates/header', $data);
+        // $this->load->view('templates/sidemenu', $data);
+        // $this->load->view('templates/sidenav', $data);
+        // $this->load->view('module/attendance_record/index', $data);
+        // $this->load->view('templates/footer', $data);
+        // $this->load->view('templates/fscript-html-end', $data);
     }
 
     public function detail($id = null, $awal = null, $akhir = null) {

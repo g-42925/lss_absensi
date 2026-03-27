@@ -11,6 +11,11 @@ class Attendance_record_model extends CI_Model {
         $this->today = date('Y-m-d');
     }
 
+    public function get_jumlah_cuti($pegawai_id) {
+        $companyId = $this->session->userdata('company_id');
+        $query = $this->db->query("SELECT * FROM m_pegawai WHERE is_del='n' and company_id=$companyId")->result_array();
+    }
+
 	public function get_data($companyId,$tglawal,$tglakhr) {
         $data = array();
         $query = $this->db->query("SELECT * FROM m_pegawai WHERE is_del='n' and company_id=$companyId")->result_array();
