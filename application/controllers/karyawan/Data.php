@@ -31,14 +31,11 @@ class Data extends CI_Controller {
 			$data['namalabel']  = $data['title'];
 			$data['auth']       = authUser();
 
-            $div = $this->input->get('divisionId');
 			$nik = $this->input->get('nik');
-
-			$div = $div == 'all' ? '' : $div;
 
 			$companyId = $this->session->userdata('company_id');
 
-			$filter = ['div' => $div,'nik' => $nik];
+			$filter = ['div' => $this->input->get('divisionId'),'nik' => $nik];
 
 			$divisions = $this->db->query("select * from divisions where company_id = ?",[$companyId])->result_array();
 
@@ -50,7 +47,7 @@ class Data extends CI_Controller {
 			}
 
 			$data['divisions'] = $divisions;
-			$data['div'] = $div;
+			$data['div'] = $this->input->get('divisionId');
 			$data['nik'] = $nik;
 
 			$this->load->view('templates/header', $data);
@@ -59,6 +56,21 @@ class Data extends CI_Controller {
 			$this->load->view('module/karyawan/data/index', $data);
 			$this->load->view('templates/footer', $data);
 			$this->load->view('templates/fscript-html-end', $data);
+    }
+
+    public function filterByDiv(){
+			  $data = null;
+        $div = $this->input->get('divId');
+				$key = $this->input->get('key');
+        $companyId = $this->session->userdata('company_id');
+        if($div == "Any"){
+					$data = $this->db->query("select * from m_pegawai where company_id = ? and (nama_pegawai like ?)",[$companyId,"%$key%"])->result_array();
+				}
+				else{
+					$data = $this->db->query("select * from m_pegawai where company_id = ? and division_id = ? and (nama_pegawai like ?)",[$companyId,$div,"%$key%"])->result_array();
+				}
+
+        echo json_encode($data);
     }
 
     public function index() {
@@ -82,8 +94,8 @@ class Data extends CI_Controller {
 
         $data['divisions'] = $divisions;
 
-				$data['div'] = '';
-		   	$data['nik'] = '';
+		$data['div'] = '';
+		$data['nik'] = '';
 				
 
         $this->load->view('templates/header', $data);

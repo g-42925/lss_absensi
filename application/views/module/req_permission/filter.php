@@ -4,8 +4,8 @@
     <div class="card-header border-bottom">
       <div class="row mt-3">
         <form method="get" action="<?= base_url().'/req_permission/filter' ?>" class="flex flex-row w-full gap-3">
-          <select name="divisionId" class="w-full p-3 rounded-md border-2 border-black appearance-none">
-            <option value="all">All</option>            
+          <select data-value="<?= $div ?>" id="target1" onChange="onDivChg(this)" name="divisionId" class="w-full p-3 rounded-md border-2 border-black appearance-none">
+            <option value="Any">Any</option>            
             <?php foreach ($divisions as $row): ?>
               <option <?= $row['id'] == $div ? 'selected':'' ?> value="<?= $row['id']; ?>">
                 <?= $row['division_name']; ?>
@@ -18,7 +18,8 @@
             <option <?= $status == 'i' ? 'selected':'' ?> value="i">Izin</option>
             <option <?= $status == 'c' ? 'selected':'' ?> value="c">Cuti</option>
           </select>
-          <input value="<?= $keyword ?>" name="keyword" type="text" placeholder="card id or name" class="w-full p-3 rounded-md border-2 border-black"/>
+          <input id="target2" onKeyUp="onKeyChg(this)" list="employees" value="<?= $keyword ?>" name="keyword" type="text" placeholder="card id or name" class="w-full p-3 rounded-md border-2 border-black"/>
+          <datalist id="employees"></datalist>
           <input value="<?= $tglawal ?>" name="start" type="date" class="w-full p-3 rounded-md border-2 border-black"/>
           <input value="<?= $tglakhir ?>" name="until" type="date" class="w-full p-3 rounded-md border-2 border-black"/>
           <button class="bg-black text-white p-3 rounded-md">search</button>
@@ -136,6 +137,41 @@
 </div>
 
 <script type="text/javascript">
+  const BASE_URL = "<?= base_url(); ?>";
+
+  function parse(data){
+    const employees = document.getElementById("employees")
+    employees.innerHTML = ""
+    data.forEach(e => {
+      const option = document.createElement("option")
+      option.value = e.nama_pegawai
+      option.text = e.nama_pegawai
+      employees.appendChild(option)
+    })
+  }
+
+  function onKeyChg(e){
+    const employees = document.getElementById("e")
+    const target1 = document.getElementById("target1")
+    const target2 = document.getElementById("target2")
+    const division = target1.getAttribute("data-value")
+    const value = target2.value
+    
+    fetch(BASE_URL + "karyawan/data/filterByDiv?divId=" + division + "&key=" + value)
+      .then(response => response.json())
+      .then(data => parse(data))
+  }
+
+  function onDivChg(e){
+    const target = document.getElementById("target1")
+    target.setAttribute("data-value",e.value)
+  }
+  function filtertglRkp() {
+    var valx = $('.filtertglrkp').val();
+    var valx2 = $('.filtertglrkp2').val();
+    window.location.href = '<?= base_url('req_permission / index / '); ?>' + valx + '/' + valx2;
+  }
+
   function filtertglRkp(){
     var valx = $('.filtertglrkp').val();
     var valx2 = $('.filtertglrkp2').val();

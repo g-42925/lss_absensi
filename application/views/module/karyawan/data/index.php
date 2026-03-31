@@ -4,7 +4,7 @@
   <div class="card">
     <div class="card-header border-bottom flex flex-row gap-3">
       <form method="get" action="<?= base_url().'karyawan/data/filter' ?>" class="flex flex-row w-full gap-3">
-        <select name="divisionId" class="w-full p-3 rounded-md border-2 border-black appearance-none">
+        <select data-value="<?= $div == '' ? 'Any':$div  ?>" id="target1" onChange="onDivChg(this)" name="divisionId" class="w-full p-3 rounded-md border-2 border-black appearance-none">
           <option value="all">Any</option>
           <?php foreach ($divisions as $row): ?>
             <option <?= $div == $row['id'] ? 'selected':'' ?> value="<?= $row['id']; ?>">
@@ -12,7 +12,11 @@
             </option>
           <?php endforeach; ?>
         </select>
-        <input value="<?= $nik ?>" name="nik" placeholder="card id or name" type="text" class="p-3 border-2 border-black rounded-md" placeholder=""/>
+        <div class="flex flex-col gap-1">
+          <input value="<?= $nik ?>" name="nik" onKeyUp="onKeyChg(this)" id="target2" list="employees" placeholder="card id or name" type="text" class="p-3 border-2 border-black rounded-md" placeholder=""/>
+          <datalist id="employees">
+          </datalist>
+        </div>
         <button class="bg-black text-white p-3 rounded-md">search</button>
       </form>
       <a class="bg-black text-white p-3 rounded-md" href="<?=base_url('karyawan/data/add/0');?>">New</a>
@@ -94,3 +98,35 @@
   </div>
 </div>
 <!-- / Content -->
+
+<script>
+  const BASE_URL = "<?= base_url(); ?>";
+
+  function parse(data){
+    const employees = document.getElementById("employees")
+    employees.innerHTML = ""
+    data.forEach(e => {
+      const option = document.createElement("option")
+      option.value = e.nama_pegawai
+      option.text = e.nama_pegawai
+      employees.appendChild(option)
+    })
+  }
+
+  function onKeyChg(e){
+    const employees = document.getElementById("e")
+    const target1 = document.getElementById("target1")
+    const target2 = document.getElementById("target2")
+    const division = target1.getAttribute("data-value")
+    const value = target2.value
+    
+    fetch(BASE_URL + "karyawan/data/filterByDiv?divId=" + division + "&key=" + value)
+      .then(response => response.json())
+      .then(data => parse(data))
+  }
+
+  function onDivChg(e){
+    const target = document.getElementById("target1")
+    target.setAttribute("data-value",e.value)
+  }
+</script>

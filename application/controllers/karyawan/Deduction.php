@@ -47,12 +47,12 @@ class Deduction extends CI_Controller{
         $data['div'] = $div;
         $data['keyword'] = $keyword;
         
-        if ($div == 'all') {
+        if ($div == 'Any') {
             if ($keyword == '') {
               $query = $this->db->query("select * from salary_deduction sd join m_pegawai mp on mp.pegawai_id = sd.employee_id join companies c on mp.company_id = c.id where sd.date between ? and ? and c.id = ?",[$from,$to,$companyId])->result_array();
             }
             else {
-              $query = $this->db->query("select * from salary_deduction sd join m_pegawai mp on mp.pegawai_id = sd.employee_id join companies c on mp.company_id = c.id where date between ? and ? and (mp.pegawai_id = ? or mp.nama_pegawai like ?)",[$from,$to,$empId,"%$keyword%"])->result_array();
+              $query = $this->db->query("select * from salary_deduction sd join m_pegawai mp on mp.pegawai_id = sd.employee_id join companies c on mp.company_id = c.id where date between ? and ? and (mp.pegawai_id = ? or mp.nama_pegawai like ?) and c.id = ?",[$from,$to,$empId,"%$keyword%",$companyId])->result_array();
             }
         }
         else {
@@ -94,7 +94,7 @@ class Deduction extends CI_Controller{
         $from = $this->input->get('from') == '' ? date('Y').'-'.date('m').'-01' : $this->input->get('from');
         $to = $this->input->get('to') == '' ? date('Y').'-'.date('m').'-31' : $this->input->get('to');
         $q1 = $this->db->query("select * from salary_deduction sd join m_pegawai mp on mp.pegawai_id = sd.employee_id join companies c on mp.company_id = c.id where sd.date between ? and ? and c.id = ?",[$from,$to,$companyId])->result_array();
-        $q2 = $this->db->query("select * from salary_deduction sd join m_pegawai mp on mp.pegawai_id = sd.employee_id join companies c on mp.company_id = c.id where sd.date between ? and ? and mp.pegawai_id = ?",[$from,$to,$empId])->result_array();
+        $q2 = $this->db->query("select * from salary_deduction sd join m_pegawai mp on mp.pegawai_id = sd.employee_id join companies c on mp.company_id = c.id where sd.date between ? and ? and mp.pegawai_id = ? and c.id = ?",[$from,$to,$empId,$companyId])->result_array();
         $data['deductions'] = $empId == '' ? $q1 : $q2;
         $data['employees'] = $this->db->query("select * from m_pegawai where company_id  = ?",[$companyId])->result_array();
 

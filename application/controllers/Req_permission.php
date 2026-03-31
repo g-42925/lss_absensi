@@ -70,7 +70,7 @@ class Req_permission extends CI_Controller {
        
         $data['divisions'] = $this->db->query("select * from divisions where company_id = ?",[$companyId])->result_array();  
         
-        $data['div'] = $div == 'all' ? '' : $div;
+        $data['div'] = $div == 'Any' ? '' : $div;
         $data['status'] = $status == 'all' ? '' : $status;
         $data['tglawal'] = $start ?: date('Y-m-01');
         $data['tglakhir'] = $until ?: date('Y-m-d');
