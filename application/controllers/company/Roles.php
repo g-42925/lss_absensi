@@ -131,13 +131,19 @@ class Roles extends CI_Controller {
         if($id==1){
             $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-danger p-cg" role="alert">Jabatan Super Admin ini tidak bisa diedit ya.</div></div>');
             redirect('company/roles');
-        }else{
-            if ($id==null) { redirect('company/roles'); }
-            $check = $this->db->get_where('m_role', ['role_id' => $id]);
-            if ($check->num_rows()==0) { 
+        }
+        else{
+            if ($id==null){ 
+                redirect('company/roles'); 
+            }
+
+            $check = $this->db->get_where('m_role', ['role_id' => $id,'is_del' => 'n']);
+
+            if($check->num_rows()==0) { 
                 $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-danger p-cg" role="alert">Data tidak ditemukan.</div></div>');
                 redirect('company/roles'); 
             }
+            
             $unama  = $this->input->post('nama');
 
             $this->form_validation->set_rules('nama', 'Nama', 'trim|required|xss_clean|htmlspecialchars');
@@ -147,21 +153,23 @@ class Roles extends CI_Controller {
             if ($this->form_validation->run() == false) {
                 $this->session->set_flashdata('message', '<div class="alert alert-danger p-cg" role="alert">'.validation_errors().'</div>');
                 redirect('company/roles/edit/'.$id);
-            } else {
-                $query = $this->db->get_where('m_role', ['nama_role' => $unama, 'is_del' => 'n', 'role_id!=' => $id])->num_rows();
-                if ($query < 1) {
-                    $res = $this->roles->edit_proses($id);
-                    if ($res==true) {
-                        $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-success p-cg" role="alert">Data berhasil disimpan.</div></div>');
-                        redirect('company/roles');
-                    }else{
-                        $this->session->set_flashdata('message', '<div class="alert alert-danger p-cg" role="alert">Proses gagal, silahkan coba lagi.</div>');
-                        redirect('company/roles/edit/'.$id);
-                    }
-                } else {
-                    $this->session->set_flashdata('message', '<div class="alert alert-warning p-cg" role="alert">Proses gagal, nama <b>"'.$this->input->post('nama').'"</b> ini sudah digunakan.</div>');
-                    redirect('company/roles/edit/'.$id);
+            } 
+            else{
+                $companyId = $this->session->userdata('company_id');
+                
+                foreach($this->input->post('roles') as $role){
+                    $r = explode("~", $role);
+                    $menu_id = $r[1];
+                    $exist = $this->db->get_where('m_role_access', ['company_id' => $companyId, 'id_role' => $id,'id_menu' => $menu_id])->num_rows();
+                    if($exist<1) $this->db->query("INSERT INTO m_role_access (company_id,id_role,id_menu) VALUES ('$companyId','$id', '$menu_id')");
                 }
+
+                foreach(explode("/",$this->input->post('uncheck')) as $role){
+                    $this->db->query("DELETE FROM m_role_access WHERE company_id = '$companyId' AND id_role = '$id' AND id_menu = '$role'");
+                }
+
+                $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-success p-cg" role="alert">Data berhasil disimpan.</div></div>');
+                redirect('company/roles');
             }
         }
     }

@@ -39,7 +39,7 @@
                     <?php foreach ($subMenu as $smx) : ?>
                     <div class="form-check form-check-primary">
                       <label class="form-check-label">
-                        <input class="form-check-input" type="checkbox" name="roles[]" value="<?=$sm['menu_id']."~".$smx['menu_id']?>" <?php if($smx['id_menu']<>''){ echo "checked";} ?> />
+                        <input onChange="onChg(this)" class="form-check-input" type="checkbox" name="roles[]" value="<?=$sm['menu_id']."~".$smx['menu_id']?>" <?php if($smx['id_menu']<>''){ echo "checked";} ?> />
                         <?=$smx['nama_menu']?>
                       </label>
                     </div>
@@ -48,7 +48,7 @@
                   <?php } else { ?>
                   <div class="form-check form-check-primary">
                     <label class="form-check-label">
-                      <input class="form-check-input" type="checkbox" name="roles[]" value="<?=$m['menu_id']."~".$sm['menu_id']?>" <?php if($sm['id_menu']<>''){ echo "checked";} ?> />
+                      <input onChange="onChg(this)" class="form-check-input" type="checkbox" name="roles[]" value="<?=$m['menu_id']."~".$sm['menu_id']?>" <?php if($sm['id_menu']<>''){ echo "checked";} ?> />
                       <?=$sm['nama_menu']?>
                     </label>
                   </div>
@@ -58,7 +58,7 @@
                   <?php $checkms = $this->menu->getSubMenurow($edit['role_id'],$m['menu_id']); ?>
                   <div class="form-check form-check-primary">
                     <label class="form-check-label">
-                      <input class="form-check-input" type="checkbox" name="roles[]" value="<?=$m['menu_id']."~".$m['menu_id']?>" <?php if($checkms>0){ echo "checked";} ?> />
+                      <input onChange="onChg(this)" class="form-check-input" type="checkbox" name="roles[]" value="<?=$m['menu_id']."~".$m['menu_id']?>" <?php if($checkms>0){ echo "checked";} ?> />
                       <?=$m['nama_menu'];?>
                     </label>
                   </div>
@@ -72,8 +72,35 @@
           <a href="javascript:window.history.back();" class="btn btn-label-secondary me-sm-3 me-1">Batal</a>
           <button type="submit" class="btn btn-primary">Simpan Data</button>
         </div>
+        <input name="uncheck" type="hidden" class="p-3 border-2 border-black rounded-md" id="target">
       </form>
     </div>
   </div>
 </div>
+
+<script>
+function onChg(checkbox){
+  var target = document.getElementById('target');
+  var value = target.value
+    if (!checkbox.checked) {
+      if(target.value == ''){
+        target.value = checkbox.value.split('~')[1];
+      }
+      else{ 
+        target.value = `${target.value}/${checkbox.value.split('~')[1]}`;
+      }
+    }
+    else{
+        if(target.value !== ''){
+          if(target.value.includes(`/${checkbox.value}`)){
+            target.value = target.value.replace(`/${checkbox.value.split('~')[1]}`, '');
+          }
+          else{
+            target.value = target.value.replace(`${checkbox.value.split('~')[1]}`, '');
+            target.value = target.value.replace(`/`, '');
+          }
+        }                                                                                                                                                                                       
+    }
+}
+</script>
 <!-- / Content -->
