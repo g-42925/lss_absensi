@@ -61,8 +61,10 @@ function cek_menu_access() {
             $segment = '';
         }
         
-        $query = $CI->db->query("SELECT * FROM m_role_access a JOIN m_menu b ON a.id_menu=b.menu_id JOIN m_role c ON a.id_role=c.role_id WHERE b.link_url = ? AND c.is_status='y' AND c.is_del='n' AND a.id_role=".$CI->session->userdata('role_id'),[explode("/", $segment)[0].'/'])->num_rows();
-                
+        //$query = $CI->db->query("SELECT * FROM m_role_access a JOIN m_menu b ON a.id_menu=b.menu_id JOIN m_role c ON a.id_role=c.role_id WHERE b.link_url = ? AND c.is_status='y' AND c.is_del='n' AND a.id_role=".$CI->session->userdata('role_id'),[explode("/", $segment)[0].'/'])->num_rows();
+        
+        $query = $CI->db->query("select * from m_role_access mra join m_role mr on mra.id_role = mr.role_id join m_menu mm on  mm.menu_id = mra.id_menu where mr.role_id = ? and mm.link_url = ? and mr.is_status = 'y' and mr.is_del = 'n' and mra.is_status = 'y' and mra.is_del = 'n'",[$CI->session->userdata('role_id'),$segment])->num_rows();
+        
         if ($query<1) {
             redirect('dashboard');
         }
