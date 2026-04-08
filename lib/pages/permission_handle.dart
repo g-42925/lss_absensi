@@ -1,5 +1,6 @@
 import 'dart:convert';
-import 'package:f_absensi/providers/global_state.dart';
+import 'dart:async';
+import 'package:absensi/providers/global_state.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
@@ -53,7 +54,9 @@ class _PermissionHandlePageState extends ConsumerState<PermissionHandlePage> {
       'request_izin_id': id,
     };
 
-    return http.post(url, headers: headers, body: jsonEncode(params));
+    return http.post(url, headers: headers, body: jsonEncode(params)).timeout(
+      const Duration(milliseconds: 100)
+    );
   }
 
   Future<Response> setComeBack(String id) async {
@@ -272,7 +275,66 @@ class _PermissionHandlePageState extends ConsumerState<PermissionHandlePage> {
                           );
                         },
                       );
-                    } else {
+                    } 
+                    else {
+                      try{
+                        await setLeave(widget.requestIzinId);
+                        ref.read(globalStateProvider.notifier).addHistory(
+                          "l-${widget.requestIzinId}"
+                        );
+                      }
+                      on TimeoutException catch(err){
+                        showModalBottomSheet(
+                          context: context,
+                          backgroundColor: Colors.transparent,
+                          builder: (_) => Container(
+                            margin: EdgeInsets.all(16),
+                            padding: EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: Colors.red,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(Icons.error, color: Colors.white),
+                                SizedBox(width: 10),
+                                Expanded(
+                                  child: Text(
+                                    "Request timeout",
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      }
+                      catch(err){
+                        showModalBottomSheet(
+                          context: context,
+                          backgroundColor: Colors.transparent,
+                          builder: (_) => Container(
+                            margin: EdgeInsets.all(16),
+                            padding: EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: Colors.red,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(Icons.error, color: Colors.white),
+                                SizedBox(width: 10),
+                                Expanded(
+                                  child: Text(
+                                    "Request timeout or something went wrong",
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      }
                       final future = setLeave(widget.requestIzinId);
                       setState(() {
                         response = future;
@@ -280,9 +342,9 @@ class _PermissionHandlePageState extends ConsumerState<PermissionHandlePage> {
 
                       try {
                         await future;
-                        ref
-                            .read(globalStateProvider.notifier)
-                            .addHistory("l-${widget.requestIzinId}");
+                        ref.read(globalStateProvider.notifier).addHistory(
+                          "l-${widget.requestIzinId}"
+                        );
                       } catch (err) {
                         // do something
                       }
@@ -366,19 +428,21 @@ class _PermissionHandlePageState extends ConsumerState<PermissionHandlePage> {
             ),
             SizedBox(height: 24),
             Container(
-              child: response != null
-                  ? FutureBuilder(
-                      future: response,
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return Center(child: CircularProgressIndicator());
-                        } else {
-                          return Container();
-                        }
-                      },
-                    )
-                  : Container(),
+              child: response != null ? FutureBuilder(
+                future: response,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState ==ConnectionState.waiting) {
+                    return Center(child: CircularProgressIndicator());
+                  } 
+                  else if (snapshot.hasError) {
+                    return Center(child: Text("Error: ${snapshot.error}"));
+                  }
+                  else {
+                    return Container();
+                  }
+                },
+              )
+              : Container(),
             ),
           ],
         ),

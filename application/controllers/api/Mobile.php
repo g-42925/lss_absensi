@@ -333,33 +333,27 @@ function break(){
 }
 
 function loginv2(){
-  $today = date('N');
-  $nextDay = $today % 7 + 1;
-  $input = file_get_contents('php://input');
-  $post = json_decode($input,true);
+    $today = date('N');
+    $nextDay = $today % 7 + 1;
+    $input = file_get_contents('php://input');
+    $post = json_decode($input,true);
+    $qR1 = "select * from m_pegawai emp join companies c on emp.company_id = c.id join divisions divs on emp.division_id = divs.id where emp.email_pegawai = ? and emp.is_del != 'y'";  
+    $r1 = $this->db->query($qR1,[$post['email']])->row_array();
     
-    $r1 = $this->db->query("select * from m_pegawai emp join companies c on emp.company_id = c.id join divisions divs on emp.division_id = divs.id where emp.email_pegawai = ? and emp.is_del != 'y'",[$post['email']])->row_array();
-    $rFile = $this->db->query("select * from employee_file ef join file f on ef.file_id = f.file_id where employee_id = ?",[$r1['pegawai_id']])->result_array();
     
-    if(count($rFile) > 0){
-      foreach($rFile as $file){
-        if($file['title'] == 'Photo'){
-          $r1['foto_pegawai'] = $file['source'];
-        }
-      }
-    }
-
-    if($r1){
+    if($r1 && password_verify($post['pwd'],$r1['password_pegawai']) ){
+      $rFile = $this->db->query("select * from employee_file ef join file f on ef.file_id = f.file_id where employee_id = ?",[$r1['pegawai_id']])->result_array();
       $r5 = $r1 ? $this->db->query("select * from m_lokasi where company_id = ? and is_del!='y'",array($r1['company_id']))->result_array() : [];
       $companyHolidays = $this->db->query("select * from company_holidays where company_id = ? and curdate() between tanggal and sampai_tanggal",[$r1['company_id']])->row_array();
       $globalHolidays = $this->db->query("select * from global_holidays where company_id = ? and curdate() between tanggal and sampai_tanggal",[$r1['company_id']])->row_array();
       $position = $this->db->query("select * from position where id = ?",[$r1['position_id']])->row_array();
-
-      $isVerified = $r1 ? password_verify($post['pwd'],$r1['password_pegawai']) : false;
-    
-      if($r1 && $isVerified){
-        $workSystem = explode("-",$r1['work_system']);
-        if($workSystem[0] == "s"){
+      $workSystem = explode("-",$r1['work_system']);
+    //   if(count($rFile) > 0){
+    //     if($file['title'] == 'Photo'){
+    //       $r1['foto_pegawai'] = $file['source'];
+    //     }
+    //   }
+      if($workSystem[0] == "s"){
           $r2 = $this->db->query("select * from shift_detail x join employee_shift y on x.shift_detail_id = y.shift_detail_id  where y.employee_id = ?",[$r1['pegawai_id']])->row_array();
           $r3 = $this->db->query("select * from shift_off where employee_id = ? and day = ?",[$r1['pegawai_id'],$today])->row_array();
         
@@ -387,8 +381,8 @@ function loginv2(){
               "result" => $result
             ]
           );
-        }
-        if($workSystem[0] == "wd"){
+      }
+      if($workSystem[0] == "wd"){
           $r2 = $this->db->query("select * from m_pola_kerja mpk join m_pola_kerja_det mpkd on mpk.pola_kerja_id = mpkd.pola_kerja_id where mpk.pola_kerja_id = ? and is_day = ?",[$workSystem[1],$today])->row_array();
           $rNext = $this->db->query("select * from m_pola_kerja mpk join m_pola_kerja_det mpkd on mpk.pola_kerja_id = mpkd.pola_kerja_id where mpk.pola_kerja_id = ? and is_day = ?",[$workSystem[1],$nextDay])->row_array();
           
@@ -418,42 +412,47 @@ function loginv2(){
             ]
           );
         }
-      }
     }
-    else{
-      echo json_encode(
-        [
-          "success" => false,
-          "message" => 'user not found'
-        ]
-      );
+    if($r1 && !(password_verify($post['pwd'],$r1['password_pegawai']))){
+      http_response_code(200);
+      echo json_encode(["success" => false,"message" => 'user not found']);
     }
-  
-  
+    if(!$r1){
+      http_response_code(200);
+      echo json_encode(["success" => false,"message" => 'user not found']);       
+    }
 }
 
 function login(){
     $today = date('N');
     $differences1 = [];
     $differences2 = [];
-		$json = file_get_contents('php://input');
+	$json = file_get_contents('php://input');
     $json = json_decode($json,true);
-		$r1 = $this->db->query("SELECT * FROM m_pegawai WHERE email_pegawai = ? and is_del!='y'", array($json['email']))->row_array();
+	$r1 = $this->db->query("SELECT * FROM m_pegawai WHERE email_pegawai = ? and is_del!='y'", array($json['email']))->row_array();
+	
+    if (!$r1) {
+      http_response_code(200);
+      echo json_encode(["success" => false,"message" => "user not found"]);
+      return;
+    }
     
     if($r1){
+      $id = $r1['pegawai_id'];
       $r2 = $this->db->query("select * from companies where id=?",array($r1['company_id']))->row_array();
       $r3 = $this->db->query("select * from m_pegawai_pola where pegawai_id = ?", array($r1['pegawai_id']))->row_array();
       $r4 = $this->db->query("select * from m_pola_kerja_det where pola_kerja_id = ? and is_day = ?",array($r3['pola_kerja_id'], $today))->row_array();
       $r5 = $this->db->query("select * from m_lokasi where company_id = ? and is_del!='y'",array($r1['company_id']))->result_array();
-      $r6 = $this->db->query("select * from tx_request_izin_pegawai x join tx_request_izin y on x.request_izin_id = y.request_izin_id and x.pegawai_id = ? and y.tipe_request = 'c'",array($r1['pegawai_id']))->result_array();
+      $r6 = $this->db->query("select * from tx_request_izin_pegawai x join tx_request_izin y on x.request_izin_id = y.request_izin_id and x.pegawai_id = ? and y.tipe_request = 'c'",[$id]);
+      $r6 = $r6->result_array();
       
       $filtered1 = array_filter($r6, function($row) {
         return $row['is_status'] == 0;
       });
 
-	  	$filtered1 = array_values($filtered1);
+	  $filtered1 = array_values($filtered1);
 
-		  foreach($filtered1 as $f){
+	  foreach($filtered1 as $f){
         $tanggalAwal = new DateTime($f['tanggal_request']);
         $tanggalAkhir = new DateTime($f['tanggal_request_end']);
         $difference = $tanggalAwal->diff($tanggalAkhir)->days+1;
@@ -464,9 +463,9 @@ function login(){
         return $row['is_status'] == 2;
       });
 
-	  	$filtered2 = array_values($filtered2);
+	  $filtered2 = array_values($filtered2);
 
-		  foreach($filtered2 as $f){
+	  foreach($filtered2 as $f){
         $tanggalAwal = new DateTime($f['tanggal_request']);
         $tanggalAkhir = new DateTime($f['tanggal_request_end']);
         $difference = $tanggalAwal->diff($tanggalAkhir)->days+1;
@@ -499,22 +498,11 @@ function login(){
         echo json_encode(
           [
             "success" => false,
-            "message" => "wrong password",
+            "message" => "user not found",
             "result" => []
           ]
         );
       }
-    }
-    else{
-      http_response_code(200);
-
-      echo json_encode(
-        [
-          "success" => false,
-          "message" => "user not found",
-          "result" => []
-        ]
-      );
     }
   }
 
@@ -1858,8 +1846,9 @@ function login(){
     $penalty = [];
     
     $emp = $this->db->query("select * from m_pegawai where pegawai_id = ?",[$empId])->row_array();
+    $company = $this->db->query("select * from companies where id = ?",[$emp['company_id']])->row_array();
     $attendance = $this->db->query("select * from tx_absensi where tanggal_absen between ? and ? and pegawai_id = ?",[$dateX,$dateY,$empId])->result_array();
-    $recap = $this->db->query("SELECT * FROM recap WHERE date BETWEEN ? AND ? AND employee_id = ?",[$dateX,$dateY,$empId])->num_rows();
+    $recap = $this->db->query("SELECT * FROM recap WHERE date BETWEEN ? AND ? AND employee_id = ? and required= ?",[$dateX,$dateY,$empId,true])->num_rows();
 
     foreach($attendance as $a){
       if($a['is_status'] == 'alpha-2'){

@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:f_absensi/pages/login.dart';
+import 'package:absensi;
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

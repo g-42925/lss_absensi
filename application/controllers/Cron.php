@@ -269,13 +269,18 @@ class Cron extends CI_Controller {
       
         foreach($data as $d){
           if($d["is_status"] == "alpha-2"){
+            $start= date('Y-m-01');
+            $until = date('Y-m-d');
             $e = $this->db->query("select * from m_pegawai where pegawai_id = ?",[$d['pegawai_id']])->row_array();
+            $recap = $this->db->query("select * from recap where employee_id = ? and date between ? and ?",[$d['pegawai_id'],$start,$until])->num_rows();
+            $required = $recap < 26 ? true : false;
             
             $recapData = [
               'recap_id' => uniqid(),
               'date' => date('Y-m-d'),
               'employee_id' => $e['pegawai_id'],
-              'isAlpha' => true
+              'isAlpha' => true,
+              'required' => $required
             ];
 
             $this->db->insert(
@@ -286,12 +291,16 @@ class Cron extends CI_Controller {
 
           if($d['is_status'] != 'alpha-2' && $d['is_status'] != 'off'){
             $e = $this->db->query("select * from m_pegawai where pegawai_id = ?",[$d['pegawai_id']])->row_array();
-
+            $start= date('Y-m-01');
+            $until = date('Y-m-d');
+            $recap = $this->db->query("select * from recap where employee_id = ? and date between ? and ?",[$d['pegawai_id'],$start,$until])->num_rows();
+            $required = $recap < 26 ? true : false;
             $recapData = [
               'recap_id' => uniqid(),
               'date' => date('Y-m-d'),
               'employee_id' => $e['pegawai_id'],
-              'isAlpha' => false
+              'isAlpha' => false,
+              'required' => $required
             ];
 
             $this->db->insert(

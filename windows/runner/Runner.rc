@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "com.leryn" "\0"
-            VALUE "FileDescription", "f_absensi" "\0"
+            VALUE "FileDescription", "absensi" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "f_absensi" "\0"
+            VALUE "InternalName", "absensi" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2025 com.leryn. All rights reserved." "\0"
-            VALUE "OriginalFilename", "f_absensi.exe" "\0"
-            VALUE "ProductName", "f_absensi" "\0"
+            VALUE "OriginalFilename", "absensi.exe" "\0"
+            VALUE "ProductName", "absensi" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

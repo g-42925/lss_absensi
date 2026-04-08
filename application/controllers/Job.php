@@ -50,8 +50,8 @@ class Job extends CI_Controller {
 
 
     public function add() {
-        cek_menu_access();
-        isCreatable();
+        // cek_menu_access();
+        // isCreatable();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Karyawan';
         $data['title']      = 'Recruitment';
@@ -73,8 +73,8 @@ class Job extends CI_Controller {
     }
 
     public function edit($jobId){
-        cek_menu_access();
-        isEditable();
+        // cek_menu_access();
+        // isEditable();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Karyawan';
         $data['title']      = 'Recruitment';

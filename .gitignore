@@ -1,31 +1,69 @@
+# =========================
+# SYSTEM FILES
+# =========================
 .DS_Store
+Thumbs.db
 
+# =========================
+# ENV / CONFIG SENSITIF
+# =========================
+.env
+
+# =========================
+# DEPENDENCIES
+# =========================
+vendor/
+node_modules/
+
+# =========================
+# CODEIGNITER 3
+# =========================
+
+# Cache & session (INI YANG KEMARIN ERROR)
 application/cache/*
 !application/cache/index.html
+!application/cache/.htaccess
 
+# Logs
 application/logs/*
 !application/logs/index.html
+!application/logs/.htaccess
 
-!application/*/.htaccess
+# Upload (optional, tergantung kebutuhan)
+uploads/*
+!uploads/index.html
 
-composer.lock
+# =========================
+# CODEIGNITER 4
+# =========================
 
-user_guide_src/build/*
-user_guide_src/cilexer/build/*
-user_guide_src/cilexer/dist/*
-user_guide_src/cilexer/pycilexer.egg-info/*
-/vendor/
+# Writable folder (CI4)
+writable/*
+!writable/index.html
+!writable/.htaccess
 
-# IDE Files
-#-------------------------
-/nbproject/
-.idea/*
+# =========================
+# BUILD / TEMP
+# =========================
+*.log
+*.tmp
+*.temp
 
-## Sublime Text cache files
-*.tmlanguage.cache
-*.tmPreferences.cache
-*.stTheme.cache
-*.sublime-workspace
+# =========================
+# IDE / EDITOR
+# =========================
+.vscode/
+.idea/
 *.sublime-project
-/tests/tests/
-/tests/results/
+*.sublime-workspace
+
+# =========================
+# OS GENERATED
+# =========================
+*.swp
+*.lock
+
+# =========================
+# TEST / COVERAGE
+# =========================
+coverage/
