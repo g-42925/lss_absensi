@@ -177,57 +177,57 @@ class File extends CI_Controller {
 
     public function config_process($id){
       $this->db->trans_begin(); // db transaction is started from here
-
       $this->db->where('employee_id',$id)->delete('employee_file');
 
-      $supabaseUrl = "https://vgbkdwivxidacojvcnbr.supabase.co";
-      $supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZnYmtkd2l2eGlkYWNvanZjbmJyIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1NDg4MDEwOCwiZXhwIjoyMDcwNDU2MTA4fQ.u4n62Z_I3mO7etIJAXpzL3ScTc9QhY04hx1_n-Tg4K4";
+      //$supabaseUrl = "https://vgbkdwivxidacojvcnbr.supabase.co";
+      //$supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZnYmtkd2l2eGlkYWNvanZjbmJyIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1NDg4MDEwOCwiZXhwIjoyMDcwNDU2MTA4fQ.u4n62Z_I3mO7etIJAXpzL3ScTc9QhY04hx1_n-Tg4K4";
+
 
 
       foreach($this->input->post('file[]') as $index => $fileId){
         $current = $this->input->post('current[]')[$index];
 
         if($current == ''){
+          $cFile = $_FILES['photo']['tmp_name'][$index];
           $name = $_FILES['photo']['name'][$index];
           $tmpName = $_FILES['photo']['tmp_name'][$index];
           $fileName = time() . '_' . basename($name);
-          $ch = curl_init($supabaseUrl . "/storage/v1/object/storage/" . $fileName);
-          curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-          curl_setopt_array($ch, [
-              CURLOPT_RETURNTRANSFER => true,
-              CURLOPT_HTTPHEADER => [
-                'Authorization: Bearer ' . $supabaseKey,
-                'Content-Type: ' . mime_content_type($tmpName)
-              ],
-              CURLOPT_UPLOAD => true, // ✅ penting
-              CURLOPT_CUSTOMREQUEST => 'POST',
-              CURLOPT_INFILE => fopen($tmpName, 'r'),
-              CURLOPT_INFILESIZE => filesize($tmpName)
+          
+          $s3 = new S3Client([
+            'version'     => 'latest',
+            'region'      => 'us-east-1',
+            'endpoint'    => 'https://s3.filebase.com',
+            'use_path_style_endpoint' => false,
+            'credentials' => [
+              'key'    => 'B8F0135956143AE0685E',
+              'secret' => 'gKrbIZJnzLWBXZ0VGQvnlAumvngpBH35PsXN5zUp'
+            ],
+            'Metadata' => [
+              'cid' => 'true'
+            ],
           ]);
-          curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
-          curl_setopt($ch, CURLOPT_INFILE, fopen($tmpName, 'r'));
-          curl_setopt($ch, CURLOPT_INFILESIZE, filesize($tmpName));
 
-          $response = curl_exec($ch);
-          $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-          curl_close($ch);
+          $result = $s3->putObject([
+            'Bucket' => 'leryn-storage',
+            'Key'    => $fileName,
+            'SourceFile' => $cFile,
+            'ContentType' => 'image/png',
+          ]);    
 
-          if($httpCode === 200 || $httpCode === 201) {
-            $publicUrl = $supabaseUrl . "/storage/v1/object/public/storage/" . $fileName;
-            
-            $data = [
-              'employee_file_id' => uniqid(),
-              'file_id' => $fileId,
-              'employee_id' => $id,
-              'source' => $publicUrl,
-            ];
+          $cid = $result['@metadata']['headers']['x-amz-meta-cid'];
+          $r = "https://wooden-plum-woodpecker.myfilebase.com/ipfs/".$cid;
 
-
-            $this->db->insert(
-              'employee_file',
-              $data
-            );
-          }
+          $data = [
+            'employee_file_id' => uniqid(),
+            'file_id' => $fileId,
+            'employee_id' => $id,
+            'source' => $r,
+          ];     
+          
+          $this->db->insert(
+            'employee_file',
+            $data
+          ); 
         }
         else{
           $data = [

@@ -149,6 +149,7 @@ class Data extends CI_Controller {
         $this->form_validation->set_rules('jeniskelamin', 'Jenis Kelamin', 'trim|required|xss_clean|htmlspecialchars');
         $this->form_validation->set_rules('password', 'Password', 'trim|required|xss_clean|htmlspecialchars|min_length[4]');
         $this->form_validation->set_rules('nik','Nik','trim|required|xss_clean|htmlspecialchars|min_length[16]');
+        $this->form_validation->set_rules('alamat','Alamat','trim|xss_clean|htmlspecialchars');
 
 
         if ($this->form_validation->run() == false) {
@@ -230,6 +231,8 @@ class Data extends CI_Controller {
             $this->form_validation->set_rules('nom', 'No WhatsApp', 'trim|xss_clean|htmlspecialchars');
             $this->form_validation->set_rules('jeniskelamin', 'Jenis Kelamin', 'trim|required|xss_clean|htmlspecialchars');
             $this->form_validation->set_rules('password', 'Password', 'trim|xss_clean|htmlspecialchars|min_length[4]');
+            $this->form_validation->set_rules('nik','Nik','trim|required|xss_clean|htmlspecialchars|min_length[16]');
+            $this->form_validation->set_rules('alamat','Alamat','trim|xss_clean|htmlspecialchars');
 
             if($this->form_validation->run() == false) {
                 $this->session->set_flashdata('message', '<div class="alert alert-danger p-cg" role="alert">'.validation_errors().'</div>');

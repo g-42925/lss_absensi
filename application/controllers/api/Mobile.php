@@ -342,18 +342,23 @@ function loginv2(){
     
     
     if($r1 && password_verify($post['pwd'],$r1['password_pegawai']) ){
-      $rFile = $this->db->query("select * from employee_file ef join file f on ef.file_id = f.file_id where employee_id = ?",[$r1['pegawai_id']])->result_array();
-      $r5 = $r1 ? $this->db->query("select * from m_lokasi where company_id = ? and is_del!='y'",array($r1['company_id']))->result_array() : [];
-      $companyHolidays = $this->db->query("select * from company_holidays where company_id = ? and curdate() between tanggal and sampai_tanggal",[$r1['company_id']])->row_array();
-      $globalHolidays = $this->db->query("select * from global_holidays where company_id = ? and curdate() between tanggal and sampai_tanggal",[$r1['company_id']])->row_array();
-      $position = $this->db->query("select * from position where id = ?",[$r1['position_id']])->row_array();
-      $workSystem = explode("-",$r1['work_system']);
-    //   if(count($rFile) > 0){
-    //     if($file['title'] == 'Photo'){
-    //       $r1['foto_pegawai'] = $file['source'];
-    //     }
-    //   }
-      if($workSystem[0] == "s"){
+        $rFile = $this->db->query(
+          "SELECT * 
+           FROM employee_file ef 
+           JOIN file f ON ef.file_id = f.file_id 
+           WHERE ef.employee_id = ? AND f.title = 'Photo'",
+          [$r1['pegawai_id']]
+        )->row_array();
+        
+        $r5 = $r1 ? $this->db->query("select * from m_lokasi where company_id = ? and is_del!='y'",array($r1['company_id']))->result_array() : [];
+        $companyHolidays = $this->db->query("select * from company_holidays where company_id = ? and curdate() between tanggal and sampai_tanggal",[$r1['company_id']])->row_array();
+        $globalHolidays = $this->db->query("select * from global_holidays where company_id = ? and curdate() between tanggal and sampai_tanggal",[$r1['company_id']])->row_array();
+        $position = $this->db->query("select * from position where id = ?",[$r1['position_id']])->row_array();
+        $workSystem = explode("-",$r1['work_system']);
+        
+        if ($rFile) $r1['foto_pegawai'] = $rFile['source'];
+        
+        if($workSystem[0] == "s"){
           $r2 = $this->db->query("select * from shift_detail x join employee_shift y on x.shift_detail_id = y.shift_detail_id  where y.employee_id = ?",[$r1['pegawai_id']])->row_array();
           $r3 = $this->db->query("select * from shift_off where employee_id = ? and day = ?",[$r1['pegawai_id'],$today])->row_array();
         

@@ -42,11 +42,6 @@ class Attendance_model extends CI_Model
 
             $q2 = $this->db->query("SELECT * FROM tx_absensi WHERE tanggal_absen='$tgl' AND pegawai_id='$row[pid]'")->num_rows();
 
-
-
-
-
-
             if (isset($row['mulai_berlaku_tanggal'])) {
                 if ($tgl >= $row['mulai_berlaku_tanggal']) {
 
@@ -772,8 +767,6 @@ class Attendance_model extends CI_Model
         }
         return $res;
     }
-
-
 
     public function req_cancel($idp, $tgl)
     {

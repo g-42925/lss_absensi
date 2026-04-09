@@ -74,7 +74,8 @@ class Data_model extends CI_Model {
             'nik'                 => $this->input->post('nik'),
             'contract_start_date' => $this->input->post('contract_start_date'),
             'contract_end_date'   => $this->input->post('contract_end_date'),
-            'on_training'         => $this->input->post('on_training')
+            'on_training'         => $this->input->post('on_training'),
+            'address'             => $this->input->post('alamat')
         ];
 
         $this->db->trans_begin();
@@ -143,8 +144,8 @@ class Data_model extends CI_Model {
             'nik'                 => $this->input->post('nik'),
             'contract_start_date' => $this->input->post('contract_start_date'),
             'contract_end_date'   => $this->input->post('contract_end_date'),
-            'on_training'         => $this->input->post('on_training')
-
+            'on_training'         => $this->input->post('on_training'),
+            'address'             => $this->input->post('alamat')
         ]);
         $this->db->where('pegawai_id', $id);
         $res = $this->db->update('m_pegawai');

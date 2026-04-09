@@ -32,6 +32,10 @@
             <input type="text" class="form-control" name="nik" />
           </div>
           <div class="col-xl-6 col-md-6 col-sm-6 col-xs-6">
+            <label class="form-label">Alamat</label>
+            <input type="text" class="form-control" name="alamat" />
+          </div>       
+          <div class="col-xl-6 col-md-6 col-sm-6 col-xs-6">
             <label class="form-label">Password<i class="text-danger">*</i></label>
             <input type="password" class="form-control" name="password" required placeholder="**********" />
           </div>

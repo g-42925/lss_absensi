@@ -29,6 +29,7 @@
             <th class="w-s-n">Divisi</th>
             <th class="w-s-n">Nama Lengkap</th>
             <th class="w-s-n">No WhatsApp</th>
+            <th class="w-s-n">Alamat</th>
             <th class="w-s-n">Tangggal Kontrak</th>
             <th>Gaji</th>
             <th>Action</th>
@@ -41,6 +42,7 @@
             <td><?= $row['divisi'];?></td>
             <td><?= $row['nama_pegawai'];?></td>
             <td><?= $row['nomor_pegawai'];?></td>
+            <td><?= $row['address'] == "" ? "-":$row['address']; ?></td>
             <td><?= $row['status_pegawai'] == 'contract' ? date('d M Y',strtotime($row['contract_start_date']))."-".date('d M Y',strtotime($row['contract_end_date'])):"-" ?></td>
             <td><?= number_format($row['salary'],2); ?></td>
             <td>
