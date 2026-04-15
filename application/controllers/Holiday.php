@@ -39,8 +39,7 @@ class Holiday extends CI_Controller {
         $this->load->view('templates/fscript-html-end');
     }
      public function add(){
-        cek_menu_access();
-        isCreatable();
+        isEditable();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Hari Libur';
         $data['title']      = 'Cuti Bersama';
@@ -69,7 +68,6 @@ class Holiday extends CI_Controller {
     }
 
     public function edit($id){
-        cek_menu_access();
         isEditable();
         $data['id']         = $id;
         $data['htmlpagejs'] = 'none';
@@ -100,6 +98,7 @@ class Holiday extends CI_Controller {
     }
 
     public function delete($id){
+        isEditable();
         $this->db->where('id', $id);
         $this->db->delete('global_holidays');
         redirect('holiday');

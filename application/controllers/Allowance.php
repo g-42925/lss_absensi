@@ -61,8 +61,7 @@ class Allowance extends CI_Controller {
     }
 
     public function add(){
-        cek_menu_access();
-        isCreatable();
+        isEditable();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Bonus & Tunjangan';
         $data['title']      = 'Harian';
@@ -80,8 +79,7 @@ class Allowance extends CI_Controller {
     }
 
      public function monthly_add(){
-        cek_menu_access();
-        isCreatable();
+        isEditable();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Bonus & Tunjangan';
         $data['title']      = 'Bulanan';
@@ -99,7 +97,6 @@ class Allowance extends CI_Controller {
     }
 
     public function monthly_edit($id){
-        cek_menu_access();
         isEditable();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Bonus & Tunjangan';
@@ -122,7 +119,6 @@ class Allowance extends CI_Controller {
     }
 
     public function edit($id){
-        cek_menu_access();
         isEditable();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Bonus & Tunjangan';
@@ -289,7 +285,7 @@ class Allowance extends CI_Controller {
     }
 
     public function config($id){
-        cek_menu_access();
+        isEditable();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Karyawan';
         $data['title']      = 'Data Karyawan';
@@ -325,6 +321,7 @@ class Allowance extends CI_Controller {
     }
 
     function monthlyDelete($allowanceId){
+      isEditable();
       $this->db->trans_begin();  // to start db transaction
       $this->db->delete('employee_allowance',['allowance_id' => $allowanceUd]);
       $this->db->delete('allowance',['allowance_id' => $allowanceId]);

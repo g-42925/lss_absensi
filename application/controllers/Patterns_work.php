@@ -66,7 +66,6 @@ class Patterns_work extends CI_Controller {
     }
 
     public function shift_edit($shiftId){
-        cek_menu_access();
         isEditable();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Pola Kerja';
@@ -102,7 +101,6 @@ class Patterns_work extends CI_Controller {
     }
 
     public function shift_detail($shiftId){
-        cek_menu_access();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Pola Kerja';
         $data['title']      = 'Shift';
@@ -124,7 +122,6 @@ class Patterns_work extends CI_Controller {
     }
 
     public function shift_set($id){
-        cek_menu_access();
         isEditable();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Pola Kerja';
@@ -229,6 +226,8 @@ class Patterns_work extends CI_Controller {
     }
 
     public function shift_off_set_proses($id){
+      isEditable();
+
       $this->db->trans_begin(); // to start db transaction
         
       $this->db->where('shift_id',$id)->delete('shift_off');
@@ -267,8 +266,7 @@ class Patterns_work extends CI_Controller {
     }
 
     public function shift_add(){
-        cek_menu_access();
-        isCreatable();
+        isEditable();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Pola Kerja';
         $data['title']      = 'Shift';
@@ -290,8 +288,7 @@ class Patterns_work extends CI_Controller {
     }
 
     public function shift_detail_add($shiftId){
-        cek_menu_access();
-        isCreatable();
+        isEditable();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Pola Kerja';
         $data['title']      = 'Shift';
@@ -354,7 +351,7 @@ class Patterns_work extends CI_Controller {
     }
 
     public function shift_detail_edit($shiftId,$id){
-        cek_menu_access();
+        isEditable();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Pola Kerja';
         $data['title']      = 'Pola Kerja';
@@ -483,8 +480,7 @@ class Patterns_work extends CI_Controller {
     }
 
     public function add() {
-        cek_menu_access();
-        isCreatable();
+        isEditable();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Pola Kerja';
         $data['title']      = 'Mingguan';
@@ -547,7 +543,6 @@ class Patterns_work extends CI_Controller {
     }
 
     public function edit($id = null) {
-        cek_menu_access();
         isEditable();
         if ($id==null) { redirect('patterns_work'); }
         $check = $this->db->get_where('m_pola_kerja', ['pola_kerja_id' => $id]);

@@ -19,12 +19,13 @@ class Admin_model extends CI_Model {
         $data = [
             'company_id'        => $companyId,
             'role_id'  			=> $this->input->post('roles'),
-            'permission_id'  	=> $this->input->post('izin'),
+            'permission'  	    => $this->input->post('permission'),
             'nama_lengkap'  	=> $this->input->post('nama'),
             'email_address'  	=> $this->input->post('email'),
             'password'  		=> password_hash($this->input->post('password'), PASSWORD_DEFAULT),
             'is_status'  		=> $this->input->post('status'),
-            'created_at'  		=> date('Y-m-d H:i:s')
+            'created_at'  		=> date('Y-m-d H:i:s'),
+            'permission_id'     => 1
         ];
         $res = $this->db->insert('m_user', $data);
         return $res;
@@ -34,19 +35,21 @@ class Admin_model extends CI_Model {
     	$pass = $this->input->post('password');
         if ($pass=='') {
             $passnya = $passwordlama;
-        }else{
+        }
+        else{
             $passnya = password_hash($this->input->post('password'), PASSWORD_DEFAULT);
         }
 
         $this->db->set([
             'company_id'        => $this->session->userdata('company_id'),
-            'role_id'  			=> $this->input->post('roles'),
-            'permission_id'  	=> $this->input->post('izin'),
+            'permission'  	    => $this->input->post('permission'),
             'nama_lengkap'  	=> $this->input->post('nama'),
             'email_address'  	=> $this->input->post('email'),
+            'role_id'  			=> $this->input->post('roles'),
+            'is_status'  		=> $this->input->post('status'),
             'password'  		=> $passnya,
-            'is_status'  		=> $this->input->post('status')
         ]);
+        
         $this->db->where('user_id', $id);
         $res = $this->db->update('m_user');
         return $res;

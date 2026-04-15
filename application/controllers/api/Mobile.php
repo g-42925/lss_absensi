@@ -938,7 +938,6 @@ function login(){
     }
   }
   
-
   function signin(){
     $today = date('N');
     $tanggalHariIni = date('Y-m-d');
@@ -2781,5 +2780,14 @@ function login(){
         'r' => $q
       ]
     );
+  }
+
+
+  function hasExceptionV2($employeeId){
+    $r = $this->db->query("select * from exception where employee_id = ? and status = ? and date = ? and type = ?",[$employeeId,1,date('Y-m-d'),'Lupa absen'])->num_rows() > 0;
+
+    echo json_encode([
+      'hasException' => $r
+    ]);
   }
 }

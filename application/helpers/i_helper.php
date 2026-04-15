@@ -21,18 +21,12 @@ function is_logged_in(){
     }
 }
 
-function isCreatable(){
-  $CI = get_instance();
-  $permittedPermissionId = [1,9,11];
-  if(!in_array($CI->session->userdata('permission_id'),$permittedPermissionId)){
-    redirect('dashboard');
-  }
-}
+
 
 function isEditable(){
   $CI = get_instance();
-  $permittedPermissionId = [1,10,11];
-  if(!in_array($CI->session->userdata('permission_id'),$permittedPermissionId)){
+  $query = $CI->db->query('select * from m_user where user_id = ?',[$CI->session->userdata('u_id')])->row_array();
+  if($query['permission'] == 'r'){
     redirect('dashboard');
   }
 }
@@ -65,9 +59,13 @@ function cek_menu_access() {
         
         $query = $CI->db->query("select * from m_role_access mra join m_role mr on mra.id_role = mr.role_id join m_menu mm on  mm.menu_id = mra.id_menu where mr.role_id = ? and mm.link_url = ? and mr.is_status = 'y' and mr.is_del = 'n' and mr.is_status = 'y' and mr.is_del = 'n'",[$CI->session->userdata('role_id'),$segment])->num_rows();
         
-        if ($query<1) {
+        if($query<1) {
             redirect('dashboard');
         }
+
+        return [
+            'query' => $query
+        ];
     }
 }
 

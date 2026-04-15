@@ -42,8 +42,7 @@ class Locations extends CI_Controller {
     }
 
     public function add() {
-        cek_menu_access();
-        isCreatable();
+        isEditable();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Lokasi Kehadiran';
         $data['title']      = 'Lokasi Kehadiran';
@@ -98,7 +97,6 @@ class Locations extends CI_Controller {
     }
 
     public function edit($id = null) {
-        cek_menu_access();
         isEditable();
         if ($id==null) { redirect('locations'); }
         $check = $this->db->get_where('m_lokasi', ['lokasi_id' => $id]);
@@ -165,9 +163,9 @@ class Locations extends CI_Controller {
     }
 
     public function hapus($id){
-        cek_menu_access();
+        isEditable();
 
-        $data['auth']       = authUser();
+        $data['auth'] = authUser();
 
         $num = $this->db->query("SELECT * FROM m_pegawai_lokasi a JOIN m_pegawai b ON a.pegawai_id=b.pegawai_id WHERE a.lokasi_id='$id' AND b.is_del='n'")->num_rows();
         if ($num<=0) {

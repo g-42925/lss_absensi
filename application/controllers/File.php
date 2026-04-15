@@ -46,8 +46,7 @@ class File extends CI_Controller {
     }
 
     public function add() {
-        cek_menu_access();
-        isCreatable();
+        isEditable();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'File';
         $data['title']      = '';
@@ -73,7 +72,6 @@ class File extends CI_Controller {
     }
 
     public function edit($id) {
-        cek_menu_access();
         isEditable();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'File';

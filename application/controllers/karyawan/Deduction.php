@@ -111,11 +111,12 @@ class Deduction extends CI_Controller{
     }
 
     public function delete($deductionId){
+      isEditable();
+
       $this->db->query(
         "DELETE FROM salary_deduction WHERE deduction_id = ?",
         [$deductionId]
       );
-
       if ($this->db->affected_rows() > 0) {
         redirect('karyawan/deduction?deleted=true');
     	} 

@@ -1,4 +1,7 @@
 <?php
+
+use GuzzleHttp\Promise\Is;
+
 defined('BASEPATH') or exit('No direct script access allowed');
 
 class Benefit extends CI_Controller {
@@ -41,7 +44,7 @@ class Benefit extends CI_Controller {
     }
 
     public function add(){
-        cek_menu_access();
+        isEditable();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Hutang & Potongan';
         $data['title']      = 'Potongan';
@@ -59,7 +62,7 @@ class Benefit extends CI_Controller {
     }
 
     public function edit($id){
-        cek_menu_access();
+        isEditable();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Hutang & Potongan';
         $data['title']      = 'Potongan';

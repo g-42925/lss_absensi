@@ -39,8 +39,7 @@ class Admin extends CI_Controller {
     }
 
     public function add($failed) {
-        cek_menu_access();
-        isCreatable();
+        isEditable();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Perusahaan';
         $data['title']      = 'Admin';
@@ -69,7 +68,7 @@ class Admin extends CI_Controller {
         $this->form_validation->set_rules('email', 'Email', 'trim|required|xss_clean|htmlspecialchars');
         $this->form_validation->set_rules('status', 'Status', 'trim|required|xss_clean|htmlspecialchars');
         $this->form_validation->set_rules('roles', 'Role/Jabatan', 'trim|required|xss_clean|htmlspecialchars');
-        $this->form_validation->set_rules('izin', 'Permission/Izin', 'trim|required|xss_clean|htmlspecialchars');
+        $this->form_validation->set_rules('permission', 'Permission/Izin', 'trim|required|xss_clean|htmlspecialchars');
         $this->form_validation->set_rules('password', 'Password', 'trim|required|xss_clean|htmlspecialchars|min_length[4]');
 
         if ($this->form_validation->run() == false) {
@@ -96,7 +95,6 @@ class Admin extends CI_Controller {
     }
 
     public function edit($id = null) {
-        cek_menu_access();
         isEditable();
         if ($id==null) { redirect('company/admin'); }
         $check = $this->db->get_where('m_user', ['user_id' => $id]);
@@ -146,13 +144,16 @@ class Admin extends CI_Controller {
             $this->form_validation->set_rules('email', 'Email', 'trim|required|xss_clean|htmlspecialchars');
             $this->form_validation->set_rules('status', 'Status', 'trim|required|xss_clean|htmlspecialchars');
             $this->form_validation->set_rules('roles', 'Role/Jabatan', 'trim|required|xss_clean|htmlspecialchars');
-            $this->form_validation->set_rules('izin', 'Permission/Izin', 'trim|required|xss_clean|htmlspecialchars');
+            $this->form_validation->set_rules('permission', 'Permission/Izin', 'trim|required|xss_clean|htmlspecialchars');
 
             if ($this->form_validation->run() == false) {
                 $this->session->set_flashdata('message', '<div class="alert alert-danger p-cg" role="alert">'.validation_errors().'</div>');
                 redirect('company/admin/edit/'.$id.'?failed=true');
             } 
             else {
+
+
+
                 $query = $this->db->get_where('m_user', ['email_address' => $unama, 'is_del' => 'n', 'user_id!=' => $id])->num_rows();
                 if ($query < 1) {
                     $res = $this->admin->edit_proses($id,$rowcheck['password']);
@@ -168,6 +169,8 @@ class Admin extends CI_Controller {
                     redirect('company/admin/edit/'.$id.'?failed=true');
                 }
             }
+
+
         }
     }
 

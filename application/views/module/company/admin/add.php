@@ -42,10 +42,9 @@
                 <a href="<?=base_url('company/permission');?>">Tambah&nbsp;</a>
               </span>
             </label>
-            <select class="select2 form-select" name="izin" required>
-              <?php foreach ($permission as $row) : ?>
-              <option value="<?=$row['permission_id'];?>"><?=$row['nama_permission'];?></option>
-              <?php endforeach; ?>
+            <select name="permission" class="select2 form-select" required>
+              <option value="r">Read only</option>
+              <option value="rw">Read and write  </option>
             </select>
           </div>
           <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6">

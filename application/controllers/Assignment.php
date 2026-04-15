@@ -41,8 +41,7 @@ class Assignment extends CI_Controller {
     }
 
     public function add(){
-        cek_menu_access();
-        isCreatable();
+        isEditable();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Penugasan';
         $data['title']      = '';
@@ -64,7 +63,6 @@ class Assignment extends CI_Controller {
     }
 
     public function edit($id){
-        cek_menu_access();
         isEditable();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Penugasan';
@@ -172,6 +170,7 @@ class Assignment extends CI_Controller {
     }
 
     public function delete($id){
+        isEditable();
         $this->db->where('assignment_id', $id);
         $this->db->delete('assignment');
         redirect('assignment');

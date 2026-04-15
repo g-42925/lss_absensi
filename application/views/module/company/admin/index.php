@@ -26,7 +26,7 @@
             <td><?= $row['nama_lengkap'];?></td>
             <td><?= $row['email_address'];?></td>
             <td><?= $row['nama_role'];?></td>
-            <td><?= $row['nama_permission'];?></td>
+            <td><?= $row['permission'] == 'r' ? 'Read only' : 'Read and write';?></td>
             <td>
               <?php if ($row['is_status']=='y') { ?>
               <span class="badge bg-label-success">Aktif</span>

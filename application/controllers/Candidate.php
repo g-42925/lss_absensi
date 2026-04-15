@@ -160,7 +160,7 @@ class Candidate extends CI_Controller {
     }
 
     public function accept($candidateId){
-        //cek_menu_access();
+        isEditable();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Karyawan';
         $data['title']      = 'Recruitment';
@@ -214,10 +214,8 @@ class Candidate extends CI_Controller {
     }
 
     public function add(){
+        isEditable();
         $data['failed'] = filter_var($this->input->get('failed'),FILTER_VALIDATE_BOOLEAN);
-        
-        // cek_menu_access();
-        // isCreatable();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Karyawan';
         $data['title']      = 'Recruitment';
@@ -237,8 +235,7 @@ class Candidate extends CI_Controller {
     }
 
     public function edit($candidateId){        
-        // cek_menu_access();
-        // isEditable();
+        isEditable();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Karyawan';
         $data['title']      = 'Recruitment';

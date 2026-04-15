@@ -55,6 +55,7 @@ class Nonaktif extends CI_Controller {
     }
 
     public function undo($employeeId){
+        isEditable();
         $this->db->set(['is_del' => 'n']);
         $this->db->where('pegawai_id', $employeeId);
         $q = $this->db->update('m_pegawai');

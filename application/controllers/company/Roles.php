@@ -43,8 +43,8 @@ class Roles extends CI_Controller {
     }
 
     public function add($failed) {
-        cek_menu_access();
-        isCreatable();
+        isEditable();
+
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Perusahaan';
         $data['nmenusub']   = 'Jabatan & Izin';
@@ -98,7 +98,6 @@ class Roles extends CI_Controller {
     }
 
     public function edit($id = null) {
-        cek_menu_access();
         isEditable();
         if ($id==null) { redirect('user/company/roles'); }
         $check = $this->db->get_where('m_role', ['role_id' => $id]);

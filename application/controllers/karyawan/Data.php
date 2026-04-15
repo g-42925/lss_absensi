@@ -180,7 +180,6 @@ class Data extends CI_Controller {
     }
 
     public function edit($id = null) {
-        cek_menu_access();
         isEditable();
         if ($id==null) { redirect('karyawan/data'); }
         $check = $this->db->get_where('m_pegawai', ['pegawai_id' => $id]);

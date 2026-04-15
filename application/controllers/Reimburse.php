@@ -41,8 +41,7 @@ class Reimburse extends CI_Controller {
     }
 
     public function add(){
-        cek_menu_access();
-        isCreatable();
+        isEditable();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Bonus & Tunjangan';
         $data['title']      = 'Reimburse';
@@ -60,7 +59,6 @@ class Reimburse extends CI_Controller {
     }
 
      public function edit($id){
-        cek_menu_access();
         isEditable();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Bonus & Tunjangan';
@@ -206,6 +204,7 @@ class Reimburse extends CI_Controller {
     }
 
     function delete($reimburseId){
+      isEditable();
       $this->db->trans_begin();  // to start db transaction
       $this->db->delete('reimburse',['reimburse_id' => $reimburseId]);
       $this->db->delete('reimburse_claim',['reimburse_id' => $reimburseId]);
