@@ -15,7 +15,7 @@
             <th class="w-s-n">No fee</th>
             <th class="w-s-n">Status</th>
           </tr>
-        </thead>"
+        </thead>
         <tbody>
           <?php $no=1; foreach ($data as $r) : ?>
           <tr>

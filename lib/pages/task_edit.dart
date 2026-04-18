@@ -64,7 +64,7 @@ class _TaskEditPageState extends ConsumerState<TaskEditPage> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text("coba beberapa saat lagi"),
-              duration: Duration(seconds: 10),
+              duration: Duration(seconds: 30),
             ),
           );
 
