@@ -106,8 +106,6 @@ class Mobile extends CI_Controller{
     $differenceApprovedDays = [];
     $r1 = $this->db->query("SELECT * FROM m_pegawai WHERE pegawai_id = ?", array($pegawaiId))->row_array();
     
-    
-    
     $all = $this->db->query("SELECT * 
         FROM tx_request_izin_pegawai x 
         JOIN tx_request_izin y 
