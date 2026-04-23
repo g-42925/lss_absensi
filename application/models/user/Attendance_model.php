@@ -167,7 +167,9 @@ class Attendance_model extends CI_Model
                     's_istirahat_longitude' => $row['s_istirahat_longitude'],
                     'isLate' => $row['isLate'],
                     'tolerance' => $row['tolerance'],
-                    'limit' => $row['limit']
+                    'limit' => $row['limit'],
+                    'mocked_in' => $row['mocked_in'],
+                    'mocked_out' => $row['mocked_out']
                 );
             }
         }
@@ -534,6 +536,8 @@ class Attendance_model extends CI_Model
                     'tolerance' => $row['tolerance'],
                     'limit' => $row['limit'],
                     'isLate' => $row['isLate'],
+                    'mocked_in' => $row['mocked_in'],
+                    'mocked_out' => $row['mocked_out']
                 );
             }
         }

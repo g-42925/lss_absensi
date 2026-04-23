@@ -85,7 +85,7 @@
               </select>
             </td>
             <td class="v-a-t"> <!-- jam masuk -->
-              <input type="text" class="form-control flatpickr-input text-center active" placeholder="hh:mm" id="flatpickr-time-work-a<?=$row['pegawai_id'];?>" value="<?=$row['jam_masuk'];?>" readonly="readonly" onchange="checkStatus<?=$row['pegawai_id'];?>('<?=$row['is_status'];?>');updateStatus('jmasuk','<?=$row['pegawai_id'];?>',this.value)" <?php if ($row['is_request']>0) { echo 'disabled'; } ?>>
+              <input type="text" class="form-control flatpickr-input text-center active <?= $row['mocked_in'] == '1' ? 'text-red-900':'' ?>" placeholder="hh:mm" id="flatpickr-time-work-a<?=$row['pegawai_id'];?>" value="<?=$row['jam_masuk'];?>" readonly="readonly" onchange="checkStatus<?=$row['pegawai_id'];?>('<?=$row['is_status'];?>');updateStatus('jmasuk','<?=$row['pegawai_id'];?>',this.value)" <?php if ($row['is_request']>0) { echo 'disabled'; } ?>>
               <?php if ($row['jam_masuk']!='') { ?>
               <div class="text-center">
                 <a target="_blank" href="https://www.google.com/maps?q=<?= $row['point_latitude'] ?>,<?= $row['point_longitude'] ?>" class="btn p-1" data-toggle="tooltip" title="Lihat Map">
@@ -113,7 +113,7 @@
             </td>
             <td class="v-a-t"> <!-- jam keluar -->
               <?php if ($row['acc_keluar']=='y') { ?>
-              <input type="text" class="form-control flatpickr-input text-center active" placeholder="hh:mm" id="flatpickr-time-work-d<?=$row['pid'];?>" value="<?=$row['jam_keluar'];?>" readonly="readonly" onchange="updateStatus('jkeluar','<?=$row['pid'];?>',this.value)" <?php if ($row['is_request']>0) { echo 'disabled'; } ?>>
+              <input type="text" class="<?= $row['mocked_out'] == '1' ? 'text-red-900':'' ?> form-control flatpickr-input text-center active" placeholder="hh:mm" id="flatpickr-time-work-d<?=$row['pid'];?>" value="<?=$row['jam_keluar'];?>" readonly="readonly" onchange="updateStatus('jkeluar','<?=$row['pid'];?>',this.value)" <?php if ($row['is_request']>0) { echo 'disabled'; } ?>>
               <?php }else if ($row['acc_keluar']=='n') { ?>
               <?=$row['jam_keluar'];?>
               <div class="ft-11">Waiting,
