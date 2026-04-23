@@ -7,7 +7,7 @@ class Mobile extends CI_Controller{
   public $upload;
   public $pagination;
 
-	function __construct() {
+  function __construct() {
     parent::__construct();
     header('Access-Control-Allow-Origin: *');
     header("Access-Control-Allow-Methods: PUT, GET, POST, DELETE, OPTIONS");
@@ -106,6 +106,8 @@ class Mobile extends CI_Controller{
     $differenceApprovedDays = [];
     $r1 = $this->db->query("SELECT * FROM m_pegawai WHERE pegawai_id = ?", array($pegawaiId))->row_array();
     
+    
+    
     $all = $this->db->query("SELECT * 
         FROM tx_request_izin_pegawai x 
         JOIN tx_request_izin y 
@@ -134,7 +136,8 @@ class Mobile extends CI_Controller{
         FROM exception where employee_id = ? and type='Cuti setengah hari' and status = '1'",
         [$pegawaiId]
     )->num_rows();
-        
+    
+
     foreach($pending as $f){
         $tanggalAwal = new DateTime($f['tanggal_request']);
         $tanggalAkhir = new DateTime($f['tanggal_request_end']);
@@ -155,7 +158,7 @@ class Mobile extends CI_Controller{
 
         $result = [
             "list"   => $all,
-            "quota"  => (12 - (array_sum($differencePendingDays) + array_sum($differenceApprovedDays)) - ($exception / 2)),
+            "quota"  => (12 - (array_sum($differencePendingDays) + array_sum($differenceApprovedDays)) - ($exception/2)),
             "used"   => array_sum($differencePendingDays) + array_sum($differenceApprovedDays) + ($exception / 2)
         ];
 
@@ -174,8 +177,70 @@ class Mobile extends CI_Controller{
 
   }
 
+  function xleavelist($pegawaiId){
+    $differencesPending = [];
+    $differencesApproved = [];
+    
+    $r1 = $this->db->query("SELECT * FROM m_pegawai WHERE pegawai_id = ?", array($pegawaiId))->row_array();
+    $r2 = $this->db->query("SELECT * 
+        FROM tx_request_izin_pegawai x 
+        JOIN tx_request_izin y 
+          ON x.request_izin_id = y.request_izin_id 
+        WHERE x.pegawai_id = ? and (y.tipe_request = 'c' or y.tipe_request = 's') order by y.created_at desc",
+        [$pegawaiId]
+    )->result_array();
 
-  function afterbreak(){
+    // Filter pending (status 0)
+    $filteredPending = array_filter($r2, function($row) {
+        return $row['is_status'] == 0;
+    });
+
+    // Filter approved (status 1)
+    $filteredApproved = array_filter($r2, function($row) {
+        return $row['is_status'] == 1;
+    });
+
+    // Hitung hari pending
+    foreach($filteredPending as $f){
+        $tanggalAwal = new DateTime($f['tanggal_request']);
+        $tanggalAkhir = new DateTime($f['tanggal_request_end']);
+        $difference = $tanggalAwal->diff($tanggalAkhir)->days+1;
+        $differencesPending[] = $difference;
+    }
+
+    // Hitung hari approved
+    foreach($filteredApproved as $f){
+        $tanggalAwal = new DateTime($f['tanggal_request']);
+        $tanggalAkhir = new DateTime($f['tanggal_request_end']);
+        $difference = $tanggalAwal->diff($tanggalAkhir)->days+1;
+        $differencesApproved[] = $difference;
+    }
+    
+    if($r1){
+        http_response_code(200);
+
+        $result = [
+            "list"   => $r2,
+            "quota"  => $r1['jumlah_cuti'] - array_sum($differencesPending) , // quota real dikurangi pending (terkunci)
+            "used"   => array_sum($differencesApproved) + array_sum($differencesPending), // hanya approved
+            "locked" => array_sum($differencesPending)   // pending (opsional, biar user tahu ada cuti terpending)
+        ];
+
+        echo json_encode([
+            "success" => true,
+            "result"  => $result
+        ]);
+    }
+    else{
+        http_response_code(200);
+
+        echo json_encode([
+            "success" => false,
+        ]);
+    }
+}
+
+function afterbreak(){
   $this->db->trans_begin();
 
   $now = $now = strtotime(date("Y-m-d H:i"));
@@ -532,7 +597,8 @@ function login(){
       "jam_keluar" => $post["jam_keluar"],
       "foto_absen_keluar" => $post["foto_absen_keluar"],
       "latitude_keluar" => $post["latitude_keluar"],
-      "longitude_keluar" => $post["longitude_keluar"]
+      "longitude_keluar" => $post["longitude_keluar"],
+      "mocked_out" => $post["is_mock"] ?? false
     );
 
     $emp = $this->db->query("select * from m_pegawai where pegawai_id = ?",[$post['pegawai_id']])->row_array();
@@ -954,6 +1020,7 @@ function login(){
     $tanggalHariIni = date('Y-m-d');
     $json = file_get_contents('php://input');
     $post = json_decode($json,true);
+    
 
     $data2 = array(
       "is_status" => $post["is_status"],
@@ -963,6 +1030,7 @@ function login(){
       "point_longitude" => $post["point_longitude"],
       "latitude_masuk" => $post["latitude_masuk"],
       "longitude_masuk" => $post["longitude_masuk"],
+      "mocked_in" => $post["is_mock"] ?? false
     );
 
     $emp = $this->db->query("select * from m_pegawai where pegawai_id = ?",[$post['pegawai_id']])->row_array();
@@ -1577,6 +1645,7 @@ function login(){
       "finish_location" => $post['finish_location'],
       "finish_photo" => $post['finish_photo'],
       "finish_time" => Date("H:i"),
+      "mocked_out" => $post["mocked_out"]
     ];
 
     $this->db->where('task_id',$post['task_id']);
@@ -1611,7 +1680,8 @@ function login(){
       "start_time" => date('H:i'),
       "finish_location" => "0/0",
       "finish_photo" => "-",
-      "finish_time" => "00:00"
+      "finish_time" => "00:00",
+      "mocked_in" => $post["is_mock"]
     ];
 
     $q = $this->db->insert(
@@ -2083,7 +2153,8 @@ function login(){
     
     $data = [
       "finish_photo" => $post["finish_photo"],
-      "finish_location" => $post["finish_location"]
+      "finish_location" => $post["finish_location"],
+      "mocked_out" => $post["is_mock"] ?? false
     ];
 
     $this->db->trans_begin(); // to start db transaction
@@ -2105,7 +2176,8 @@ function login(){
     
     $data = [
       "start_photo" => $post["start_photo"],
-      "start_location" => $post["start_location"]
+      "start_location" => $post["start_location"],
+      "mocked_out" => $post["is_mock"]
     ];
 
     $data2 = ['start_from' => date('Y-m-d H:i:s')];
