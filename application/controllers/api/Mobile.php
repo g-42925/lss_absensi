@@ -1641,11 +1641,11 @@ function login(){
     $json = file_get_contents('php://input');
     $post = json_decode($json,true);
     
-    $data = [
+    $data = [  
       "finish_location" => $post['finish_location'],
       "finish_photo" => $post['finish_photo'],
       "finish_time" => Date("H:i"),
-      "mocked_out" => $post["mocked_out"]
+      "mocked_in" => $post["is_mock"] ?? false
     ];
 
     $this->db->where('task_id',$post['task_id']);
@@ -1681,7 +1681,7 @@ function login(){
       "finish_location" => "0/0",
       "finish_photo" => "-",
       "finish_time" => "00:00",
-      "mocked_in" => $post["is_mock"]
+      "mocked_in" => $post["is_mock"] ?? false
     ];
 
     $q = $this->db->insert(
@@ -2177,7 +2177,7 @@ function login(){
     $data = [
       "start_photo" => $post["start_photo"],
       "start_location" => $post["start_location"],
-      "mocked_out" => $post["is_mock"]
+      "mocked_in" => $post["is_mock"] ?? false
     ];
 
     $data2 = ['start_from' => date('Y-m-d H:i:s')];
