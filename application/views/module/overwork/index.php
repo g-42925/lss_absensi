@@ -11,6 +11,8 @@
             <th class="w-s-n">Requested At</th>
             <th class="w-s-n">Start from</th>
             <th class="w-s-n">Until</th>
+            <th class="w-s-n">Mocked in</th>
+            <th class="w-s-n">Mocked out</th>
             <th class="w-s-n">Action</th>
           </tr>
         </thead>
@@ -21,8 +23,8 @@
             <td><?= $r['date'];?></td>
             <td><?= $r['start_from'];?></td>
             <td><?= $r['until'];?></td>
-            <td><?= $r['approved'] == 1 ? 'yes':'no' ?></td>
-
+            <td><?= $r['mocked_in']  ?></td>
+            <td><?= $r['mocked_out']  ?></td>
             <td>
               <a href="<?=base_url('overwork/edit/'.$r['employee_overwork_id']).'?failed=false';?>" class="btn p-1" title="Edit Pengajuan">
                 <i class="ti ti-edit"></i>

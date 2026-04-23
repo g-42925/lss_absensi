@@ -35,7 +35,9 @@ class Overwork extends CI_Controller {
 
         $companyId = $this->session->userdata('company_id');
 
-        $data['data'] = $this->db->query("select * from employee_overwork eo join m_pegawai mp on eo.employee_id = mp.pegawai_id where mp.company_id = ? order by date desc ",[$companyId])->result_array();
+        $data['data'] = $this->db->query("select * from employee_overwork eo join m_pegawai mp on eo.employee_id = mp.pegawai_id join employee_overwork_detail eod on eo.employee_overwork_id = eod.employee_overwork_id where mp.company_id = ? order by date desc ",[$companyId])->result_array();
+        
+
 
         $this->load->view('templates/header', $data);
         $this->load->view('templates/sidemenu', $data);
