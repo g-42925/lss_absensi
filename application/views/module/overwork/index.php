@@ -1,4 +1,4 @@
-<div class="container-xxl flex-grow-1 container-p-y m-3">
+<div class="container-xxl flex-grow-1 container-p-y">
   <div class="card">
     <div class="card-header border-bottom">
       <h5 class="card-title">Lembur</h5>
@@ -11,8 +11,10 @@
             <th class="w-s-n">Requested At</th>
             <th class="w-s-n">Start from</th>
             <th class="w-s-n">Until</th>
-            <th class="w-s-n">Mocked in</th>
-            <th class="w-s-n">Mocked out</th>
+            <th class="w-s-n">Start photo</th>
+            <th class="w-s-n">Start location</th>
+            <th class="w-s-n">Finish photo</th>
+            <th class="w-s-n">Finish location</th>
             <th class="w-s-n">Action</th>
           </tr>
         </thead>
@@ -23,8 +25,36 @@
             <td><?= $r['date'];?></td>
             <td><?= $r['start_from'];?></td>
             <td><?= $r['until'];?></td>
-            <td><?= $r['mocked_in']  ?></td>
-            <td><?= $r['mocked_out']  ?></td>
+            <td class="text-capitalize">
+              <a target="_blank" href="<?= base_url('image/index').'/'.basename($r['start_photo']) ?>"><i class="ti ti-photo"></i></a>
+            </td>  
+            <td>
+                <?php if (!empty($r['start_location'])): ?>
+                  <a href="https://www.google.com/maps?q=<?= explode("/",$r['start_location'])[0] ?>,<?= explode("/",$r['start_location'])[1] ?>" target="_blank">
+                    <i class="ti ti-map-pin <?= $r['mocked_in'] == '1' ? 'text-red-900':'' ?>"></i>
+                  </a>
+                <?php endif; ?>
+                <?php if (empty($r['start_location'])): ?>
+                  <a href="" target="_blank">
+                    -
+                  </a>
+                <?php endif; ?>
+            </td>
+            <td class="text-capitalize">
+              <a target="_blank" href="<?= base_url('image/index').'/'.basename($r['finish_photo']) ?>"><i class="ti ti-photo"></i></a>
+            </td>  
+            <td>
+                <?php if (!empty($r['finish_location'])): ?>
+                  <a href="https://www.google.com/maps?q=<?= explode("/",$r['finish_location'])[0] ?>,<?= explode("/",$r['finish_location'])[1] ?>" target="_blank">
+                    <i class="ti ti-map-pin text <?= $r['mocked_in'] == '1' ? 'text-red-900':'' ?>"></i>
+                  </a>
+                <?php endif; ?>
+                <?php if (empty($r['finish_location'])): ?>
+                  <a href="" target="_blank">
+                    -
+                  </a>
+                <?php endif; ?>
+            </td>
             <td>
               <a href="<?=base_url('overwork/edit/'.$r['employee_overwork_id']).'?failed=false';?>" class="btn p-1" title="Edit Pengajuan">
                 <i class="ti ti-edit"></i>
