@@ -650,15 +650,12 @@ class Attendance_model extends CI_Model
                 $dateTime1 = new DateTime($lastDefaultStatus['tanggal_absen'] . ' ' . $shift['clock_in']);
                 $row['tolerance'] = (clone $dateTime1)->modify("+{$shift['tardiness_tolerance']} minutes");
                 $row['limit'] = (clone $row['tolerance'])->modify("+{$division['restriction']} minutes");
-
             }
             else {
                 $pattern = $this->db->query("select * from m_pola_kerja mpk join m_pola_kerja_det mpkd on mpk.pola_kerja_id = mpkd.pola_kerja_id where mpk.pola_kerja_id = ? and is_day = ?", [$workSystem[1], $today])->row_array();
                 $dateTime1 = new DateTime($lastDefaultStatus['tanggal_absen'] . ' ' . $pattern['jam_masuk']);
                 $row['tolerance'] = (clone $dateTime1)->modify("+{$pattern['toleransi_terlambat']} minutes");
                 $row['limit'] = (clone $row['tolerance'])->modify("+{$division['restriction']} minutes");
-
-
             }
 
             if ($tgl >= $row['tanggal_mulai_kerja']) {
