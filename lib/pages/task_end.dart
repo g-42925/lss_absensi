@@ -56,6 +56,8 @@ class _TaskEndPageState extends ConsumerState<TaskEndPage> {
 
   bool clicked = false;
 
+  bool isSuspicious = false;
+
   @override
   void initState() {
     super.initState();

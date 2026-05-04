@@ -231,7 +231,7 @@ class Attendance_record_model extends CI_Model {
                         'catatan_keluar'  => $res['catatan_keluar'],
                         'acc_keluar'  => $res['acc_keluar'],
                         'shift_jam_mulai'  => $datashiftm,
-                        'shift_jam_selesai'  => $datashiftk
+                        'shift_jam_selesai'  => $datashiftk,
                     );
                 }
 

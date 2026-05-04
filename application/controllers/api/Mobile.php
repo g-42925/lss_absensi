@@ -2865,12 +2865,38 @@ function login(){
     );
   }
 
-
   function hasExceptionV2($employeeId){
     $r = $this->db->query("select * from exception where employee_id = ? and status = ? and date = ? and type = ?",[$employeeId,1,date('Y-m-d'),'Lupa absen'])->num_rows() > 0;
 
     echo json_encode([
       'hasException' => $r
     ]);
+  }
+
+  function timenow(){
+    $tz = new DateTimeZone("Asia/Jakarta");
+    $now = new DateTime("now", $tz);
+
+    // ambil microtime untuk millisecond
+    $micro = microtime(true);
+    $milliSeconds = (int)(($micro - floor($micro)) * 1000);
+
+    $data = [
+        "year" => (int)$now->format("Y"),
+        "month" => (int)$now->format("n"),
+        "day" => (int)$now->format("j"),
+        "hour" => (int)$now->format("G"),
+        "minute" => (int)$now->format("i"),
+        "seconds" => (int)$now->format("s"),
+        "milliSeconds" => $milliSeconds,
+        "dateTime" => $now->format("Y-m-d\TH:i:s") . "." . str_pad($milliSeconds, 3, "0", STR_PAD_LEFT),
+        "date" => $now->format("m/d/Y"),
+        "time" => $now->format("H:i"),
+        "timeZone" => "Asia/Jakarta",
+        "dayOfWeek" => $now->format("l"),
+        "dstActive" => $now->format("I") == "1"
+    ];
+
+    return $this->output->set_content_type('application/json')->set_output(json_encode($data));
   }
 }

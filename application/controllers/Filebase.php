@@ -19,6 +19,40 @@ class Filebase extends CI_Controller {
     public $pagination;
     
     
+    public function unknown($fileName,$id){
+        $company = $this->db->query("select * from companies where id = ?",[$id])->row_array();
+        $rootDir = explode('@', $company['email'])[0];
+        
+        $s3 = new S3Client([
+            'version'     => 'latest',
+            'region'      => 'us-east-1',
+            'endpoint'    => 'https://s3.filebase.com',
+            'use_path_style_endpoint' => false,
+            'credentials' => [
+                'key'    => 'B8F0135956143AE0685E',
+                'secret' => 'gKrbIZJnzLWBXZ0VGQvnlAumvngpBH35PsXN5zUp'
+            ],
+            'Metadata' => [
+              'cid' => 'true'
+            ],
+        ]);
+        
+        $file = $_FILES['file']['tmp_name'];
+
+        // file dari form android
+
+        $result = $s3->putObject([
+          'Bucket' => 'leryn-storage',
+          'Key' => 'absensi/'.$rootDir.'/unknown/'. $fileName,
+          'SourceFile' => $file,
+          'ContentType' => 'image/png',
+        ]);
+
+        $cid = $result['@metadata']['headers']['x-amz-meta-cid']; 
+
+        echo "https://wooden-plum-woodpecker.myfilebase.com/ipfs/".$cid;        
+    }
+    
     public function exception($fileName,$id){
         $company = $this->db->query("select * from companies where id = ?",[$id])->row_array();
         $rootDir = explode('@', $company['email'])[0];
@@ -43,7 +77,7 @@ class Filebase extends CI_Controller {
 
         $result = $s3->putObject([
           'Bucket' => 'leryn-storage',
-          'Key' => $rootDir .'/exception/'. $fileName,
+          'Key' => 'absensi/'.$rootDir.'/exception/'. $fileName,
           'SourceFile' => $file,
           'ContentType' => 'image/png',
         ]);
@@ -77,7 +111,7 @@ class Filebase extends CI_Controller {
 
         $result = $s3->putObject([
           'Bucket' => 'leryn-storage',
-          'Key' => $rootDir .'/task/'. $fileName,
+          'Key' => 'absensi/'.$rootDir .'/task/'. $fileName,
           'SourceFile' => $file,
           'ContentType' => 'image/png',
         ]);
@@ -112,7 +146,7 @@ class Filebase extends CI_Controller {
 
         $result = $s3->putObject([
           'Bucket' => 'leryn-storage',
-          'Key' => $rootDir .'/attendance/'. $fileName,
+          'Key' => 'absensi/'.$rootDir .'/attendance/'. $fileName,
           'SourceFile' => $file,
           'ContentType' => 'image/png',
         ]);
