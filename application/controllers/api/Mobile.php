@@ -2865,14 +2865,16 @@ function login(){
     );
   }
 
-  function hasExceptionV2($employeeId){
-    $r = $this->db->query("select * from exception where employee_id = ? and status = ? and date = ? and type = ?",[$employeeId,1,date('Y-m-d'),'Lupa absen'])->num_rows() > 0;
 
+  function hasException($employeeId,$reason){
+    $r = $this->db->query("select * from exception where employee_id = ? and status = ? and date = ? and type = ?",[$employeeId,1,date('Y-m-d'),urldecode($reason)])->num_rows() > 0;
+    
     echo json_encode([
-      'hasException' => $r
+      'hasException' => $r,
+      'reason' => $reason
     ]);
   }
-
+  
   function timenow(){
     $tz = new DateTimeZone("Asia/Jakarta");
     $now = new DateTime("now", $tz);
@@ -2896,7 +2898,7 @@ function login(){
         "dayOfWeek" => $now->format("l"),
         "dstActive" => $now->format("I") == "1"
     ];
-
+    
     return $this->output->set_content_type('application/json')->set_output(json_encode($data));
   }
 }
