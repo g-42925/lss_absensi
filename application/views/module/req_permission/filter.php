@@ -36,7 +36,7 @@
             <th>Category</th>
             <th>Photo</th>
             <th>Status</th>
-            <th class="text-end">Action</th>
+            <th class="text-end w-s-n">...</th>
           </tr>
         </thead>
         <tbody>
@@ -65,7 +65,11 @@
               <?= $row['is_status'] ?>
             </td>
             <?php if ($status == "csh"): ?>
-              <td align="right">-</td>
+              <td align="right">
+                <a href="<?=base_url('except/edit/'.$row['id']).'?failed=false';?>" class="btn p-1" title="Edit Pengajuan">
+                  <i class="ti ti-edit"></i>
+                </a>
+              </td>
             <?php else: ?>
               <td align="right">
                 <a href="<?=base_url('req_permission/edit/'.$row['request_izin_id']);?>" class="btn p-1">

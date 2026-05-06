@@ -38,7 +38,7 @@ endforeach; ?>
             <th>Category</th>
             <th>Photo</th>
             <th>Status</th>
-            <th class="text-end">Action</th>
+            <th class="text-end w-s-n">...</th>
           </tr>
         </thead>
         <tbody>

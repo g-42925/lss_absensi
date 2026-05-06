@@ -14,6 +14,7 @@
             <th class="w-s-n">Photo</th>
             <th class="w-s-n">No fee</th>
             <th class="w-s-n">Status</th>
+            <th class="w-s-n">...</th>
           </tr>
         </thead>
         <tbody>

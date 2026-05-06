@@ -117,7 +117,12 @@ class Except extends CI_Controller {
       } 
       else {
         $this->db->trans_commit();
-        redirect('except');
+        if($exception['is_csh']){
+          redirect('req_permission');
+        }
+        else{
+          redirect('except');
+        }
       }
     }
 
