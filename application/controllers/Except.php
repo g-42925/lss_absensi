@@ -30,7 +30,9 @@ class Except extends CI_Controller {
 
         $companyId = $this->session->userdata('company_id');
 
+
         $data['data'] = $this->db->query("select * from exception e join m_pegawai mp on e.employee_id = mp.pegawai_id where mp.company_id = ? and mp.is_del != 'y' order by e.created_at desc",[$companyId])->result_array();
+        $data['divisions'] = $this->db->query("select * from divisions where company_id = ?",[$companyId])->result_array();
 
         $this->load->view('templates/header', $data);
         $this->load->view('templates/sidemenu', $data);
@@ -38,6 +40,45 @@ class Except extends CI_Controller {
         $this->load->view('module/exception/index', $data);
         $this->load->view('templates/footer', $data);
         $this->load->view('templates/fscript-html-end', $data);
+
+
+    }
+
+    public function filter(){
+        cek_menu_access();
+        $data['htmlpagejs'] = 'none';
+        $data['nmenu']      = 'Data Request Izin';
+        $data['title']      = 'Pengecualian';
+        $data['namalabel']  = $data['title'];
+        $data['auth']       = authUser();
+
+        $div = $this->input->get('divisionId');
+        $status = $this->input->get('status');
+        $start = $this->input->get('start');
+        $until = $this->input->get('until');
+
+        $companyId = $this->session->userdata('company_id');
+       
+        $data['divisions'] = $this->db->query("select * from divisions where company_id = ?",[$companyId])->result_array();  
+        
+        $data['div'] = $div == 'Any' ? '' : $div;
+        $data['status'] = $status == 'all' ? '' : $status;
+        $data['tglawal'] = $start ?: date('Y-m-01');
+        $data['tglakhir'] = $until ?: date('Y-m-d');
+        $data['keyword'] = $this->input->get('keyword');
+
+
+        $data['status'] = $status;
+        $data['divisions'] = $this->db->query("select * from divisions where company_id = ?",[$companyId])->result_array();
+        $data['data'] = $this->rp->exceptionFilter($data['tglawal'],$data['tglakhir'],$data);
+
+        $this->load->view('templates/header', $data);
+        $this->load->view('templates/sidemenu', $data);
+        $this->load->view('templates/sidenav', $data);
+        $this->load->view('module/exception/filter', $data);
+        $this->load->view('templates/footer', $data);
+        $this->load->view('templates/fscript-html-end', $data);
+
     }
 
     public function edit($id){

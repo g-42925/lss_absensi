@@ -7,7 +7,7 @@ class Req_permission_model extends CI_Model {
         parent::__construct();
     }
 
-	public function withFilter($tglawal,$tglakhr,$filter) {
+	  public function withFilter($tglawal,$tglakhr,$filter) {
         $data = array();
         $query = null;
         $div = $filter['div'];
@@ -17,13 +17,13 @@ class Req_permission_model extends CI_Model {
 
         if($div == ''){
           if($status == ''){
-		        $query = $this->db->query(" SELECT x.*, y.*, z.pegawai_id, z.nama_pegawai, z.is_del FROM tx_request_izin x JOIN tx_request_izin_pegawai y ON x.request_izin_id = y.request_izin_id JOIN m_pegawai z ON y.pegawai_id = z.pegawai_id WHERE x.company_id = ? AND z.is_del = 'n' AND DATE(x.tanggal_request) BETWEEN ? AND ? and (z.nama_pegawai like ? or z.nik = ?) ORDER BY created_at DESC ",[$companyId,$tglawal,$tglakhr,"%$key%",$key])->result_array();
+		        $query = $this->db->query(" SELECT x.*, y.*, z.pegawai_id, z.nama_pegawai, z.is_del FROM tx_request_izin x JOIN tx_request_izin_pegawai y ON x.request_izin_id = y.request_izin_id JOIN m_pegawai z ON y.pegawai_id = z.pegawai_id WHERE x.company_id = ? AND z.is_del = 'n' AND x.tanggal_request BETWEEN ? AND ? and (z.nama_pegawai like ? or z.nik = ?) ORDER BY x.created_at DESC ",[$companyId,$tglawal,$tglakhr,"%$key%",$key])->result_array();
+            //$query = $this->db->query("select * from tx_request_izin tri join tx_request_izin_pegawai trip on tri.request_izin_id = trip.request_izin_id join m_pegawai mp on trip.pegawai_id = mp.pegawai_id where mp.company_id = ? and Date(tri.tanggal_request) between ? and ? and (mp.nama_pegawai like ? or mp.nik = ?)",[$companyId,$tglawal,$tglakhr,"%$key%",$key])->result_array();
           }
           else{
             if($status == 'csh'){
               //$query = $this->db->query("select e.*, mp.* from exception e join m_pegawai mp on e.employee_id = mp.pegawai_id where mp.company_id = ? and e.type = ? ",[$companyId,"Cuti setengah hari"])->result_array();
               $query = $this->db->query(" SELECT * from exception e join m_pegawai mp on e.employee_id = mp.pegawai_id and mp.company_id = ? and (mp.nama_pegawai like ? or mp.nik = ?) and e.type = ? and DATE(e.date) BETWEEN ? AND ?",[$companyId,"%$key%",$key,"Cuti setengah hari",$tglawal,$tglakhr])->result_array();
-
             }
             else{
               $query = $this->db->query(" SELECT x.*, y.*, z.pegawai_id, z.nama_pegawai, z.is_del FROM tx_request_izin x JOIN tx_request_izin_pegawai y ON x.request_izin_id = y.request_izin_id JOIN m_pegawai z ON y.pegawai_id = z.pegawai_id WHERE x.company_id = ? AND z.is_del = 'n' AND DATE(x.tanggal_request) BETWEEN ? AND ? and (z.nama_pegawai like ? or z.nik = ?) and x.tipe_request = ? ORDER BY created_at DESC ",[$companyId,$tglawal,$tglakhr,"%$key%",$key,$status])->result_array();
@@ -82,6 +82,84 @@ class Req_permission_model extends CI_Model {
             }
           }
         }
+
+        
+
+        return $query;
+    }
+
+    public function exceptionFilter($tglawal,$tglakhr,$filter) {
+        $data = array();
+        $query = null;
+        $div = $filter['div'];
+        $status = $filter['status'];
+        $key = $filter['keyword'];
+        $companyId = $this->session->userdata('company_id');
+
+        if($div == ''){
+          if($status == 'all'){
+		        //$query = $this->db->query(" SELECT x.*, y.*, z.pegawai_id, z.nama_pegawai, z.is_del FROM tx_request_izin x JOIN tx_request_izin_pegawai y ON x.request_izin_id = y.request_izin_id JOIN m_pegawai z ON y.pegawai_id = z.pegawai_id WHERE x.company_id = ? AND z.is_del = 'n' AND DATE(x.tanggal_request) BETWEEN ? AND ? and (z.nama_pegawai like ? or z.nik = ?) ORDER BY created_at DESC ",[$companyId,$tglawal,$tglakhr,"%$key%",$key])->result_array();
+            $query = $this->db->query("select * from exception e join m_pegawai mp on e.employee_id = mp.pegawai_id where mp.company_id = ? and DATE(e.date) BETWEEN ? AND ? and (mp.nama_pegawai like ? or mp.nik = ?)",[$companyId,$tglawal,$tglakhr,"%$key%",$key])->result_array();
+          }
+          else{ // works
+            $query = $this->db->query("select * from exception e join m_pegawai mp on e.employee_id = mp.pegawai_id where mp.company_id = ? and mp.is_del != 'y' and DATE(e.date) BETWEEN ? AND ? and e.type = ?",[$companyId,$tglawal,$tglakhr,$status])->result_array();
+          }
+        }
+        else{
+          if($status == 'all'){
+		        //query = $this->db->query(" SELECT x.*, y.*, z.pegawai_id, z.nama_pegawai, z.is_del FROM tx_request_izin x JOIN tx_request_izin_pegawai y ON x.request_izin_id = y.request_izin_id JOIN m_pegawai z ON y.pegawai_id = z.pegawai_id WHERE x.company_id = ? AND z.is_del = 'n' AND DATE(x.tanggal_request) BETWEEN ? AND ? and (z.nama_pegawai like ? or z.nik = ?) and z.division_id = ? ORDER BY created_at DESC ",[$companyId,$tglawal,$tglakhr,"%$key%",$key,$div])->result_array();
+            $query = $this->db->query("select * from exception e join m_pegawai mp on e.employee_id = mp.pegawai_id where mp.company_id = ? and mp.is_del != 'y' and DATE(e.date) BETWEEN ? AND ? and mp.division_id = ?",[$companyId,$tglawal,$tglakhr,$div])->result_array();
+          }
+          else{
+            if($status == 'csh'){ //works
+              //$query = $this->db->query(" SELECT * from exception e join m_pegawai mp on e.employee_id = mp.pegawai_id and mp.company_id = ? and (mp.nama_pegawai like ? or mp.nik = ?) and e.type = ? and DATE(e.date) BETWEEN ? AND ?",[$companyId,"%$key%",$key,"Cuti setengah hari",$tglawal,$tglakhr])->result_array();
+              $query = $this->db->query("select * from exception e join m_pegawai mp on e.employee_id = mp.pegawai_id where mp.company_id = ? and mp.is_del != 'y' and DATE(e.date) BETWEEN ? AND ?",[$companyId,$tglawal,$tglakhr])->result_array();
+            }
+            else{
+              //$query = $this->db->query(" SELECT x.*, y.*, z.pegawai_id, z.nama_pegawai, z.is_del FROM tx_request_izin x JOIN tx_request_izin_pegawai y ON x.request_izin_id = y.request_izin_id JOIN m_pegawai z ON y.pegawai_id = z.pegawai_id WHERE x.company_id = ? AND z.is_del = 'n' AND DATE(x.tanggal_request) BETWEEN ? AND ? and (z.nama_pegawai like ? or z.nik = ?) and x.tipe_request = ? ORDER BY created_at DESC ",[$companyId,$tglawal,$tglakhr,"%$key%",$key,$status])->result_array();
+              $query = $this->db->query("select * from exception e join m_pegawai mp on e.employee_id = mp.pegawai_id where mp.company_id = ? and DATE(e.date) BETWEEN ? AND ? and (mp.nama_pegawai like ? or mp.nik = ?) and e.type = ?",[$companyId,$tglawal,$tglakhr,"%$key%",$key,$status])->result_array();
+            }
+          }
+        }
+
+        // $companyId = $this->session->userdata('company_id');
+		
+        // foreach($query as $index => $r){
+        //   if($status != 'csh'){
+        //     if($r['tipe_request'] == "c"){
+        //       $query[$index]['type_request'] = "cuti";
+        //     }
+        //     if($r['tipe_request'] == "i"){
+        //       $query[$index]['type_request'] = "izin";
+        //     }
+        //     if($r['tipe_request'] == "s"){
+        //       $query[$index]['type_request'] = "sakit";
+        //     }
+
+        //     if($r['is_status'] == 1){
+        //       $query[$index]['is_status'] = "approved";
+        //     }
+        //     if($r['is_status'] == 0){
+        //       $query[$index]['is_status'] = "pending";
+        //     }
+        //     if($r['is_status'] == 2){
+        //       $query[$index]['is_status'] = "rejected";
+        //     }
+        //   }
+        //   else{
+        //     $query[$index]['tipe_request'] = "Cuti Setengah Hari";
+
+        //     if($r['status'] == 1){
+        //       $query[$index]['is_status'] = "approved";
+        //     }
+        //     if($r['status'] == 0){
+        //       $query[$index]['is_status'] = "pending";
+        //     }
+        //     if($r['status'] == 2){
+        //       $query[$index]['is_status'] = "rejected";
+        //     }
+        //   }
+        // }
 
         
 

@@ -3,7 +3,7 @@
   <div class="card">
     <div class="card-header border-bottom">
       <div class="row mt-3">
-        <form method="get" action="<?= base_url().'/req_permission/filter' ?>" class="flex flex-row w-full gap-3">
+        <form method="get" action="<?= base_url().'req_permission/filter' ?>" class="flex flex-row w-full gap-3">
           <select data-value="<?= $div ?>" id="target1" onChange="onDivChg(this)" name="divisionId" class="w-full p-3 rounded-md border-2 border-black appearance-none">
             <option value="Any">Any</option>            
             <?php foreach ($divisions as $row): ?>

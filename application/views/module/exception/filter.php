@@ -2,27 +2,25 @@
   <div class="card">
     <div class="card-header border-bottom">
         <form method="get" action="<?= base_url() . 'except/filter'?>" class="flex flex-row w-full gap-3">
-          <select data-value="Any" id="target1" onChange="onDivChg(this)" name="divisionId" class="w-full p-3 rounded-md border-2 border-black appearance-none">
+          <select data-value="<?= $div ?>" id="target1" onChange="onDivChg(this)" name="divisionId" class="w-full p-3 rounded-md border-2 border-black appearance-none">
             <option value="Any">Any</option>
             <?php foreach ($divisions as $row): ?>
-              <option value="<?= $row['id']; ?>">
+              <option <?= $row['id'] == $div ? 'selected':'' ?> value="<?= $row['id']; ?>">
                 <?= $row['division_name']; ?>
               </option>
             <?php endforeach; ?>
           </select>
           <select name="status" class="w-full p-3 rounded-md border-2 border-black appearance-none">
-            <option value="all">All</option>
-            <option value="Absen masuk">Absen masuk</option>
-            <option value="Absen pulang">Absen pulang</option>
-            <option value="Lupa absen">Lupa absen</option>
-            <option value="Lupa absen">Cuti pulang</option>
-
-            <option value="Cuti setengah hari">Cuti setengah hari</option>
+            <option <?= $status == 'all' ? 'selected' : '' ?> value="all">All</option>
+            <option <?= $status == 'Absen masuk' ? 'selected' : '' ?> value="Absen masuk">Absen masuk</option>
+            <option <?= $status == 'Absen pulang' ? 'selected' : '' ?> value="Absen pulang">Absen pulang</option>
+            <option <?= $status == 'Lupa absen' ? 'selected' : '' ?> value="Lupa absen">Lupa absen</option>
+            <option <?= $status == 'Cuti setengah hari' ? 'selected' : '' ?> value="Cuti setengah hari">Cuti setengah hari</option>
           </select>
-          <input id="target2" onKeyUp="onKeyChg(this)" list="employees" value="" name="keyword" type="text" placeholder="card id or name" class="w-full p-3 rounded-md border-2 border-black" />
+          <input id="target2" onKeyUp="onKeyChg(this)" list="employees" value="<?= $keyword ?>" name="keyword" type="text" placeholder="card id or name" class="w-full p-3 rounded-md border-2 border-black" />
           <datalist id="employees"></datalist>
-          <input value="<?= date('Y-m-01')?>" name="start" type="date" class="w-full p-3 rounded-md border-2 border-black" />
-          <input value="<?= date('Y-m-t')?>" name="until" type="date" class="w-full p-3 rounded-md border-2 border-black" />
+          <input value="<?= $tglawal ?>" name="start" type="date" class="w-full p-3 rounded-md border-2 border-black" />
+          <input value="<?= $tglakhir ?>" name="until" type="date" class="w-full p-3 rounded-md border-2 border-black" />
           <button class="bg-black text-white p-3 rounded-md">search</button>
         </form>
     </div>
