@@ -2727,7 +2727,6 @@ function login(){
   public function employeeList($employeeId){
     $q = $this->db->query("select * from m_pegawai where pegawai_id = ?",[$employeeId])->row_array();
     $q2 = $this->db->query("select * from m_pegawai mp join position p on mp.position_id = p.id where mp.division_id = ? and is_del='n'",[$q['division_id']])->result_array();
-
     echo json_encode($q2);
   }
 

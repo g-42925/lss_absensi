@@ -78,6 +78,7 @@ class Req_permission extends CI_Controller {
 
 
         $data['datas']  = $this->rp->withFilter($data['tglawal'],$data['tglakhir'],$data);
+        $data['status'] = $status;
 
         $this->load->view('templates/header', $data);
         $this->load->view('templates/sidemenu', $data);
@@ -90,7 +91,7 @@ class Req_permission extends CI_Controller {
 
     public function add() {
         cek_menu_access();
-        isCreatable();
+        isEditable();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Data Request Izin';
         $data['title']      = 'Data Request Izin';

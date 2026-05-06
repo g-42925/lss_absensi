@@ -17,6 +17,7 @@
             <option <?= $status == 's' ? 'selected':'' ?> value="s">Sakit</option>
             <option <?= $status == 'i' ? 'selected':'' ?> value="i">Izin</option>
             <option <?= $status == 'c' ? 'selected':'' ?> value="c">Cuti</option>
+            <option <?= $status == 'csh' ? 'selected':'' ?> value="csh">Cuti Setengah Hari</option>
           </select>
           <input id="target2" onKeyUp="onKeyChg(this)" list="employees" value="<?= $keyword ?>" name="keyword" type="text" placeholder="card id or name" class="w-full p-3 rounded-md border-2 border-black"/>
           <datalist id="employees"></datalist>
@@ -27,7 +28,7 @@
       </div>
     </div>
     <div class="card-datatable table-responsive">
-      <table class="table border-top" id="dataTableatt">
+      <table class="table border-top" id="dataTableatt text-center">
         <thead>
           <tr>
             <th class="w-s-n">Date</th>
@@ -44,7 +45,12 @@
           ?>
           <tr>
             <td class="w-s-n">
-              <?= $row['tanggal_request'] ?> - <?= $row['tanggal_request_end'] ?>
+              <?php if($status == "csh") { ?>
+                <?= $row['date'] ?>
+              <?php } else { ?>
+                <?= $row['tanggal_request']?> -
+                <?= $row['tanggal_request_end']?>
+              <?php } ?>
             </td>
             <td class="w-s-n">
               <?= $row['nama_pegawai'] ?> (<?= $row['pegawai_id']; ?>)
@@ -57,69 +63,73 @@
             </td>  
             <td class="w-s-n">
               <?= $row['is_status'] ?>
-            </td>                   
-            <td align="right">
-              <a href="<?=base_url('req_permission/edit/'.$row['request_izin_id']);?>" class="btn p-1">
-                <i class="ti ti-edit"></i>
-              </a>
-              <a href="#" class="btn p-1" data-bs-toggle="modal" data-bs-target="#delRow<?=$row['request_izin_id'];?>">
-                <i class="ti ti-trash"></i>
-              </a>
-              <a href="#" class="<?= $row['tipe_request'] == "s" ? "":"hidden"  ?> btn p-1" data-bs-toggle="modal" data-bs-target="#cutRow<?=$row['request_izin_id'];?>" title="payroll">
-                <i class="ti ti-scissors"></i>
-              </a>
-              <a href="<?=base_url('req_permission/print/'.$row['request_izin_id']);?>" class="btn p-1">
-                <i class="ti ti-file"></i>
-              </a>
+            </td>
+            <?php if ($status == "csh"): ?>
+              <td align="right">-</td>
+            <?php else: ?>
+              <td align="right">
+                <a href="<?=base_url('req_permission/edit/'.$row['request_izin_id']);?>" class="btn p-1">
+                  <i class="ti ti-edit"></i>
+                </a>
+                <a href="#" class="btn p-1" data-bs-toggle="modal" data-bs-target="#delRow<?=$row['request_izin_id'];?>">
+                  <i class="ti ti-trash"></i>
+                </a>
+                <a href="#" class="<?= $row['tipe_request'] == "s" ? "":"hidden"  ?> btn p-1" data-bs-toggle="modal" data-bs-target="#cutRow<?=$row['request_izin_id'];?>" title="payroll">
+                  <i class="ti ti-scissors"></i>
+                </a>
+                <a href="<?=base_url('req_permission/print/'.$row['request_izin_id']);?>" class="btn p-1">
+                  <i class="ti ti-file"></i>
+                </a>
 
-              <div class="modal fade" id="cutRow<?=$row['request_izin_id'];?>" tabindex="-1" aria-hidden="true">
-                <div class="modal-dialog modal-simple modal-enable-otp modal-dialog-centered">
-                  <div class="modal-content p-3 p-md-5">
-                    <div class="modal-body">
-                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                      <div class="text-center mb-4">
-                        <h3 class="mb-2">Konfirmasi</h3>
-                        <p>Yakin ingin memotong jumlah cuti karyawan ini ?</p>
-                      </div>
-                      <div class="col-12 text-center pt-3">
-                        <button
-                          type="button"
-                          class="btn btn-label-secondary me-sm-3 me-1"
-                          data-bs-dismiss="modal"
-                          aria-label="Close">
-                          Batal
-                        </button>
-                        <a href="<?=base_url('req_permission/cut/'.$row['pegawai_id']).'/'.$row['tanggal_request'].'/'.$row['tanggal_request_end'] ?>" class="btn btn-danger">Ya, Potong!</a>
-                      </div>
+                <div class="modal fade" id="cutRow<?=$row['request_izin_id'];?>" tabindex="-1" aria-hidden="true">
+                  <div class="modal-dialog modal-simple modal-enable-otp modal-dialog-centered">
+                    <div class="modal-content p-3 p-md-5">
+                      <div class="modal-body">
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <div class="text-center mb-4">
+                          <h3 class="mb-2">Konfirmasi</h3>
+                          <p>Yakin ingin memotong jumlah cuti karyawan ini ?</p>
+                        </div>
+                        <div class="col-12 text-center pt-3">
+                          <button
+                            type="button"
+                            class="btn btn-label-secondary me-sm-3 me-1"
+                            data-bs-dismiss="modal"
+                            aria-label="Close">
+                            Batal
+                          </button>
+                          <a href="<?=base_url('req_permission/cut/'.$row['pegawai_id']).'/'.$row['tanggal_request'].'/'.$row['tanggal_request_end'] ?>" class="btn btn-danger">Ya, Potong!</a>
+                        </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </td>
-            <td>
-              <div class="modal fade" id="delRow<?=$row['request_izin_id'];?>" tabindex="-1" aria-hidden="true">
-                <div class="modal-dialog modal-simple modal-enable-otp modal-dialog-centered">
-                  <div class="modal-content p-3 p-md-5">
-                    <div class="modal-body">
-                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                      <div class="text-center mb-4">
-                        <h3 class="mb-2">Konfirmasi</h3>
-                        <p>Yakin ingin menghapus data ini ?</p>
-                      </div>
-                      <div class="col-12 text-center pt-3">
-                        <button
-                          type="button"
-                          class="btn btn-label-secondary me-sm-3 me-1"
-                          data-bs-dismiss="modal"
-                          aria-label="Close">
-                          Batal
-                        </button>
-                        <a href="<?=base_url('req_permission/hapus/'.$row['request_izin_id']);?>" class="btn btn-danger">Ya, Hapus!</a>
+              </td>
+              <td>
+                <div class="modal fade" id="delRow<?=$row['request_izin_id'];?>" tabindex="-1" aria-hidden="true">
+                  <div class="modal-dialog modal-simple modal-enable-otp modal-dialog-centered">
+                    <div class="modal-content p-3 p-md-5">
+                      <div class="modal-body">
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <div class="text-center mb-4">
+                          <h3 class="mb-2">Konfirmasi</h3>
+                          <p>Yakin ingin menghapus data ini ?</p>
+                        </div>
+                        <div class="col-12 text-center pt-3">
+                          <button
+                            type="button"
+                            class="btn btn-label-secondary me-sm-3 me-1"
+                            data-bs-dismiss="modal"
+                            aria-label="Close">
+                            Batal
+                          </button>
+                          <a href="<?=base_url('req_permission/hapus/'.$row['request_izin_id']);?>" class="btn btn-danger">Ya, Hapus!</a>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </td>
+              </td>
+            <?php endif; ?>               
           </tr>
           <?php $no++; endforeach; ?>
         </tbody>

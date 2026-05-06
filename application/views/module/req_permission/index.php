@@ -18,6 +18,7 @@ endforeach; ?>
             <option value="s">Sakit</option>
             <option value="i">Izin</option>
             <option value="c">Cuti</option>
+            <option value="csh">Cuti Setengah Hari</option>
           </select>
           <input id="target2" onKeyUp="onKeyChg(this)" list="employees" value="" name="keyword" type="text" placeholder="card id or name" class="w-full p-3 rounded-md border-2 border-black" />
           <datalist id="employees"></datalist>
@@ -53,9 +54,6 @@ foreach ($datas as $row):
             <td class="w-s-n">
               <?= $row['nama_pegawai']?> (
               <?= $row['pegawai_id']; ?>)
-            </td>
-            <td>
-              <?= $row['created_at']?>
             </td>
             <td class="w-s-n">
               <?= $row['tipe_request']?>
