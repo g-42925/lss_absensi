@@ -913,8 +913,13 @@ class Payroll extends CI_Controller {
             $offDays += 1;
           }
         }
-    
-        $emp['salary'] = (int) ($emp['salary'] / 26) * count($attendance) - ((int) ($emp['salary'] / 26) * $offDays);
+  
+        if (date('m') === '02') {
+          $emp['salary'] = (int) ($emp['salary'] / 24) * count($attendance) - ((int) ($emp['salary'] / 24) * $offDays);
+        }
+        else{
+          $emp['salary'] = (int) ($emp['salary'] / 26) * count($attendance) - ((int) ($emp['salary'] / 26) * $offDays);
+        }
     
         $alphaPenalty = $this->db->query("select sum(amount) as amt from salary_deduction where employee_id = ? and date between ? and ? and deduction_type = 'alpha-2'",[$empId,$dateX,$dateY])->row_array();
 
