@@ -1946,15 +1946,22 @@ function login(){
         $offDays += 1;
       }
     }
-    
-    if($emp['salary_config'] == 'full_month'){
-      if(date('d') != $company['salary_date']){
-        $emp['salary'] = $recap * $emp['salary'] / 26;
-      }
+
+    if (date('m') === '02') {
+      $emp['salary'] = $recap * $emp['salary'] / 24;
     }
     else{
       $emp['salary'] = $recap * $emp['salary'] / 26;
     }
+    
+    // if($emp['salary_config'] == 'full_month'){
+    //   if(date('d') != $company['salary_date']){
+    //     $emp['salary'] = $recap * $emp['salary'] / 26;
+    //   }
+    // }
+    // else{
+    //   $emp['salary'] = $recap * $emp['salary'] / 26;
+    // }
 
     
     $alphaPenalty = $this->db->query("select sum(amount) as amt from salary_deduction where employee_id = ? and date between ? and ? and deduction_type = 'alpha-2'",[$empId,$dateX,$dateY])->row_array();

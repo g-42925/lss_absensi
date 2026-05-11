@@ -319,7 +319,12 @@ class Req_permission extends CI_Controller {
 
       $employee = $this->db->query("select * from m_pegawai where pegawai_id = ?",[$employeeId])->row_array();
 
-      $amount = $employee['salary'] / 26;
+      if (date('m') === '02') {
+        $amount = $employee['salary'] / 24;
+      }
+      else{
+        $amount = $employee['salary'] / 26;
+      }
 
       $this->db->trans_begin();
 

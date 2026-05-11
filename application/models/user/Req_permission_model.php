@@ -401,6 +401,13 @@ class Req_permission_model extends CI_Model {
               $this->db->update(
                 'm_pegawai'
               );
+
+              if (date('m') === '02') {
+                $amount = $employee['salary'] / 24;
+              }
+              else{
+                $amount = $employee['salary'] / 26;
+              }
               
               foreach($periode as $tanggal){
                 $data = [
@@ -408,7 +415,7 @@ class Req_permission_model extends CI_Model {
                   'employee_id' => $employee['pegawai_id'],
                   'deduction_type' => 'alpha-2',
                   'date' => $tanggal->format('Y-m-d'),
-                  'amount' => intval($employee['salary'] / 26),
+                  'amount' => intval($amount),
                   'note' => '...'
                 ];
                 

@@ -123,7 +123,13 @@ class Except extends CI_Controller {
           $this->db->update('m_pegawai');
         }
         else{
-          $oneDaySalary = $employee['salary'] / 26;
+          if (date('m') === '02') {
+            $oneDaySalary = $employee['salary'] / 24;
+          }
+          else{
+            $oneDaySalary = $employee['salary'] / 26;
+          }
+          
           $halfOfOneDaySalary = $oneDaySalary / 2;
           
           $cshData = [

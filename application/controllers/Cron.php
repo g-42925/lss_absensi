@@ -331,7 +331,12 @@ class Cron extends CI_Controller {
 
             if($div['alpha_penalty_type'] == "percent"){
               $penaltyValue = $div['alpha_penalty_value'] / 100;
-              $deductionValue = ($e['salary'] / 26) * $penaltyValue;
+              if (date('m') === '02') {
+                $deductionValue = ($e['salary'] / 24) * $penaltyValue;
+              }
+              else{
+                $deductionValue = ($e['salary'] / 26) * $penaltyValue;
+              }
               
 
               $data = [

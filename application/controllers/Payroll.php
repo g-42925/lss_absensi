@@ -72,7 +72,7 @@ class Payroll extends CI_Controller {
       $emp = $this->db->query("select * from m_pegawai where pegawai_id = ?",[$empId])->row_array();
       $attendance = $this->db->query("select * from tx_absensi where tanggal_absen between ? and ? and pegawai_id = ?",[$dateX,$dateY,$empId])->result_array();
 
-      $recap = $this->db->query("SELECT * FROM recap WHERE date BETWEEN ? AND ? AND employee_id = ?",[$dateX,$dateY,$empId])->num_rows();
+      $recap = $this->db->query("SELECT * FROM recap WHERE date BETWEEN ? AND ? AND employee_id = ? and required ?",[$dateX,$dateY,$empId,true])->num_rows();
 
       foreach($attendance as $a){
           if($a['is_status'] == 'alpha-2'){
@@ -86,7 +86,12 @@ class Payroll extends CI_Controller {
           }
       }
 
-      $emp['salary'] = $recap * $emp['salary'] / 26;
+      if (date('m') === '02') {
+        $emp['salary'] = $recap * $emp['salary'] / 24;
+      }
+      else{
+        $emp['salary'] = $recap * $emp['salary'] / 26;
+      }
     
       $alphaPenalty = $this->db->query("select sum(amount) as amt from salary_deduction where employee_id = ? and date between ? and ? and deduction_type = 'alpha-2'",[$empId,$dateX,$dateY])->row_array();
 
@@ -285,9 +290,19 @@ class Payroll extends CI_Controller {
           }
         }
 
-        $e['salary'] = $recap * $e['salary'] / 26;
-    
-			      $employees[$empIndex]['salaryx'] = (int) ($e['salary'] / 26) * count($attendance) - ((int) ($e['salary'] / 26) * $offDays);
+        if (date('m') === '02') {
+          $e['salary'] = $recap * $e['salary'] / 24;
+        }
+        else{
+          $e['salary'] = $recap * $e['salary'] / 26;
+        }
+        
+        if (date('m') === '02') {
+          $employees[$empIndex]['salaryx'] = (int) ($e['salary'] / 24) * count($attendance) - ((int) ($e['salary'] / 24) * $offDays);
+        }
+        else{
+          $employees[$empIndex]['salaryx'] = (int) ($e['salary'] / 26) * count($attendance) - ((int) ($e['salary'] / 26) * $offDays);
+        }
 
     
         		$alphaPenalty = $this->db->query("select sum(amount) as amt from salary_deduction where employee_id = ? and date between ? and ? and deduction_type = 'alpha-2'",[$empId,$dateX,$dateY])->row_array();
@@ -488,7 +503,12 @@ class Payroll extends CI_Controller {
           }
         }
     
-        $emp['salary'] = (int) ($emp['salary'] / 26) * count($attendance) - ((int) ($emp['salary'] / 26) * $offDays);
+        if (date('m') === '02') {
+          $emp['salary'] = (int) ($emp['salary'] / 24) * count($attendance) - ((int) ($emp['salary'] / 24) * $offDays);
+        }
+        else{
+          $emp['salary'] = (int) ($emp['salary'] / 26) * count($attendance) - ((int) ($emp['salary'] / 26) * $offDays);
+        }
     
         $alphaPenalty = $this->db->query("select sum(amount) as amt from salary_deduction where employee_id = ? and date between ? and ? and deduction_type = 'alpha-2'",[$empId,$dateX,$dateY])->row_array();
 
@@ -685,10 +705,19 @@ class Payroll extends CI_Controller {
           }
         }
     
-        $emp['salary'] = (int) ($emp['salary'] / 26) * count($attendance) - ((int) ($emp['salary'] / 26) * $offDays);
+        if (date('m') === '02') {
+          $emp['salary'] = (int) ($emp['salary'] / 24) * count($attendance) - ((int) ($emp['salary'] / 24) * $offDays);
+        }
+        else{
+          $emp['salary'] = (int) ($emp['salary'] / 26) * count($attendance) - ((int) ($emp['salary'] / 26) * $offDays);
+        }
 
-
-			    $employees[$empIndex]['salaryx'] = (int) ($e['salary'] / 26) * count($attendance) - ((int) ($emp['salary'] / 26) * $offDays);
+        if (date('m') === '02') {
+          $employees[$empIndex]['salaryx'] = (int) ($e['salary'] / 24) * count($attendance) - ((int) ($e['salary'] / 24) * $offDays);
+        }
+        else{
+          $employees[$empIndex]['salaryx'] = (int) ($e['salary'] / 26) * count($attendance) - ((int) ($e['salary'] / 26) * $offDays);
+        }
 
     
         		$alphaPenalty = $this->db->query("select sum(amount) as amt from salary_deduction where employee_id = ? and date between ? and ? and deduction_type = 'alpha-2'",[$empId,$dateX,$dateY])->row_array();
