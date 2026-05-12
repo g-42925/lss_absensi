@@ -48,8 +48,9 @@
               <?php if($status == "csh") { ?>
                 <?= $row['date'] ?>
               <?php } else { ?>
-                <?= $row['tanggal_request']?> -
-                <?= $row['tanggal_request_end']?>
+              <?= $row['tanggal_request']?> -
+              <?= $row['tanggal_request_end']?>
+              (<?= ((new DateTime($row['tanggal_request']))->diff(new DateTime($row['tanggal_request_end']))->days + 1) ?> hari)
               <?php } ?>
             </td>
             <td class="w-s-n">
