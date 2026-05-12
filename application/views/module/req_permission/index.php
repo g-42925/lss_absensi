@@ -28,15 +28,15 @@
       </div>
     </div>
     <div class="card-datatable table-responsive">
-      <table class="table border-top" id="dataTableatt">
+      <table class="table border-top text-center" id="dataTableatt">
         <thead>
           <tr>
             <th class="w-s-n">Date</th>
             <th class="w-s-n">Requested By</th>
-            <th class="w-s-n">Requested At</th>
             <th>Category</th>
             <th>Photo</th>
             <th>Status</th>
+            <th>Remain</th>
             <th class="text-end w-s-n">...</th>
           </tr>
         </thead>
@@ -49,6 +49,7 @@ foreach ($datas as $row):
             <td class="w-s-n">
               <?= $row['tanggal_request']?> -
               <?= $row['tanggal_request_end']?>
+              (<?= ((new DateTime($row['tanggal_request']))->diff(new DateTime($row['tanggal_request_end']))->days + 1) ?> hari)
             </td>
             <td class="w-s-n">
               <?= $row['nama_pegawai']?> (
@@ -57,13 +58,13 @@ foreach ($datas as $row):
             <td class="w-s-n">
               <?= $row['tipe_request']?>
             </td>
-            <td class="text-capitalize">
-              <a target="_blank" href="<?= $row['image'] == " -" ? "" : base_url('image/index') . '/' .
-    basename($row['image'])?>"><i class="ti ti-photo"></i></a>
+            <td class="w-s-n">
+              <a target="_blank" href="<?= $row['image'] == " -" ? "" : base_url('image/index') . '/' .basename($row['image'])?>"><i class="ti ti-photo"></i></a>
             </td>
             <td class="w-s-n">
               <?= $row['is_status']?>
             </td>
+            <td><?= $row['remain'] == '0' ? '0':$row['remain'] ?></td>
             <td align="right">
               <a href="<?= base_url('req_permission/edit/' . $row['request_izin_id']); ?>" class="btn p-1">
                 <i class="ti ti-edit"></i>
