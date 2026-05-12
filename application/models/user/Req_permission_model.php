@@ -346,6 +346,12 @@ class Req_permission_model extends CI_Model {
 
         $approvedBy = $this->input->post('status') == 1 ? $this->session->userdata('nama_lengkap') : '';
 
+        $tanggalAwal = new DateTime($this->input->post('tgl1'));
+        $tanggalAkhir = new DateTime($this->input->post('tgl2'));
+
+        $difference = $tanggalAwal->diff($tanggalAkhir)->days+1;
+
+
         $this->db->set([
             'tipe_request'          => $this->input->post('kat'),
             'tanggal_request'       => $this->input->post('tgl1'),
