@@ -18,7 +18,7 @@ class Req_permission_model extends CI_Model {
         if($div == ''){
           if($status == ''){
 		        $query = $this->db->query(" SELECT x.*, y.*, z.pegawai_id, z.nama_pegawai, z.is_del FROM tx_request_izin x JOIN tx_request_izin_pegawai y ON x.request_izin_id = y.request_izin_id JOIN m_pegawai z ON y.pegawai_id = z.pegawai_id WHERE x.company_id = ? AND z.is_del = 'n' AND x.tanggal_request BETWEEN ? AND ? and (z.nama_pegawai like ? or z.nik = ?) ORDER BY x.created_at DESC ",[$companyId,$tglawal,$tglakhr,"%$key%",$key])->result_array();
-            //$query = $this->db->query("select * from tx_request_izin tri join tx_request_izin_pegawai trip on tri.request_izin_id = trip.request_izin_id join m_pegawai mp on trip.pegawai_id = mp.pegawai_id where mp.company_id = ? and Date(tri.tanggal_request) between ? and ? and (mp.nama_pegawai like ? or mp.nik = ?)",[$companyId,$tglawal,$tglakhr,"%$key%",$key])->result_array();
+            // $query = $this->db->query("select * from tx_request_izin tri join tx_request_izin_pegawai trip on tri.request_izin_id = trip.request_izin_id join m_pegawai mp on trip.pegawai_id = mp.pegawai_id where mp.company_id = ? and Date(tri.tanggal_request) between ? and ? and (mp.nama_pegawai like ? or mp.nik = ?)",[$companyId,$tglawal,$tglakhr,"%$key%",$key])->result_array();
           }
           else{
             if($status == 'csh'){
@@ -357,6 +357,7 @@ class Req_permission_model extends CI_Model {
             'approvedBy'            => $approvedBy,
             'jumlah_cuti'           => $jumlahhari+1,
             'file_dokumen'          => $filex,
+            'remain'                => $employee['jumlah_cuti'] - $difference
         ]);
 
         $this->db->where('request_izin_id', $id);
@@ -401,13 +402,6 @@ class Req_permission_model extends CI_Model {
               $this->db->update(
                 'm_pegawai'
               );
-
-              if (date('m') === '02') {
-                $amount = $employee['salary'] / 24;
-              }
-              else{
-                $amount = $employee['salary'] / 26;
-              }
               
               foreach($periode as $tanggal){
                 $data = [
@@ -415,7 +409,7 @@ class Req_permission_model extends CI_Model {
                   'employee_id' => $employee['pegawai_id'],
                   'deduction_type' => 'alpha-2',
                   'date' => $tanggal->format('Y-m-d'),
-                  'amount' => intval($amount),
+                  'amount' => intval($employee['salary'] / 26),
                   'note' => '...'
                 ];
                 
@@ -469,19 +463,22 @@ class Req_permission_model extends CI_Model {
 
                     if($cek['catatan_awal']==$this->input->post('catatanl')){
                         $cttnnya = $checkdata['catatan_awal'];
-                    }else{
+                    }
+                    else{
                         $cttnnya = $this->input->post('catatanl');
                     }
 
                     if($this->input->post('amasuk')==''){
                         $amasuk = $checkdata['r_absen_masuk'];
-                    }else{
+                    }
+                    else{
                         $amasuk = $this->input->post('amasuk');
                     }
 
                     if($this->input->post('akeluar')==''){
                         $akeluar = $checkdata['r_absen_keluar'];
-                    }else{
+                    }
+                    else{
                         $akeluar = $this->input->post('akeluar');
                     }
 
@@ -508,7 +505,8 @@ class Req_permission_model extends CI_Model {
                     $this->db->insert('tx_request_izin_pegawai', $data);
                 }
             }
-        } else {
+        } 
+        else {
             $this->db->delete('tx_request_izin_pegawai', ['request_izin_id' => $id]);
         }
 
