@@ -17,6 +17,7 @@ class Cron extends CI_Controller {
     // This function is called by the cron job to update attendance data
     
     public function default() {
+      $this->db->query("SET time_zone = '+07:00'");
       $companies = $this->db->query("select * from companies where active = ?",[1])->result_array();
       foreach($companies as $company){
         $companyHolidays = $this->db->query("select * from company_holidays where company_id = ? and curdate() between tanggal and sampai_tanggal",[$company['id']])->result_array();
