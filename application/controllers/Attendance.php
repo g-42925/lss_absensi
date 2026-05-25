@@ -66,6 +66,7 @@ class Attendance extends CI_Controller {
 
         $tgl = null;
 
+
         if ($tgl=='') {
           $data['today']  = date('Y-m-d');
         }
@@ -83,6 +84,7 @@ class Attendance extends CI_Controller {
         $div = $this->input->get('divisionId');
         $status = $this->input->get('status');
         $date = $this->input->get('date');
+        $until = $this->input->get('until');
        
         $date = $date ?: date('Y-m-d');
         $div = $div == 'all' ? '' : $div;
@@ -91,6 +93,7 @@ class Attendance extends CI_Controller {
 
         $filter = [
           'date' => $date,
+          'until' => $until,
           'div' => $div,
           'status' => $status,
           'key' => $this->input->get('keyword')
@@ -98,16 +101,20 @@ class Attendance extends CI_Controller {
 
         $data['status'] = $status;
         $data['date'] = $date;
+        $data['until'] = $until;
         $data['div'] = $div;
         $data['key'] = $this->input->get('keyword');
 
         $companyId = $this->session->userdata('company_id');
 
         $data['divisions'] = $this->db->query("select * from divisions where company_id = ?",[$companyId])->result_array();
-
-        // $data['datas']  = $this->att->get_data($data['today'],'n',false);
         
         $data['datas']  = $this->att->getByFilter($data['today'],'n',false,$filter);
+
+        if ($this->input->get('export') == 'excel') {
+            $this->load->view('module/attendance/filter_excel', $data);
+            return;
+        }
 
         $this->load->view('templates/header', $data);
         $this->load->view('templates/sidemenu', $data);
@@ -156,7 +163,8 @@ class Attendance extends CI_Controller {
 
         if ($tgl=='') {
             $data['today']  = date('Y-m-d');
-        }else{
+        }
+        else{
             $data['today']  = $tgl;
         }
 

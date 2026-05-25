@@ -22,6 +22,8 @@
           <option value="l">Terlambat</option>
         </select>
         <input value="<?= date('Y-m-d') ?>" name="date" type="date" class="w-full p-3 rounded-md border-2 border-black"/>
+        <input name="until" type="date" class="w-full p-3 rounded-md border-2 border-black"/>
+
         <input value="" name="keyword" type="text" placeholder="card id or name" class="w-full p-3 rounded-md border-2 border-black"/>
 
         <button class="bg-black text-white p-3 rounded-md">search</button>
@@ -91,9 +93,15 @@
                 <a target="_blank" href="https://www.google.com/maps?q=<?= $row['point_latitude'] ?>,<?= $row['point_longitude'] ?>" class="<?= $row['mocked_in'] == 1 ? 'text-red-900':'' ?> btn p-1" data-toggle="tooltip" title="Lihat Map">
                   <i class="ti ti-map-pin ft-13"></i>
                 </a>
-                <a target="_blank" href="<?= $row['is_status'] === 'hhk' ? base_url('image/index').'/'.basename($row['foto_absen_masuk'])  : '' ?>" class="btn p-1" data-toggle="tooltip" title="Lihat Foto Absen">
+                <?php if (strpos($row['foto_absen_masuk'], '{') !== false || strpos(strtolower($row['foto_absen_masuk']), 'error') !== false || strpos(strtolower($row['foto_absen_masuk']), 'exceeded') !== false) { ?>
+                <a href="javascript:void(0);" class="btn p-1 text-danger" data-toggle="tooltip" title="Error/Quota Exceeded">
+                  <i class="ti ti-photo-off ft-13"></i>
+                </a>
+                <?php } else { ?>
+                <a target="_blank" href="<?= $row['is_status'] === 'hhk' ? htmlspecialchars(base_url('image/index').'/'.basename($row['foto_absen_masuk'])) : '' ?>" class="btn p-1" data-toggle="tooltip" title="Lihat Foto Absen">
                   <i class="ti ti-photo ft-13"></i>
                 </a>
+                <?php } ?>
               </div>
               <?php } ?>
             </td>
@@ -106,9 +114,15 @@
                 <a target="_blank" href="https://www.google.com/maps?q=<?= $row['s_istirahat_latitude'] ?>,<?= $row['s_istirahat_longitude'] ?>" class="btn p-1" data-toggle="tooltip" title="Lihat Map">
                   <i class="ti ti-map-pin ft-13"></i>
                 </a>
-                <a target="_blank" href="<?= $row['s_istirahat_photo'] ?>" class="btn p-1" data-toggle="tooltip" title="Lihat Foto Absen">
+                <?php if (strpos($row['s_istirahat_photo'], '{') !== false || strpos(strtolower($row['s_istirahat_photo']), 'error') !== false || strpos(strtolower($row['s_istirahat_photo']), 'exceeded') !== false) { ?>
+                <a href="javascript:void(0);" class="btn p-1 text-danger" data-toggle="tooltip" title="Error/Quota Exceeded">
+                  <i class="ti ti-photo-off ft-13"></i>
+                </a>
+                <?php } else { ?>
+                <a target="_blank" href="<?= htmlspecialchars($row['s_istirahat_photo'] ?: '#') ?>" class="btn p-1" data-toggle="tooltip" title="Lihat Foto Absen">
                   <i class="ti ti-photo ft-13"></i>
                 </a>
+                <?php } ?>
               </div>
             </td>
             <td class="v-a-t"> <!-- jam keluar -->
@@ -132,9 +146,15 @@
                 <a target="_blank" href="https://www.google.com/maps?q=<?= $row['latitude_keluar'] ?>,<?= $row['longitude_keluar'] ?>" class="<?= $row['mocked_out'] == '1' ? 'text-red-900':'' ?> btn p-1" data-toggle="tooltip" title="Lihat Map">
                   <i class="ti ti-map-pin ft-13"></i>
                 </a>
-                <a target="_blank" href="<?= $row['is_status'] === 'hhk' ? base_url('image/index').'/'.basename($row['foto_absen_keluar'])  : '' ?>" class="btn p-1" data-toggle="tooltip" title="Lihat Foto Absen">
+                <?php if (strpos($row['foto_absen_keluar'], '{') !== false || strpos(strtolower($row['foto_absen_keluar']), 'error') !== false || strpos(strtolower($row['foto_absen_keluar']), 'exceeded') !== false) { ?>
+                <a href="javascript:void(0);" class="btn p-1 text-danger" data-toggle="tooltip" title="Error/Quota Exceeded">
+                  <i class="ti ti-photo-off ft-13"></i>
+                </a>
+                <?php } else { ?>
+                <a target="_blank" href="<?= $row['is_status'] === 'hhk' ? htmlspecialchars(base_url('image/index').'/'.basename($row['foto_absen_keluar'])) : '' ?>" class="btn p-1" data-toggle="tooltip" title="Lihat Foto Absen">
                   <i class="ti ti-photo ft-13"></i>
                 </a>
+                <?php } ?>
               </div>
               <?php } ?>
             </td>

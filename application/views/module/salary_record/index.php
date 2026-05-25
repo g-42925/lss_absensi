@@ -18,7 +18,7 @@
             <option <?= $filter == $month['key'] ? 'selected' : '' ?> value="<?= $month['key'] ?>"><?= $month['month'] ?></option>
           <?php endforeach; ?>
         </select>
-        <button class="rounded-md bg-black px-4 py-2 text-sm font-medium text-white shadow">
+        <button onclick="exportExcel()" class="rounded-md bg-black px-4 py-2 text-sm font-medium text-white shadow">
           Export Payroll
         </button>
       </div>
@@ -91,8 +91,9 @@
               <td class="px-4 py-4">
                 <?= $emp['married'] ?>
               </td>
-              <td class="px-4 py-4">
-                <?= $emp['nik'] ?>
+              <td class="px-4 py-4 cursor-pointer" title="Click to show/hide NIK" onclick="this.querySelector('.nik-hidden').classList.toggle('hidden'); this.querySelector('.nik-value').classList.toggle('hidden');">
+                <span class="nik-hidden text-gray-400 select-none">******</span>
+                <span class="nik-value hidden"><?= $emp['nik'] ?></span>
               </td>
               <td class="px-4 py-4">
                 <?= $emp['address'] ?>
@@ -131,12 +132,12 @@
               </td>
               <td class="px-4 py-4">
                 <div class="space-y-1 text-sm">
-                  <?= number_format($emp['plus']) ?>
+                  <?= number_format($emp['totalPlus']) ?>
                 </div>
               </td>
               <td class="px-4 py-4">
                 <div class="space-y-1 text-sm">
-                  <?= $emp['minus'] ?>
+                  <?= $emp['totalMinus'] ?>
                 </div>
               </td>
               <td class="px-4 py-4">
@@ -165,5 +166,9 @@
 <script>
   function filter(month){
     window.location.href = "<?= base_url('salary_record/filter/') ?>" + month;
+  }
+  function exportExcel(){
+    let month = document.querySelector('select').value;
+    window.location.href = "<?= base_url('salary_record/filter/') ?>" + month + "?export=excel";
   }
 </script>

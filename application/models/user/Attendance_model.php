@@ -9,8 +9,7 @@ class Attendance_model extends CI_Model
         parent::__construct();
     }
 
-    public function get_data($tgl, $statt, $isRun)
-    {
+    public function get_data($tgl, $statt, $isRun){
         $data = array();
         $today = Date('N');
         $serverDate = new DateTime();
@@ -176,8 +175,7 @@ class Attendance_model extends CI_Model
         return $data;
     }
 
-    public function getByDiv($tgl, $statt, $isRun, $div)
-    {
+    public function getByDiv($tgl, $statt, $isRun, $div){
         $data = array();
         $today = Date('N');
         $serverDate = new DateTime();
@@ -334,12 +332,12 @@ class Attendance_model extends CI_Model
         return $data;
     }
 
-    public function getByFilter($tgl, $statt, $isRun, $filter)
-    {
+    public function getByFilter($tgl, $statt, $isRun, $filter){
         $data = array();
         $today = Date('N');
         $serverDate = new DateTime();
         $date = $filter['date'];
+        $until = $filter['until'];
         $query = null;
 
         $tgl = $date;
@@ -363,40 +361,83 @@ class Attendance_model extends CI_Model
 
         if ($div == '') {
             if ($status == '') {
-                $query = "SELECT a.company_id, a.pegawai_id as pid, a.division_id as division_id, a.nama_pegawai, a.tanggal_mulai_kerja, b.*, c.mulai_berlaku_tanggal, c.dari_hari_ke, c.is_day, c.pola_kerja_id FROM m_pegawai a
+                if($until){
+                    $query = "SELECT a.company_id, a.pegawai_id as pid, a.division_id as division_id, a.nama_pegawai, a.tanggal_mulai_kerja, b.*, c.mulai_berlaku_tanggal, c.dari_hari_ke, c.is_day, c.pola_kerja_id FROM m_pegawai a
+							LEFT JOIN tx_absensi b ON a.pegawai_id=b.pegawai_id AND b.tanggal_absen between '$tgl' and '$until' AND b.is_pending='$statt' LEFT JOIN m_pegawai_pola c ON a.pegawai_id=c.pegawai_id AND c.is_selected='y'
+							WHERE a.is_del='n' and a.company_id ='$companyId' and (a.nama_pegawai like '%$key%' or a.nik= '$key')";
+                }
+                else{
+                    $query = "SELECT a.company_id, a.pegawai_id as pid, a.division_id as division_id, a.nama_pegawai, a.tanggal_mulai_kerja, b.*, c.mulai_berlaku_tanggal, c.dari_hari_ke, c.is_day, c.pola_kerja_id FROM m_pegawai a
 							LEFT JOIN tx_absensi b ON a.pegawai_id=b.pegawai_id AND b.tanggal_absen='$tgl' AND b.is_pending='$statt' LEFT JOIN m_pegawai_pola c ON a.pegawai_id=c.pegawai_id AND c.is_selected='y'
 							WHERE a.is_del='n' and a.company_id ='$companyId' and (a.nama_pegawai like '%$key%' or a.nik= '$key')";
+                }
+
             }
             else {
                 if ($status == 'l') {
-                    $query = "SELECT a.company_id, a.pegawai_id as pid, a.division_id as division_id, a.nama_pegawai, a.tanggal_mulai_kerja, b.*, c.mulai_berlaku_tanggal, c.dari_hari_ke, c.is_day, c.pola_kerja_id FROM m_pegawai a
+                    if($until){
+                        $query = "SELECT a.company_id, a.pegawai_id as pid, a.division_id as division_id, a.nama_pegawai, a.tanggal_mulai_kerja, b.*, c.mulai_berlaku_tanggal, c.dari_hari_ke, c.is_day, c.pola_kerja_id FROM m_pegawai a
+							  LEFT JOIN tx_absensi b ON a.pegawai_id=b.pegawai_id AND b.tanggal_absen between '$tgl' and '$until' AND b.is_pending='$statt' LEFT JOIN m_pegawai_pola c ON a.pegawai_id=c.pegawai_id AND c.is_selected='y'
+							  WHERE a.is_del='n' and b.isLate='1' and a.company_id ='$companyId' and (a.nama_pegawai like '%$key%' or a.nik= '$key')";
+                    }
+                    else{
+                        $query = "SELECT a.company_id, a.pegawai_id as pid, a.division_id as division_id, a.nama_pegawai, a.tanggal_mulai_kerja, b.*, c.mulai_berlaku_tanggal, c.dari_hari_ke, c.is_day, c.pola_kerja_id FROM m_pegawai a
 							  LEFT JOIN tx_absensi b ON a.pegawai_id=b.pegawai_id AND b.tanggal_absen='$tgl' AND b.is_pending='$statt' LEFT JOIN m_pegawai_pola c ON a.pegawai_id=c.pegawai_id AND c.is_selected='y'
 							  WHERE a.is_del='n' and b.isLate='1' and a.company_id ='$companyId' and (a.nama_pegawai like '%$key%' or a.nik= '$key')";
+                    }
                 }
                 else {
-                    $query = "SELECT a.company_id, a.pegawai_id as pid, a.division_id as division_id, a.nama_pegawai, a.tanggal_mulai_kerja, b.*, c.mulai_berlaku_tanggal, c.dari_hari_ke, c.is_day, c.pola_kerja_id FROM m_pegawai a
+                    if($until){
+                        $query = "SELECT a.company_id, a.pegawai_id as pid, a.division_id as division_id, a.nama_pegawai, a.tanggal_mulai_kerja, b.*, c.mulai_berlaku_tanggal, c.dari_hari_ke, c.is_day, c.pola_kerja_id FROM m_pegawai a
+							  LEFT JOIN tx_absensi b ON a.pegawai_id=b.pegawai_id AND b.tanggal_absen between '$tgl' and '$until' AND b.is_pending='$statt' LEFT JOIN m_pegawai_pola c ON a.pegawai_id=c.pegawai_id AND c.is_selected='y'
+							  WHERE a.is_del='n' and b.is_status='$status' and a.company_id ='$companyId' and (a.nama_pegawai like '%$key%' or a.nik= '$key')";
+                    }
+                    else{
+                        $query = "SELECT a.company_id, a.pegawai_id as pid, a.division_id as division_id, a.nama_pegawai, a.tanggal_mulai_kerja, b.*, c.mulai_berlaku_tanggal, c.dari_hari_ke, c.is_day, c.pola_kerja_id FROM m_pegawai a
 							  LEFT JOIN tx_absensi b ON a.pegawai_id=b.pegawai_id AND b.tanggal_absen='$tgl' AND b.is_pending='$statt' LEFT JOIN m_pegawai_pola c ON a.pegawai_id=c.pegawai_id AND c.is_selected='y'
 							  WHERE a.is_del='n' and b.is_status='$status' and a.company_id ='$companyId' and (a.nama_pegawai like '%$key%' or a.nik= '$key')";
+                    }
                 }
 
             }
         }
         else {
             if ($status == '') {
-                $query = "SELECT a.company_id, a.pegawai_id as pid, a.division_id as division_id, a.nama_pegawai, a.tanggal_mulai_kerja, b.*, c.mulai_berlaku_tanggal, c.dari_hari_ke, c.is_day, c.pola_kerja_id FROM m_pegawai a
+                if($until){
+                    $query = "SELECT a.company_id, a.pegawai_id as pid, a.division_id as division_id, a.nama_pegawai, a.tanggal_mulai_kerja, b.*, c.mulai_berlaku_tanggal, c.dari_hari_ke, c.is_day, c.pola_kerja_id FROM m_pegawai a
+							LEFT JOIN tx_absensi b ON a.pegawai_id=b.pegawai_id AND b.tanggal_absen between '$tgl' and '$until' AND b.is_pending='$statt' LEFT JOIN m_pegawai_pola c ON a.pegawai_id=c.pegawai_id AND c.is_selected='y'
+							WHERE a.is_del='n' and a.division_id = '$div' and a.company_id ='$companyId' and (a.nama_pegawai like '%$key%' or a.nik= '$key')";
+                }
+                else{
+                    $query = "SELECT a.company_id, a.pegawai_id as pid, a.division_id as division_id, a.nama_pegawai, a.tanggal_mulai_kerja, b.*, c.mulai_berlaku_tanggal, c.dari_hari_ke, c.is_day, c.pola_kerja_id FROM m_pegawai a
 							LEFT JOIN tx_absensi b ON a.pegawai_id=b.pegawai_id AND b.tanggal_absen='$tgl' AND b.is_pending='$statt' LEFT JOIN m_pegawai_pola c ON a.pegawai_id=c.pegawai_id AND c.is_selected='y'
 							WHERE a.is_del='n' and a.division_id = '$div' and a.company_id ='$companyId' and (a.nama_pegawai like '%$key%' or a.nik= '$key')";
+                }
             }
             else {
                 if ($status == 'l') {
-                    $query = "SELECT a.company_id, a.pegawai_id as pid, a.division_id as division_id, a.nama_pegawai, a.tanggal_mulai_kerja, b.*, c.mulai_berlaku_tanggal, c.dari_hari_ke, c.is_day, c.pola_kerja_id FROM m_pegawai a
+                    if($until){
+                        $query = "SELECT a.company_id, a.pegawai_id as pid, a.division_id as division_id, a.nama_pegawai, a.tanggal_mulai_kerja, b.*, c.mulai_berlaku_tanggal, c.dari_hari_ke, c.is_day, c.pola_kerja_id FROM m_pegawai a
+						  	LEFT JOIN tx_absensi b ON a.pegawai_id=b.pegawai_id AND b.tanggal_absen between '$tgl' and '$until' AND b.is_pending='$statt' LEFT JOIN m_pegawai_pola c ON a.pegawai_id=c.pegawai_id AND c.is_selected='y'
+							  WHERE a.is_del='n' and a.division_id = '$div' and b.isLate='1' and a.company_id ='$companyId' and (a.nama_pegawai like '%$key%' or a.nik= '$key')";
+                    }
+                    else{
+                        $query = "SELECT a.company_id, a.pegawai_id as pid, a.division_id as division_id, a.nama_pegawai, a.tanggal_mulai_kerja, b.*, c.mulai_berlaku_tanggal, c.dari_hari_ke, c.is_day, c.pola_kerja_id FROM m_pegawai a
 						  	LEFT JOIN tx_absensi b ON a.pegawai_id=b.pegawai_id AND b.tanggal_absen='$tgl' AND b.is_pending='$statt' LEFT JOIN m_pegawai_pola c ON a.pegawai_id=c.pegawai_id AND c.is_selected='y'
 							  WHERE a.is_del='n' and a.division_id = '$div' and b.isLate='1' and a.company_id ='$companyId' and (a.nama_pegawai like '%$key%' or a.nik= '$key')";
+                    }
                 }
                 else {
-                    $query = "SELECT a.company_id, a.pegawai_id as pid, a.division_id as division_id, a.nama_pegawai, a.tanggal_mulai_kerja, b.*, c.mulai_berlaku_tanggal, c.dari_hari_ke, c.is_day, c.pola_kerja_id FROM m_pegawai a
+                    if($until){
+                        $query = "SELECT a.company_id, a.pegawai_id as pid, a.division_id as division_id, a.nama_pegawai, a.tanggal_mulai_kerja, b.*, c.mulai_berlaku_tanggal, c.dari_hari_ke, c.is_day, c.pola_kerja_id FROM m_pegawai a
+						  	LEFT JOIN tx_absensi b ON a.pegawai_id=b.pegawai_id AND b.tanggal_absen between '$tgl' and '$until' AND b.is_pending='$statt' LEFT JOIN m_pegawai_pola c ON a.pegawai_id=c.pegawai_id AND c.is_selected='y'
+							  WHERE a.is_del='n' and a.division_id = '$div' and b.is_status='$status' and a.company_id ='$companyId' and (a.nama_pegawai like '%$key%' or a.nik= '$key')";
+                    }
+                    else{
+                        $query = "SELECT a.company_id, a.pegawai_id as pid, a.division_id as division_id, a.nama_pegawai, a.tanggal_mulai_kerja, b.*, c.mulai_berlaku_tanggal, c.dari_hari_ke, c.is_day, c.pola_kerja_id FROM m_pegawai a
 						  	LEFT JOIN tx_absensi b ON a.pegawai_id=b.pegawai_id AND b.tanggal_absen='$tgl' AND b.is_pending='$statt' LEFT JOIN m_pegawai_pola c ON a.pegawai_id=c.pegawai_id AND c.is_selected='y'
 							  WHERE a.is_del='n' and a.division_id = '$div' and b.is_status='$status' and a.company_id ='$companyId' and (a.nama_pegawai like '%$key%' or a.nik= '$key')";
+                    }
                 }
             }
         }
@@ -492,8 +533,6 @@ class Attendance_model extends CI_Model
                 $dateTime1 = new DateTime($lastDefaultStatus['tanggal_absen'] . ' ' . $pattern['jam_masuk']);
                 $row['tolerance'] = (clone $dateTime1)->modify("+{$pattern['toleransi_terlambat']} minutes");
                 $row['limit'] = (clone $row['tolerance'])->modify("+{$division['restriction']} minutes");
-
-
             }
 
             if ($tgl >= $row['tanggal_mulai_kerja']) {
