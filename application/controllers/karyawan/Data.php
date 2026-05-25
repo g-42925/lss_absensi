@@ -108,7 +108,7 @@ class Data extends CI_Controller {
 
     public function add($failed) {
         cek_menu_access();
-        isCreatable();
+        isEditable();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Karyawan';
         $data['title']      = 'Data Karyawan';
@@ -150,7 +150,7 @@ class Data extends CI_Controller {
         $this->form_validation->set_rules('password', 'Password', 'trim|required|xss_clean|htmlspecialchars|min_length[4]');
         $this->form_validation->set_rules('nik','Nik','trim|required|xss_clean|htmlspecialchars|min_length[16]');
         $this->form_validation->set_rules('alamat','Alamat','trim|xss_clean|htmlspecialchars');
-
+        $this->form_validation->set_rules('statusPernikahan','Status Pernikahan','trim|required|xss_clean|htmlspecialchars');
 
         if ($this->form_validation->run() == false) {
             $this->session->set_flashdata('message', '<div class="alert alert-danger p-cg" role="alert">'.validation_errors().'</div>');
@@ -232,6 +232,7 @@ class Data extends CI_Controller {
             $this->form_validation->set_rules('password', 'Password', 'trim|xss_clean|htmlspecialchars|min_length[4]');
             $this->form_validation->set_rules('nik','Nik','trim|required|xss_clean|htmlspecialchars|min_length[16]');
             $this->form_validation->set_rules('alamat','Alamat','trim|xss_clean|htmlspecialchars');
+            $this->form_validation->set_rules('statusPernikahan','Status Pernikahan','trim|required|xss_clean|htmlspecialchars');
 
             if($this->form_validation->run() == false) {
                 $this->session->set_flashdata('message', '<div class="alert alert-danger p-cg" role="alert">'.validation_errors().'</div>');
@@ -248,7 +249,8 @@ class Data extends CI_Controller {
                         $this->session->set_flashdata('message', '<div class="alert alert-danger p-cg" role="alert">Proses gagal, silahkan coba lagi.</div>');
                         redirect('karyawan/data/edit/'.$id.'?failed=true');
                     }
-                } else {
+                } 
+                else {
                     $this->session->set_flashdata('message', '<div class="alert alert-warning p-cg" role="alert">Proses gagal, id karyawan <b>"'.$unama.'"</b> ini sudah digunakan.</div>');
                     redirect('karyawan/data/edit/'.$id.'?failed=true');
                 }

@@ -67,7 +67,9 @@
               Total
             </th>
 
-            <th class="px-4 py-4"></th>
+            <th class="px-4 py-4">
+              ...
+            </th>
           </tr>
         </thead>
 
@@ -86,7 +88,9 @@
                   </p>
                 </div>
               </td>
-              <td class="px-4 py-4">----</td>
+              <td class="px-4 py-4">
+                <?= $emp['married'] ?>
+              </td>
               <td class="px-4 py-4">
                 <?= $emp['nik'] ?>
               </td>
@@ -127,27 +131,21 @@
               </td>
               <td class="px-4 py-4">
                 <div class="space-y-1 text-sm">
-                  <?php foreach($emp['plus'] as $key => $value): ?>
-                    <div class="flex justify-between gap-6">
-                      <span class="text-gray-500"><?= $key ?></span>
-                      <span><?= number_format($value) ?></span>
-                    </div>
-                  <?php endforeach; ?>
+                  <?= number_format($emp['plus']) ?>
                 </div>
               </td>
               <td class="px-4 py-4">
                 <div class="space-y-1 text-sm">
-                  <?php foreach($emp['minus'] as $key => $value): ?>
-                    <div class="flex justify-between gap-6">
-                      <span class="text-gray-500"><?= $key ?></span>
-                      <span><?= number_format($value) ?></span>
-                    </div>
-                  <?php endforeach; ?>
+                  <?= $emp['minus'] ?>
                 </div>
               </td>
-
               <td class="px-4 py-4">
                 <?= number_format(round($emp['thp'],0)) ?>
+              </td>
+              <td class="px-4 py-4">
+                <a href="<?= base_url('salary_record/slip/'.$filter.'/'.$emp['pegawai_id']) ?>" class="">
+                  <i class="ti ti-checklist"></i>
+                </a>
               </td>
             </tr>
 

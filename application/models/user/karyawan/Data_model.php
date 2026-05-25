@@ -57,8 +57,8 @@ class Data_model extends CI_Model {
             'id_sync'             => $idsync,
             'id_pegawai'          => $initials."-".$idPegawai."-".substr($nik, -3),
             'company_id'          => $companyId,
-            'nama_pegawai'  	  => $this->input->post('nama'),
-            'email_pegawai'  	  => $this->input->post('email'),
+            'nama_pegawai'  	    => $this->input->post('nama'),
+            'email_pegawai'  	    => $this->input->post('email'),
             'nomor_pegawai'       => $this->input->post('nom'),
             'jenis_kelamin'       => $this->input->post('jeniskelamin'),
             'tanggal_mulai_kerja' => $this->input->post('tglmulai'),
@@ -67,15 +67,16 @@ class Data_model extends CI_Model {
             'division_id'         => $this->input->post('division'),
             'password_pegawai'    => password_hash($this->input->post('password'), PASSWORD_DEFAULT),
             'foto_pegawai'        => 'assets/uploaded/users/default-logo.png',
-            'is_status'  		  => $this->input->post('status'),
+            'is_status'  		      => $this->input->post('status'),
             'status_pegawai'      => $this->input->post('statusPegawai'),
             'position_id'         => $this->input->post('position'),
-            'created_at'  		  => date('Y-m-d H:i:s'),
+            'created_at'  		    => date('Y-m-d H:i:s'),
             'nik'                 => $this->input->post('nik'),
             'contract_start_date' => $this->input->post('contract_start_date'),
             'contract_end_date'   => $this->input->post('contract_end_date'),
             'on_training'         => $this->input->post('on_training'),
-            'address'             => $this->input->post('alamat')
+            'address'             => $this->input->post('alamat'),
+            'married'             => $this->input->post('statusPernikahan')
         ];
 
         $this->db->trans_begin();
@@ -145,7 +146,8 @@ class Data_model extends CI_Model {
             'contract_start_date' => $this->input->post('contract_start_date'),
             'contract_end_date'   => $this->input->post('contract_end_date'),
             'on_training'         => $this->input->post('on_training'),
-            'address'             => $this->input->post('alamat')
+            'address'             => $this->input->post('alamat'),
+            'married'             => $this->input->post('statusPernikahan')
         ]);
         $this->db->where('pegawai_id', $id);
         $res = $this->db->update('m_pegawai');

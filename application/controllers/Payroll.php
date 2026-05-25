@@ -72,7 +72,7 @@ class Payroll extends CI_Controller {
       $emp = $this->db->query("select * from m_pegawai where pegawai_id = ?",[$empId])->row_array();
       $attendance = $this->db->query("select * from tx_absensi where tanggal_absen between ? and ? and pegawai_id = ?",[$dateX,$dateY,$empId])->result_array();
 
-      $recap = $this->db->query("SELECT * FROM recap WHERE date BETWEEN ? AND ? AND employee_id = ? and required ?",[$dateX,$dateY,$empId,true])->num_rows();
+      $recap = $this->db->query("SELECT * FROM recap WHERE date BETWEEN ? AND ? AND employee_id = ? and required = ?",[$dateX,$dateY,$empId,true])->num_rows();
 
       foreach($attendance as $a){
           if($a['is_status'] == 'alpha-2'){

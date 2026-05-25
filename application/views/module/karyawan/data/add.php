@@ -74,6 +74,23 @@
             </select>
           </div>
           <div class="col-xl-6 col-md-6 col-sm-6 col-xs-6">
+            <label class="form-label" for="multicol-country">Status pernikahan<i class="text-danger">*</i></label>
+            <select class="select2 form-select" name="statusPernikahan" required>
+              <option value="tk0">Tidak Menikah (tk)</option>
+              <option value="tk1">Tidak Menikah (tk1)</option>
+              <option value="tk2">Tidak Menikah (tk2)</option>
+              <option value="tk3">Tidak Menikah (tk3)</option>
+              <option value="tk4">Tidak Menikah (tk4)</option>
+              <option value="tk5">Tidak Menikah (tk5)</option>
+              <option value="k0">Menikah (k0)</option>
+              <option value="k1">Menikah (k1)</option>
+              <option value="k2">Menikah (k2)</option>
+              <option value="k3">Menikah (k3)</option>
+              <option value="k4">Menikah (k4)</option>
+              <option value="k5">Menikah (k5)</option>
+            </select>
+          </div>
+          <div class="col-xl-6 col-md-6 col-sm-6 col-xs-6"> 
             <label class="form-label">Gaji</label>
             <input type="text" class="form-control" name="salary" placeholder="..." />
           </div>
