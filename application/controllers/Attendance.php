@@ -1,0 +1,257 @@
+<?php
+defined('BASEPATH') or exit('No direct script access allowed');
+
+class Attendance extends CI_Controller {
+
+    public $email;
+    public $session;
+    public $form_validation;
+    public $upload;
+    public $pagination;
+    public $other;
+    public $menu;
+    public $att;
+
+    public function __construct() {
+        parent::__construct();
+        is_logged_in();
+        $this->load->library('form_validation');
+        $this->load->model('other_model', 'other');
+        $this->load->model('user/menu_model', 'menu');
+        $this->load->model('user/attendance_model', 'att');
+    }
+
+    public function division($div){
+        cek_menu_access();
+        $data['htmlpagejs'] = 'none';
+        $data['nmenu']      = 'Kehadiran Harian';
+        $data['title']      = 'Kehadiran Harian';
+        $data['namalabel']  = $data['title'];
+        $data['auth']       = authUser();        
+        
+		$tgl = null;
+
+        if ($tgl=='') {
+            $data['today']  = date('Y-m-d');
+        }else{
+            $data['today']  = $tgl;
+        }    
+
+
+        $data['maxdate'] = date("Y-m-d", strtotime(date('Y-m-d')." +3 day"));
+
+        if ($data['today']>$data['maxdate']) {
+            $data['today']  = date('Y-m-d');
+            $this->session->set_flashdata('message', '<div class="me-3 ms-3"><div class="alert alert-warning p-cg" role="alert">Maksimal 3 hari kedepan dari tanggal sekarang.</div></div>');
+        }
+
+
+        $data['datas']  = $this->att->getByDivision($data['today'],'n',false,$div);
+
+        $this->load->view('templates/header', $data);
+        $this->load->view('templates/sidemenu', $data);
+        $this->load->view('templates/sidenav', $data);
+        $this->load->view('module/attendance/filter', $data);
+        $this->load->view('templates/footer', $data);
+        $this->load->view('templates/fscript-html-end', $data);
+		}
+
+    public function filter(){
+        cek_menu_access();
+        $data['htmlpagejs'] = 'none';
+        $data['nmenu']      = 'Kehadiran Harian';
+        $data['title']      = 'Kehadiran Harian';
+        $data['namalabel']  = $data['title'];
+        $data['auth']       = authUser();
+
+        $tgl = null;
+
+
+        if ($tgl=='') {
+          $data['today']  = date('Y-m-d');
+        }
+        else{
+          $data['today']  = $tgl;
+        }
+
+        $data['maxdate'] = date("Y-m-d", strtotime(date('Y-m-d')." +3 day"));
+
+        if ($data['today']>$data['maxdate']) {
+          $data['today']  = date('Y-m-d');
+          $this->session->set_flashdata('message', '<div class="me-3 ms-3"><div class="alert alert-warning p-cg" role="alert">Maksimal 3 hari kedepan dari tanggal sekarang.</div></div>');
+        }
+
+        $div = $this->input->get('divisionId');
+        $status = $this->input->get('status');
+        $date = $this->input->get('date');
+        $until = $this->input->get('until');
+       
+        $date = $date ?: date('Y-m-d');
+        $div = $div == 'all' ? '' : $div;
+        $status = $status == 'all' ? '' : $status;
+        
+
+        $filter = [
+          'date' => $date,
+          'until' => $until,
+          'div' => $div,
+          'status' => $status,
+          'key' => $this->input->get('keyword')
+        ];
+
+        $data['status'] = $status;
+        $data['date'] = $date;
+        $data['until'] = $until;
+        $data['div'] = $div;
+        $data['key'] = $this->input->get('keyword');
+
+        $companyId = $this->session->userdata('company_id');
+
+        $data['divisions'] = $this->db->query("select * from divisions where company_id = ?",[$companyId])->result_array();
+        
+        $data['datas']  = $this->att->getByFilter($data['today'],'n',false,$filter);
+
+        if ($this->input->get('export') == 'excel') {
+            $this->load->view('module/attendance/filter_excel', $data);
+            return;
+        }
+
+        $this->load->view('templates/header', $data);
+        $this->load->view('templates/sidemenu', $data);
+        $this->load->view('templates/sidenav', $data);
+        $this->load->view('module/attendance/filter', $data);
+        $this->load->view('templates/footer', $data);
+        $this->load->view('templates/fscript-html-end', $data);
+    }
+    
+    function date($tgl){
+        $data['htmlpagejs'] = 'none';
+        $data['nmenu']      = 'Kehadiran Harian';
+        $data['title']      = 'Kehadiran Harian';
+        $data['namalabel']  = $data['title'];
+        $data['auth']       = authUser();
+        
+        $data['today']  = $tgl;
+        $data['maxdate'] = date("Y-m-d", strtotime(date('Y-m-d')." +3 day"));
+        if ($data['today']>$data['maxdate']) {
+            $data['today']  = date('Y-m-d');
+            $this->session->set_flashdata('message', '<div class="me-3 ms-3"><div class="alert alert-warning p-cg" role="alert">Maksimal 3 hari kedepan dari tanggal sekarang.</div></div>');
+        }
+
+        $data['datas']  = $this->att->get_data($data['today'],'n',false);
+
+
+        $this->load->view('templates/header', $data);
+        $this->load->view('templates/sidemenu', $data);
+        $this->load->view('templates/sidenav', $data);
+        $this->load->view('module/attendance/index', $data);
+        $this->load->view('templates/footer', $data);
+        $this->load->view('templates/fscript-html-end', $data);
+    }
+
+    public function index($tgl = null) {
+        cek_menu_access();
+        $data['htmlpagejs'] = 'none';
+        $data['nmenu']      = 'Kehadiran Harian';
+        $data['title']      = 'Kehadiran Harian';
+        $data['namalabel']  = $data['title'];
+        $data['auth']       = authUser();
+
+        $data['role'] = $this->session->userdata('role_id');
+        $data['rolename'] = $this->session->userdata('role_name');
+        $data['namalengkap'] = $this->session->userdata('nama_lengkap');
+
+        if ($tgl=='') {
+            $data['today']  = date('Y-m-d');
+        }
+        else{
+            $data['today']  = $tgl;
+        }
+
+        $data['maxdate'] = date("Y-m-d", strtotime(date('Y-m-d')." +3 day"));
+
+        if ($data['today']>$data['maxdate']) {
+            $data['today']  = date('Y-m-d');
+            $this->session->set_flashdata('message', '<div class="me-3 ms-3"><div class="alert alert-warning p-cg" role="alert">Maksimal 3 hari kedepan dari tanggal sekarang.</div></div>');
+        }
+
+        $companyId = $this->session->userdata('company_id');
+
+        $data['employees'] = $this->db->query("select * from m_pegawai where company_id = ?",[$companyId])->result_array();
+        $data['divisions'] = $this->db->query("select * from divisions where company_id = ?",[$companyId])->result_array();
+
+        $data['datas']  = $this->att->get_data($data['today'],'n',false);
+
+        $this->load->view('templates/header', $data);
+        $this->load->view('templates/sidemenu', $data);
+        $this->load->view('templates/sidenav', $data);
+        $this->load->view('module/attendance/index', $data);
+        $this->load->view('templates/footer', $data);
+        $this->load->view('templates/fscript-html-end', $data);
+    }
+
+    public function alpha($tgl = null){
+        cek_menu_access();
+        $data['htmlpagejs'] = 'none';
+        $data['nmenu']      = 'Kehadiran Harian';
+        $data['title']      = 'Kehadiran Harian';
+        $data['namalabel']  = $data['title'];
+        $data['auth']       = authUser();
+
+        if ($tgl=='') {
+            $data['today']  = date('Y-m-d');
+        }else{
+            $data['today']  = $tgl;
+        }
+
+        $data['maxdate'] = date("Y-m-d", strtotime(date('Y-m-d')." +3 day"));
+
+        if ($data['today']>$data['maxdate']) {
+            $data['today']  = date('Y-m-d');
+            $this->session->set_flashdata('message', '<div class="me-3 ms-3"><div class="alert alert-warning p-cg" role="alert">Maksimal 3 hari kedepan dari tanggal sekarang.</div></div>');
+        }
+
+        $data['datas']  = $this->att->get_alpha($data['today'],'n',false);
+
+        $this->load->view('templates/header', $data);
+        $this->load->view('templates/sidemenu', $data);
+        $this->load->view('templates/sidenav', $data);
+        $this->load->view('module/attendance/alpha', $data);
+        $this->load->view('templates/footer', $data);
+        $this->load->view('templates/fscript-html-end', $data);
+    }
+
+    public function absensi($tgl,$tipe,$idp,$value) {
+        cek_menu_access();
+        $res = $this->att->absensi_proses($tgl,$tipe,$idp,$value);
+    }
+
+    public function action($inout,$id,$tipe) {
+        cek_menu_access();
+        $data['inout'] = $inout;
+        $data['tipe'] = $tipe;
+        $data['datas'] = $this->db->get_where('tx_absensi', ['absen_id' => $id])->row_array();
+        $this->load->view('module/attendance/action', $data);
+    }
+
+    public function req_cancel($idp = null,$tgl = null) {
+        cek_menu_access();
+
+        if ($idp==null || $tgl==null) { redirect('attendance'); }
+        $check = $this->db->get_where('m_pegawai', ['pegawai_id' => $idp]);
+        if ($check->num_rows()==0) {
+            $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-danger p-cg" role="alert">Data tidak ditemukan.</div></div>');
+        }else{
+            $res = $this->att->req_cancel($idp,$tgl);
+            if ($res==true) {
+                $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-success p-cg" role="alert">Data request berhasil dihapus.</div></div>');
+            }else{
+                $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-warning p-cg" role="alert">Data request gagal dihapus.</div></div>');
+            }
+        }
+
+        redirect('attendance'); 
+
+    }
+
+}
