@@ -29,6 +29,7 @@ class Attendance_record_model extends CI_Model {
             $leave = $this->db->query("select * from tx_absensi where is_status = 'c' and pegawai_id = ? and tanggal_absen between ? and ? ",[$row['pegawai_id'],$tglawal,$tglakhr])->result_array();
             $other = $this->db->query("select * from tx_absensi where (is_status = 'i' or is_status = 's') and pegawai_id = ? and tanggal_absen between ? and ?",[$row['pegawai_id'],$tglawal,$tglakhr])->result_array();
             $csh = $this->db->query("select * from exception where employee_id = ? and status = ? and is_csh = ? and date between ? and ?",[$row['pegawai_id'],1,1,$tglawal,$tglakhr])->num_rows();
+            $free = $this->db->query("select * from tx_absensi where is_status ='free' and pegawai_id = ? and tanggal_absen between ? and ?",[$row['pegawai_id'],$tglawal,$tglakhr])->result_array();
 
             $data[] = array(
                 'pegawai_id'              => $row['pegawai_id'],
@@ -38,7 +39,8 @@ class Attendance_record_model extends CI_Model {
                 'onDuty'                  => count($onDuty),
                 'c'                       => count($leave),
                 'lL'                      => count($other),
-                'csh'                     => $csh
+                'csh'                     => $csh,
+                'free'                    => count($free)
             );
         }
 
