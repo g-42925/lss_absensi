@@ -21,7 +21,6 @@
 
     <meta name="author" content="https://carvellonic.com">
     <meta name="description" content="" />
-    <link href="https://cdn.tailwindcss.com" rel="stylesheet">
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="<?=base_url('assets/temp/');?>assets/logo/favicon.png" />
 
@@ -81,6 +80,13 @@
     <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
     <script src="<?=base_url('assets/temp/');?>assets/vendor/libs/jquery/jquery.js"></script>
     <script src="<?=base_url('assets/temp/');?>assets/js/config.js"></script>
+    <script>
+      tailwind = {
+        corePlugins: {
+          preflight: false,
+        }
+      }
+    </script>
     <script src="https://cdn.tailwindcss.com"></script>
 
     <style type="text/css">
