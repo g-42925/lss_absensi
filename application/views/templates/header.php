@@ -80,14 +80,14 @@
     <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
     <script src="<?=base_url('assets/temp/');?>assets/vendor/libs/jquery/jquery.js"></script>
     <script src="<?=base_url('assets/temp/');?>assets/js/config.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <script>
-      tailwind = {
+      tailwind.config = {
         corePlugins: {
           preflight: false,
         }
       }
     </script>
-    <script src="https://cdn.tailwindcss.com"></script>
 
     <style type="text/css">
       .customselectinput .select2-selection.select2-selection--single{
