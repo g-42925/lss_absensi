@@ -32,11 +32,13 @@
           <tr>
             <th class="w-s-n">Date</th>
             <th class="w-s-n">Requested By</th>
+            <th class="w-s-n">Requested At</th>
             <th class="w-s-n">Reason</th>
             <th class="w-s-n">Category</th>
             <th class="w-s-n">Photo</th>
             <th class="w-s-n">No fee</th>
             <th class="w-s-n">Status</th>
+            <th class="w-s-n">Handled at</th>
             <th class="w-s-n">...</th>
           </tr>
         </thead>
@@ -45,6 +47,7 @@
           <tr>
             <td><?= $r['date'];?></td>
             <td><?= $r['nama_pegawai'] ?> (<?= $r['employee_id'];?>)</td>
+            <td><?= $r['requested_at'];?></td>
             <td><?= $r['reason'];?></td>
             <td><?= $r['type'];?></td>
             <td class="text-capitalize">
@@ -62,6 +65,7 @@
                 };
               ?>
             </td>
+            <td><?= $r['actTime'];?></td>
             <td align="right">
               <a href="<?=base_url('except/edit/'.$r['id']).'?failed=false';?>" class="btn p-1" title="Edit Pengajuan">
                 <i class="ti ti-edit"></i>
