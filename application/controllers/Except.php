@@ -106,7 +106,8 @@ class Except extends CI_Controller {
       $data = [
         'date' => $this->input->post('date'),
         'status' => $this->input->post('status'),
-        'htu' => false
+        'htu' => false,
+        'actTime' => date('H:i')
       ];
 
       $this->db->trans_begin(); // to start db transaction
