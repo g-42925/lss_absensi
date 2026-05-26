@@ -1753,7 +1753,7 @@ function login(){
       "type" => $post["type"],
       "image" => $post['image'],
       "is_csh" => $post["isCsh"],
-      "requested_at" => date('H:i:s')
+      "requested_at" => date('H:i')
     );
 
     $q = $this->db->insert(
