@@ -69,6 +69,9 @@ class Dashboard extends CI_Controller {
 
                 $data['t_terkini'] = $this->db->get_where('tx_lokasi_terkini', ['is_read' => 'n'])->num_rows();
 
+                // Release session lock to allow concurrent resource loading
+                if (session_id()) session_write_close();
+
                 $this->load->view('templates/header', $data);
                 $this->load->view('templates/sidemenu', $data);
                 $this->load->view('templates/sidenav', $data);
