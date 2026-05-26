@@ -1752,7 +1752,8 @@ function login(){
       "created_at" => date('Y-m-d H:i:s'),
       "type" => $post["type"],
       "image" => $post['image'],
-      "is_csh" => $post["isCsh"]
+      "is_csh" => $post["isCsh"],
+      "requested_at" => date('H:i:s')
     );
 
     $q = $this->db->insert(
