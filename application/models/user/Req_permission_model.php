@@ -319,18 +319,20 @@ class Req_permission_model extends CI_Model {
         return $res;
     }
 
-    public function edit_proses($id,$cekimgpdf,$upload,$oldimg) {
+    public function edit_proses($id,$cekimgpdf,$upload,$oldimg,$photo) {
 
         if ($cekimgpdf=='') { 
             $filex = $oldimg; 
-        }else{ 
+        }
+        else{ 
             $filex = $upload['path'].$upload['file']['file_name']; 
         }
 
         if ($this->input->post('tgl2')=='') {
-            $tglakh = $this->input->post('tgl1');
-        }else{
-            $tglakh = $this->input->post('tgl2');
+          $tglakh = $this->input->post('tgl1');
+        }
+        else{
+          $tglakh = $this->input->post('tgl2');
         }
 
         $tgl1 = strtotime($this->input->post('tgl1')); 
@@ -363,7 +365,8 @@ class Req_permission_model extends CI_Model {
                 'approvedBy'            => $approvedBy,
                 'jumlah_cuti'           => $jumlahhari+1,
                 'file_dokumen'          => $filex,
-                'remain'                => $employee['jumlah_cuti'] - $difference
+                'remain'                => $employee['jumlah_cuti'] - $difference,
+                'image'                 => $photo,
             ]);            
         }
 

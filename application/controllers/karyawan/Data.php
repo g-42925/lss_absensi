@@ -58,14 +58,21 @@ class Data extends CI_Controller {
 			$this->load->view('templates/fscript-html-end', $data);
     }
 
+    public function all(){
+		$key = $this->input->get('key');
+        $companyId = $this->session->userdata('company_id');
+		$data = $this->db->query("select * from m_pegawai where company_id = ? and (nama_pegawai like ?)",[$companyId,"%$key%"])->result_array();
+        echo json_encode($data);
+    }
+
     public function filterByDiv(){
-			  $data = null;
+		$data = null;
         $div = $this->input->get('divId');
-				$key = $this->input->get('key');
+		$key = $this->input->get('key');
         $companyId = $this->session->userdata('company_id');
         if($div == "Any"){
-					$data = $this->db->query("select * from m_pegawai where company_id = ? and (nama_pegawai like ?)",[$companyId,"%$key%"])->result_array();
-				}
+			$data = $this->db->query("select * from m_pegawai where company_id = ? and (nama_pegawai like ?)",[$companyId,"%$key%"])->result_array();
+		}
 				else{
 					$data = $this->db->query("select * from m_pegawai where company_id = ? and division_id = ? and (nama_pegawai like ?)",[$companyId,$div,"%$key%"])->result_array();
 				}

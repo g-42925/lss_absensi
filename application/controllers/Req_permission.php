@@ -1,4 +1,8 @@
 <?php
+use Aws\S3\S3Client;
+use Aws\Credentials\Credentials;
+use Aws\Exception\AwsException;
+
 defined('BASEPATH') or exit('No direct script access allowed');
 
 class Req_permission extends CI_Controller {
@@ -206,14 +210,16 @@ class Req_permission extends CI_Controller {
 
         if ($ukat=='csh') {
             $this->form_validation->set_rules('tgl2', 'Tanggal', 'trim|xss_clean|htmlspecialchars');
-        }else{
+        }
+        else{
             $this->form_validation->set_rules('tgl2', 'Sampai Tanggal', 'trim|required|xss_clean|htmlspecialchars');
         }
 
         if ($ukat=='lm' || $ukat=='csh' || $ukat=='tl') {
             $this->form_validation->set_rules('jmasuk', 'Masuk', 'trim|required|xss_clean|htmlspecialchars');
             $this->form_validation->set_rules('jkeluar', 'Keluar', 'trim|required|xss_clean|htmlspecialchars');
-        }else{
+        }
+        else{
             $this->form_validation->set_rules('jmasuk', 'Masuk', 'trim|xss_clean|htmlspecialchars');
             $this->form_validation->set_rules('jkeluar', 'Keluar', 'trim|xss_clean|htmlspecialchars');
         }
@@ -224,22 +230,56 @@ class Req_permission extends CI_Controller {
         if ($this->form_validation->run() == false) {
             $this->session->set_flashdata('message', '<div class="alert alert-danger p-cg" role="alert">'.validation_errors().'</div>');
             redirect('req_permission/edit/'.$id);
-        } else {
+        } 
+        else {
             if($_FILES){
-                         $cekimgpdf = $_FILES['imgpdf']['name'];
-            $imgold = $rowcheck['file_dokumen'];
-            if ($imgold=='') { $imgold = 'new'; }
-            $upload = $this->other->upload_digital('imgpdf',$imgold,'others','file_');
-            if($upload['result'] == "success" || $cekimgpdf==''){
-                $res = $this->rp->edit_proses($id,$cekimgpdf,$upload,$imgold);
+                $cmpId = $this->session->userdata('company_id');
+                $company = $this->db->query("select * from companies where id = ?",[$cmpId])->row_array();
+                $rootDir = explode('@', $company['email'])[0];
+                $path = 'absensi/'.$rootDir .'/attendance/';
+                $cFile = $_FILES['attachment']['tmp_name'];
+                $name = $_FILES['attachment']['name'];    
+                $tmpName = $_FILES['attachment']['tmp_name'];
+                $fileName = time() . '_' . basename($name);
+
+                $s3 = new S3Client([
+                    'version'     => 'latest',
+                    'region'      => 'us-east-1',
+                    'endpoint'    => 'https://s3.filebase.com',
+                    'use_path_style_endpoint' => false,
+                    'credentials' => [
+                      'key'    => 'B8F0135956143AE0685E',
+                      'secret' => 'gKrbIZJnzLWBXZ0VGQvnlAumvngpBH35PsXN5zUp'
+                    ],
+                    'Metadata' => [
+                      'cid' => 'true'
+                    ],
+                ]);
+
+                $result = $s3->putObject([
+                    'Bucket' => 'leryn-storage',
+                    'Key'    => $path.$fileName,
+                    'SourceFile' => $cFile,
+                    'ContentType' => 'image/png',
+                ]);   
+
+
+                $cekimgpdf = $_FILES['attachment']['name'];
+                $imgold = $rowcheck['file_dokumen'];
+                if ($imgold=='') { $imgold = 'new'; }
+                $upload = $this->other->upload_digital('attachment',$imgold,'others','file_');
+                if($upload['result'] == "success" || $cekimgpdf==''){
+                    $res = $this->rp->edit_proses($id,$cekimgpdf,$upload,$imgold);
                 if ($res==true) {
                     $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-success p-cg" role="alert">Data berhasil disimpan.</div></div>');
                     redirect('req_permission');
-                }else{
+                }
+                else{
                     $this->session->set_flashdata('message', '<div class="alert alert-danger p-cg" role="alert">Proses gagal, silahkan coba lagi.</div>');
                     redirect('req_permission/edit/'.$id);
                 }
-            }else{
+            }
+            else{
                 $this->session->set_flashdata('message', '<div class="alert alert-danger p-cg" role="alert">'.$upload['error'].'</div>');
                 redirect('req_permission/add');
             }   
@@ -249,7 +289,8 @@ class Req_permission extends CI_Controller {
                 if ($res==true) {
                     $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-success p-cg" role="alert">Data berhasil disimpan.</div></div>');
                     redirect('req_permission');
-                }else{
+                }
+                else{
                     $this->session->set_flashdata('message', '<div class="alert alert-danger p-cg" role="alert">Proses gagal, silahkan coba lagi.</div>');
                     redirect('req_permission/edit/'.$id);
                 } 

@@ -90,6 +90,10 @@
             <label class="form-label">Catatan</label>
             <textarea type="text" class="form-control" name="catatanl" placeholder="..."><?=$edit['catatan_awal'];?></textarea>
           </div>
+          <div class="col-xl-6 col-md-6 col-sm-6 col-xs-6">
+            <label class="form-label">Attachment</label>
+            <input type="file" class="form-control" name="attachment" />
+          </div>
         </div>
         <div class="pt-5 text-end">
           <a href="javascript:window.history.back();" class="btn btn-label-secondary me-sm-3 me-1">Batal</a>
