@@ -32,8 +32,8 @@
         <thead>
           <tr>
             <th class="w-s-n">Date</th>
-            <th class="w-s-n">Requested At</th>
             <th class="w-s-n">Requested By</th>
+            <th class="w-s-n">Requested At</th>
             <th>Category</th>
             <th>Photo</th>
             <th>Status</th>
