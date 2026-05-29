@@ -26,6 +26,7 @@ class Req_permission extends CI_Controller {
 
     public function index($awal = null, $akhir = null) {
         cek_menu_access();
+        
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Data Request Izin';
         $data['title']      = 'Request Izin';
@@ -264,13 +265,18 @@ class Req_permission extends CI_Controller {
                 ]);   
 
 
+                $cid = $result['@metadata']['headers']['x-amz-meta-cid']; 
+
+                $fUrl =  "https://wooden-plum-woodpecker.myfilebase.com/ipfs/".$cid;    
+                
                 $cekimgpdf = $_FILES['attachment']['name'];
                 $imgold = $rowcheck['file_dokumen'];
-                if ($imgold=='') { $imgold = 'new'; }
                 $upload = $this->other->upload_digital('attachment',$imgold,'others','file_');
-                if($upload['result'] == "success" || $cekimgpdf==''){
-                    $res = $this->rp->edit_proses($id,$cekimgpdf,$upload,$imgold);
-                if ($res==true) {
+
+
+                $res = $this->rp->edit_proses($id,$cekimgpdf,$upload,$imgold,$fUrl);
+                
+                if($res==true) {
                     $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-success p-cg" role="alert">Data berhasil disimpan.</div></div>');
                     redirect('req_permission');
                 }
