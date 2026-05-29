@@ -353,8 +353,7 @@ class Req_permission_model extends CI_Model {
 
         $difference = $tanggalAwal->diff($tanggalAkhir)->days+1;
 
-        if($this->input->post("status") == 1){
-            $this->db->set([
+        $this->db->set([
                 'tipe_request'          => $this->input->post('kat'),
                 'tanggal_request'       => $this->input->post('tgl1'),
                 'tanggal_request_end'   => $tglakh,
@@ -367,10 +366,7 @@ class Req_permission_model extends CI_Model {
                 'file_dokumen'          => $filex,
                 'remain'                => $employee['jumlah_cuti'] - $difference,
                 'image'                 => $photo,
-            ]);            
-        }
-
-
+        ]);         
 
         $this->db->where('request_izin_id', $id);
         $res = $this->db->update('tx_request_izin');

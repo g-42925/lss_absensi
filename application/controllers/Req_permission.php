@@ -190,160 +190,125 @@ class Req_permission extends CI_Controller {
         $this->load->view('templates/footer', $data);
         $this->load->view('templates/fscript-html-end', $data);
     }
+    
 
-public function edit_proses($id = null) {
-    cek_menu_access();
+    public function edit_proses($id = null) {
+        cek_menu_access();
 
-    if ($id == null) {
-        redirect('req_permission');
-    }
-
-    $check = $this->db->get_where('tx_request_izin', [
-        'request_izin_id' => $id
-    ]);
-
-    if ($check->num_rows() == 0) {
-        $this->session->set_flashdata(
-            'message',
-            '<div class="me-3 ms-3 mt-3">
-                <div class="alert alert-danger p-cg" role="alert">
-                    Data tidak ditemukan.
-                </div>
-            </div>'
-        );
-        redirect('req_permission');
-    }
-
-    $rowcheck = $check->row_array();
-    $ukat = $this->input->post('kat');
-
-    /*
-    |--------------------------------------------------------------------------
-    | VALIDATION
-    |--------------------------------------------------------------------------
-    */
-    $this->form_validation->set_rules('idp[]', 'Karyawan', 'trim|required|xss_clean|htmlspecialchars');
-    $this->form_validation->set_rules('kat', 'Kategori', 'trim|required|xss_clean|htmlspecialchars');
-    $this->form_validation->set_rules('tgl1', 'Tanggal', 'trim|required|xss_clean|htmlspecialchars');
-
-    if ($ukat == 'csh') {
-        $this->form_validation->set_rules('tgl2', 'Tanggal', 'trim|xss_clean|htmlspecialchars');
-    } else {
-        $this->form_validation->set_rules('tgl2', 'Sampai Tanggal', 'trim|required|xss_clean|htmlspecialchars');
-    }
-
-    if (in_array($ukat, ['lm', 'csh', 'tl'])) {
-        $required = 'trim|required|xss_clean|htmlspecialchars';
-    } else {
-        $required = 'trim|xss_clean|htmlspecialchars';
-    }
-
-    $this->form_validation->set_rules('jmasuk', 'Masuk', $required);
-    $this->form_validation->set_rules('jkeluar', 'Keluar', $required);
-    $this->form_validation->set_rules('catatanl', 'Catatan Lembur', 'trim|xss_clean|htmlspecialchars');
-    $this->form_validation->set_rules('status', 'Status', 'trim|required|xss_clean|htmlspecialchars');
-
-    if ($this->form_validation->run() == false) {
-        $this->session->set_flashdata(
-            'message',
-            '<div class="alert alert-danger p-cg" role="alert">' . validation_errors() . '</div>'
-        );
-        redirect('req_permission/edit/' . $id);
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | FILE HANDLING & DATABASE UPDATE
-    |--------------------------------------------------------------------------
-    */
-    $imgold = $rowcheck['file_dokumen'];
-
-    if (empty($_FILES['attachment']['name'])) {
-        // Kondisi 1: Tanpa ganti file
-        $res = $this->rp->edit_proses($id, null, null, null);
-    } else {
-        // Kondisi 2: Upload file baru ke S3 dan Lokal
-        $cmpId = $this->session->userdata('company_id');
-        $company = $this->db->query("SELECT * FROM companies WHERE id = ?", [$cmpId])->row_array();
-        $rootDir = explode('@', $company['email'])[0];
-        $path = 'absensi/' . $rootDir . '/attendance/';
-
-        $cFile = $_FILES['attachment']['tmp_name'];
-        $name  = $_FILES['attachment']['name'];
-        $fileName = time() . '_' . basename($name);
-
-        // Integrasi S3
-        $s3 = new S3Client([
-            'version' => 'latest',
-            'region'  => 'us-east-1',
-            'endpoint' => 'https://s3.filebase.com',
-            'use_path_style_endpoint' => false,
-            'credentials' => [
-                'key'    => 'YOUR_KEY',
-                'secret' => 'YOUR_SECRET'
-            ],
-            'Metadata' => [
-                'cid' => 'true'
-            ],
-        ]);
-
-        try {
-            $result = $s3->putObject([
-                'Bucket' => 'leryn-storage',
-                'Key' => $path . $fileName,
-                'SourceFile' => $cFile,
-                'ContentType' => 'image/png',
-            ]);
-
-            $cid = $result['@metadata']['headers']['x-amz-meta-cid'];
-            $fUrl = "https://wooden-plum-woodpecker.myfilebase.com/ipfs/" . $cid;
-        } catch (AwsException $e) {
-            $this->session->set_flashdata(
-                'message',
-                '<div class="alert alert-danger p-cg" role="alert">S3 Upload Error: ' . $e->getMessage() . '</div>'
-            );
-            redirect('req_permission/edit/' . $id);
+        if ($id==null) { redirect('req_permission'); }
+        $check = $this->db->get_where('tx_request_izin', ['request_izin_id' => $id]);
+        $rowcheck = $check->row_array();
+        if ($check->num_rows()==0) {
+            $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-danger p-cg" role="alert">Data tidak ditemukan.</div></div>');
+            redirect('req_permission'); 
         }
 
-        // Upload Lokal/Backup
-        $upload = $this->other->upload_digital('attachment', $imgold, 'others', 'file_');
+        $ukat  = $this->input->post('kat');
+        $unama  = $this->input->post('tgl1');
 
-        if ($upload['result'] != "success") {
-            $this->session->set_flashdata(
-                'message',
-                '<div class="alert alert-danger p-cg" role="alert">' . $upload['error'] . '</div>'
-            );
-            redirect('req_permission/edit/' . $id);
+        $this->form_validation->set_rules('idp[]', 'Karyawan', 'trim|required|xss_clean|htmlspecialchars');
+        $this->form_validation->set_rules('kat', 'Kategori', 'trim|required|xss_clean|htmlspecialchars');
+        $this->form_validation->set_rules('tgl1', 'Tanggal', 'trim|required|xss_clean|htmlspecialchars');
+
+        if ($ukat=='csh') {
+            $this->form_validation->set_rules('tgl2', 'Tanggal', 'trim|xss_clean|htmlspecialchars');
+        }
+        else{
+            $this->form_validation->set_rules('tgl2', 'Sampai Tanggal', 'trim|required|xss_clean|htmlspecialchars');
         }
 
-        $res = $this->rp->edit_proses($id, $name, $upload, $imgold, $fUrl);
-    }
+        if ($ukat=='lm' || $ukat=='csh' || $ukat=='tl') {
+            $this->form_validation->set_rules('jmasuk', 'Masuk', 'trim|required|xss_clean|htmlspecialchars');
+            $this->form_validation->set_rules('jkeluar', 'Keluar', 'trim|required|xss_clean|htmlspecialchars');
+        }
+        else{
+            $this->form_validation->set_rules('jmasuk', 'Masuk', 'trim|xss_clean|htmlspecialchars');
+            $this->form_validation->set_rules('jkeluar', 'Keluar', 'trim|xss_clean|htmlspecialchars');
+        }
 
-    /*
-    |--------------------------------------------------------------------------
-    | RESPONSE HANDLING (Single Output)
-    |--------------------------------------------------------------------------
-    */
-    if ($res) {
-        $this->session->set_flashdata(
-            'message',
-            '<div class="me-3 ms-3 mt-3">
-                <div class="alert alert-success p-cg" role="alert">
-                    Data berhasil disimpan.
-                </div>
-            </div>'
-        );
-        redirect('req_permission');
-    } else {
-        $this->session->set_flashdata(
-            'message',
-            '<div class="alert alert-danger p-cg" role="alert">
-                Proses gagal, silahkan coba lagi.
-            </div>'
-        );
-        redirect('req_permission/edit/' . $id);
+        $this->form_validation->set_rules('catatanl', 'Catatan Lembur', 'trim|xss_clean|htmlspecialchars');
+        $this->form_validation->set_rules('status', 'Status', 'trim|required|xss_clean|htmlspecialchars');
+
+        if ($this->form_validation->run() == false) {
+            $this->session->set_flashdata('message', '<div class="alert alert-danger p-cg" role="alert">'.validation_errors().'</div>');
+            redirect('req_permission/edit/'.$id);
+        } 
+        else {
+            if(isset($_FILES['attachment']) && $_FILES['attachment']['error'] !== UPLOAD_ERR_NO_FILE){
+                $cmpId = $this->session->userdata('company_id');
+                $company = $this->db->query("select * from companies where id = ?",[$cmpId])->row_array();
+                $rootDir = explode('@', $company['email'])[0];
+                $path = 'absensi/'.$rootDir .'/attendance/';
+                $cFile = $_FILES['attachment']['tmp_name'];
+                $name = $_FILES['attachment']['name'];    
+                $tmpName = $_FILES['attachment']['tmp_name'];
+                $fileName = time() . '_' . basename($name);
+
+                $s3 = new S3Client([
+                    'version'     => 'latest',
+                    'region'      => 'us-east-1',
+                    'endpoint'    => 'https://s3.filebase.com',
+                    'use_path_style_endpoint' => false,
+                    'credentials' => [
+                      'key'    => 'B8F0135956143AE0685E',
+                      'secret' => 'gKrbIZJnzLWBXZ0VGQvnlAumvngpBH35PsXN5zUp'
+                    ],
+                    'Metadata' => [
+                      'cid' => 'true'
+                    ],
+                ]);
+
+                $result = $s3->putObject([
+                    'Bucket' => 'leryn-storage',
+                    'Key'    => $path.$fileName,
+                    'SourceFile' => $cFile,
+                    'ContentType' => 'image/png',
+                ]);   
+
+
+                $cid = $result['@metadata']['headers']['x-amz-meta-cid']; 
+
+                $fUrl =  "https://wooden-plum-woodpecker.myfilebase.com/ipfs/".$cid;    
+                
+                $cekimgpdf = $_FILES['attachment']['name'];
+                $imgold = $rowcheck['file_dokumen'];
+                $upload = $this->other->upload_digital('attachment',$imgold,'others','file_');
+
+
+                $res = $this->rp->edit_proses($id,$cekimgpdf,$upload,$imgold,$fUrl);
+                
+                if ($res==true) {
+                    $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-success p-cg" role="alert">Data berhasil disimpan.</div></div>');
+                    redirect('req_permission');
+                }
+                else{
+                    $this->session->set_flashdata('message', '<div class="alert alert-danger p-cg" role="alert">Proses gagal, silahkan coba lagi.</div>');
+                    redirect('req_permission/edit/'.$id);
+                }
+
+                if($upload['result'] == "success" || $cekimgpdf==''){}
+            else{
+                $this->session->set_flashdata('message', '<div class="alert alert-danger p-cg" role="alert">'.$upload['error'].'</div>');
+                redirect('req_permission/add');
+            }   
+            }
+            else{
+                $cekimgpdf = $_FILES['attachment']['name'];
+                $imgold = $rowcheck['file_dokumen'];
+                $upload = $this->other->upload_digital('attachment',$imgold,'others','file_');
+
+                $res = $this->rp->edit_proses($id,null,null,null,null);
+                if ($res==true) {
+                    $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-success p-cg" role="alert">Data berhasil disimpan.</div></div>');
+                    redirect('req_permission');
+                }
+                else{
+                    $this->session->set_flashdata('message', '<div class="alert alert-danger p-cg" role="alert">Proses gagal, silahkan coba lagi.</div>');
+                    redirect('req_permission/edit/'.$id);
+                } 
+            }
+        }
     }
-}
 
     public function hapus($id = null){
         cek_menu_access();
