@@ -32,6 +32,7 @@
         <thead>
           <tr>
             <th class="w-s-n">Date</th>
+            <th class="w-s-n">Requested At</th>
             <th class="w-s-n">Requested By</th>
             <th>Category</th>
             <th>Photo</th>
@@ -54,6 +55,9 @@ foreach ($datas as $row):
             <td class="w-s-n">
               <?= $row['nama_pegawai']?> (
               <?= $row['pegawai_id']; ?>)
+            </td>
+            <td class="w-s-n">
+              <?= $row['created_at']?>
             </td>
             <td class="w-s-n">
               <?= $row['tipe_request']?>
