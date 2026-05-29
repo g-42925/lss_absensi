@@ -287,15 +287,23 @@ public function edit_proses($id = null) {
             ],
         ]);
 
-        $result = $s3->putObject([
-            'Bucket' => 'leryn-storage',
-            'Key' => $path . $fileName,
-            'SourceFile' => $cFile,
-            'ContentType' => 'image/png',
-        ]);
+        try {
+            $result = $s3->putObject([
+                'Bucket' => 'leryn-storage',
+                'Key' => $path . $fileName,
+                'SourceFile' => $cFile,
+                'ContentType' => 'image/png',
+            ]);
 
-        $cid = $result['@metadata']['headers']['x-amz-meta-cid'];
-        $fUrl = "https://wooden-plum-woodpecker.myfilebase.com/ipfs/" . $cid;
+            $cid = $result['@metadata']['headers']['x-amz-meta-cid'];
+            $fUrl = "https://wooden-plum-woodpecker.myfilebase.com/ipfs/" . $cid;
+        } catch (AwsException $e) {
+            $this->session->set_flashdata(
+                'message',
+                '<div class="alert alert-danger p-cg" role="alert">S3 Upload Error: ' . $e->getMessage() . '</div>'
+            );
+            redirect('req_permission/edit/' . $id);
+        }
 
         // Upload Lokal/Backup
         $upload = $this->other->upload_digital('attachment', $imgold, 'others', 'file_');
