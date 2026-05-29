@@ -275,8 +275,7 @@ class Req_permission extends CI_Controller {
 
 
                 $res = $this->rp->edit_proses($id,$cekimgpdf,$upload,$imgold,$fUrl);
-                
-                if($res==true) {
+                if ($res==true) {
                     $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-success p-cg" role="alert">Data berhasil disimpan.</div></div>');
                     redirect('req_permission');
                 }
@@ -284,7 +283,8 @@ class Req_permission extends CI_Controller {
                     $this->session->set_flashdata('message', '<div class="alert alert-danger p-cg" role="alert">Proses gagal, silahkan coba lagi.</div>');
                     redirect('req_permission/edit/'.$id);
                 }
-            }
+
+                if($upload['result'] == "success" || $cekimgpdf==''){}
             else{
                 $this->session->set_flashdata('message', '<div class="alert alert-danger p-cg" role="alert">'.$upload['error'].'</div>');
                 redirect('req_permission/add');
