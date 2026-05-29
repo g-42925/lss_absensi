@@ -5,7 +5,7 @@
     <div class="card-header border-bottom flex flex-col gap-3">
       <form method="get" action="<?= base_url().'karyawan/deduction/filter' ?>" class="flex flex-row w-full gap-3">
         <select data-value="Any" id="target1" onChange="onDivChg(this)" name="divisionId" class="w-full p-3 rounded-md border-2 border-black appearance-none">
-          <option value="all">Any</option>
+          <option value="Any">Any</option>
           <?php foreach ($divisions as $row): ?>
             <option value="<?= $row['id']; ?>"><?= $row['division_name']; ?></option>
           <?php endforeach; ?>
