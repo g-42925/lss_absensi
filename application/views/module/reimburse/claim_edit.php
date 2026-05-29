@@ -18,7 +18,7 @@
 
           <div class="col-xl-12 col-md-12 col-sm-12">
             <label class="form-label">Claim By<i class="text-danger">*</i></label>
-            <input value="<?= $data['employee_id'] ?>" readonly type="text" class="form-control" name="employeeId" autocomplete="off" />
+            <input value="<?= $data['nama_pegawai'] ?>" readonly type="text" class="form-control" name="employeeId" autocomplete="off" />
           </div>
 
           <div class="col-xl-12 col-md-12 col-sm-12">

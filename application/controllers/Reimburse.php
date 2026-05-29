@@ -143,7 +143,9 @@ class Reimburse extends CI_Controller {
 
         $data['failed'] = filter_var($this->input->get('failed'),FILTER_VALIDATE_BOOLEAN);
 
-        $data['data'] = $this->db->query("select * from reimburse_claim rc join reimburse r on rc.reimburse_id = r.reimburse_id where rc.reimburse_claim_id = ?",[$claimId])->row_array();
+        //$data['data'] = $this->db->query("select * from reimburse_claim rc join reimburse r on rc.reimburse_id = r.reimburse_id where rc.reimburse_claim_id = ?",[$claimId])->row_array();
+
+        $data['data'] = $this->db->query("select * from reimburse_claim rc join reimburse r on rc.reimburse_id = r.reimburse_id join m_pegawai mp on mp.pegawai_id = rc.employee_id where rc.reimburse_claim_id = ?",[$claimId])->row_array();
 
         $this->load->view('templates/header', $data);
         $this->load->view('templates/sidemenu', $data);
