@@ -136,7 +136,7 @@ class Task extends CI_Controller
         $nik = str_replace(')', '', $nik);
 
         $data = [
-            'office_task_id'   => uniqid(),
+            'office_task_id'   => $id,
             'company_id'  => $this->session->userdata('company_id'),
             'assigned_to' => $nik,
             'task'       =>  $this->input->post('task'),
