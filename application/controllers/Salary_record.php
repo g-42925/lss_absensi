@@ -168,6 +168,13 @@ class Salary_record extends CI_Controller {
         }
 
         foreach($employees as $index => $emp){
+          foreach($this->db->query("select * from reimburse_claim where employee_id = ?",[$emp['pegawai_id']])->result_array() as $idx => $rmb){
+            $reimburse = $this->db->query("select * from reimburse where reimburse_id = ?",[$rmb['reimburse_id']])->row_array();
+            $employees[$index]['plus'][] = ['name' => $reimburse['reimburse_name'], 'value' => $rmb['value']];
+          }
+        }
+
+        foreach($employees as $index => $emp){
           if(!isset($employees[$index]['plus'])){
             $employees[$index]['plus'] = [];
           }
@@ -357,6 +364,12 @@ class Salary_record extends CI_Controller {
         }
       }
 
+      foreach($this->db->query("select * from reimburse_claim where employee_id = ?",[$emp['pegawai_id']])->result_array() as $idx => $rmb){
+        $reimburse = $this->db->query("select * from reimburse where reimburse_id = ?",[$rmb['reimburse_id']])->row_array();
+        $employees[$index]['plus'][] = ['name' => $reimburse['reimburse_name'], 'value' => $rmb['value']];
+      }
+      
+
       foreach($employees as $index => $emp){
         if(!isset($employees[$index]['plus'])){
           $employees[$index]['plus'] = [];
@@ -475,6 +488,7 @@ class Salary_record extends CI_Controller {
         $awalBulan = date('Y-m-01');
         $akhirBulan = date('Y-m-t');       
         $recap = $this->db->query("select * from recap where employee_id = ? and date between ? and ? and required = ?",[$employee['pegawai_id'],$awalBulan,$akhirBulan,true])->result_array();
+     
         foreach($this->db->query("select * from allowance a join employee_allowance ea on a.allowance_id = ea.allowance_id where a.company_id = ? and ea.employee_id = ?",[$company, $employee['pegawai_id']])->result_array() as $idx => $a){
           if($a['value'] > 0){
             if($a['period'] == 'monthly'){
@@ -497,6 +511,11 @@ class Salary_record extends CI_Controller {
               }
             }
           }
+        }
+
+        foreach($this->db->query("select * from reimburse_claim where employee_id = ?",[$employee['pegawai_id']])->result_array() as $idx => $rmb){
+          $reimburse = $this->db->query("select * from reimburse where reimburse_id = ?",[$rmb['reimburse_id']])->row_array();
+          $employee['plus'][] = ['name' => $reimburse['reimburse_name'], 'value' => $rmb['value']];
         }
 
         if(!isset($employee['plus'])){
