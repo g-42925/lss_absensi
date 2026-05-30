@@ -160,12 +160,22 @@ class Salary_record extends CI_Controller {
                         return $item['isLate'] == 1;
                     });
 
-                    if(count($hasil) < 1){
+                    if($a['fol'] && count($hasil) > 1){
                       $employees[$index]['plus'][] = ['name' => $a['name'], 'value' => $a['value']];
                     }
                   }
                 }
-                else{
+
+                if($a['fol']){
+                  $hasil = array_filter($absences, function($item) {
+                    return $item['isLate'] == 1;
+                  });
+                  if(!$a['foa'] && count($hasil) < 1){
+                    $employees[$index]['plus'][] = ['name' => $a['name'], 'value' => $a['value']];
+                  }
+                }
+
+                if(!$a['foa'] && !$a['fol']){
                   $employees[$index]['plus'][] = ['name' => $a['name'], 'value' => $a['value']];
                 }
               }
@@ -370,12 +380,21 @@ class Salary_record extends CI_Controller {
                         return $item['isLate'] == 1;
                     });
 
-                    if(count($hasil) < 1){
+                    if($a['fol'] && count($hasil) > 1){
                       $employees[$index]['plus'][] = ['name' => $a['name'], 'value' => $a['value']];
                     }
                   }
                 }
-                else{
+                if($a['fol']){
+                  $hasil = array_filter($absences, function($item) {
+                    return $item['isLate'] == 1;
+                  });
+                  if(!$a['foa'] && count($hasil) < 1){
+                    $employees[$index]['plus'][] = ['name' => $a['name'], 'value' => $a['value']];
+                  }
+                }
+
+                if(!$a['foa'] && !$a['fol']){
                   $employees[$index]['plus'][] = ['name' => $a['name'], 'value' => $a['value']];
                 }
             }
@@ -533,17 +552,30 @@ class Salary_record extends CI_Controller {
             if($a['period'] == 'monthly'){
                 if($a['foa']){
                   if(count(array_filter($recap, fn($r) => $r['isAlpha'] == 1)) < 1){
-                    $hasil = array_filter($absences, function($item) {
+                    if($a['fol']){
+                      $hasil = array_filter($absences, function($item) {
                         return $item['isLate'] == 1;
-                    });
-
-                    if(count($hasil) < 1){
-                      $employees[$index]['plus'][] = ['name' => $a['name'], 'value' => $a['value']];
+                      });
+                      if(count($hasil) < 1){
+                        $employee['plus'][] = ['name' => $a['name'], 'value' => $a['value']];
+                      }
+                    }
+                    else{
+                      $employee['plus'][] = ['name' => $a['name'], 'value' => $a['value']];
                     }
                   }
                 }
-                else{
-                  $employees[$index]['plus'][] = ['name' => $a['name'], 'value' => $a['value']];
+                if($a['fol']){
+                  $hasil = array_filter($absences, function($item) {
+                    return $item['isLate'] == 1;
+                  });
+                  if(!$a['foa'] && count($hasil) < 1){
+                    $employee['plus'][] = ['name' => $a['name'], 'value' => $a['value']];
+                  }
+                }
+
+                if(!$a['foa'] && !$a['fol']){
+                  $employee['plus'][] = ['name' => $a['name'], 'value' => $a['value']];
                 }
             }
             if($a['period'] == 'daily'){
