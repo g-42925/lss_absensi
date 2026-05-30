@@ -474,6 +474,9 @@ class Salary_record extends CI_Controller {
           if($d['deduction_type'] == 'late penalty'){
             $latePenalty += $d['amount'];
           }
+          if($d['deduction_type'] == 'mmc'){
+            $sick += $d['amount'];
+          }
         }
 
         $deduction['clockout_late'] = $clockoutLatePenalty;
