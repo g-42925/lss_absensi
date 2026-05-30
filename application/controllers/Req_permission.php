@@ -381,51 +381,28 @@ class Req_permission extends CI_Controller {
 
       $this->db->trans_begin();
 
-      if($employee['jumlah_cuti'] > 0){
-        foreach($periode as $tanggal){
-            if($employee['jumlah_cuti'] > 0){
-                
-                $offDaysAmount = $employee['jumlah_cuti'];
-                $data = ['jumlah_cuti' => $offDaysAmount - 1];
-                $this->db->where('pegawai_id',$employeeId);
-                $this->db->update('m_pegawai',$data);
-                $employee['jumlah_cuti'] = $employee['jumlah_cuti'] - 1;
-            }
-            else{
-                $data = [
-                    'deduction_id' => uniqid(),
-                    'employee_id' => $employeeId,
-                    'deduction_type' => 'missing medical certificate',
-                    'date' => $tanggal->format('Y-m-d'),
-                    'amount' => $amount,
-                    'note' => '...'
-                ];
+      foreach ($periode as $tanggal) {
+          if ($employee['jumlah_cuti'] > 0) {
+              $offDaysAmount = $employee['jumlah_cuti'];
+              $data = ['jumlah_cuti' => $offDaysAmount - 1];
+              $this->db->where('pegawai_id', $employeeId);
+              $this->db->update('m_pegawai', $data);
+              $employee['jumlah_cuti'] = $employee['jumlah_cuti'] - 1;
+          } else {
+              $data = [
+                  'deduction_id' => uniqid(),
+                  'employee_id' => $employeeId,
+                  'deduction_type' => 'mmc',
+                  'date' => $tanggal->format('Y-m-d'),
+                  'amount' => $amount,
+                  'note' => '...'
+              ];
 
-                $this->db->insert(
-                  'salary_deduction',
-                  $data
-                );
-            }
-            
-        }
+              $this->db->insert('salary_deduction', $data);
+          }
       }
-      else{
-        foreach ($periode as $tanggal) {
-            $data = [
-                'deduction_id' => uniqid(),
-                'employee_id' => $employeeId,
-                'deduction_type' => 'missing medical certificate',
-                'date' => $tanggal->format('Y-m-d'),
-                'amount' => $amount,
-                'note' => '...'
-            ];
 
-            $this->db->insert(
-                'salary_deduction',
-                $data
-            );
-        }
-      }
+      
 
       if($this->db->trans_status() === FALSE) {
         $this->db->trans_rollback();

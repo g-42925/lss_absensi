@@ -100,6 +100,7 @@ class Salary_record extends CI_Controller {
           $clockoutForget = 0;
           $alpha2 = 0;
           $latePenalty = 0;
+          $sick = 0;
 
           $deduction = [];
 
@@ -116,18 +117,24 @@ class Salary_record extends CI_Controller {
             if($d['deduction_type'] == 'late penalty'){
               $latePenalty += $d['amount'];
             }
+            if($d['deduction_type'] == 'mmc'){
+              $sick += $d['amount'];
+            }
           }
 
           $deduction['clockout_late'] = $clockoutLatePenalty;
           $deduction['clockout_forget'] = $clockoutForget;
           $deduction['alpha-2'] = $alpha2;
           $deduction['late_penalty'] = $latePenalty;
+          $deduction['sick'] = $sick;
 
           unset($employees[$index]['deduction']);
+          
           $employees[$index]['minus'][] = ['name' => 'Clockout Late Penalty', 'value' => $clockoutLatePenalty];
           $employees[$index]['minus'][] = ['name' => 'Clockout Forget', 'value' => $clockoutForget];
           $employees[$index]['minus'][] = ['name' => 'Alpha-2', 'value' => $alpha2];
           $employees[$index]['minus'][] = ['name' => 'Late Penalty', 'value' => $latePenalty];
+          $employees[$index]['minus'][] = ['name' => 'Denda sakit', 'value' => $sick];
         }
         
 
@@ -298,7 +305,7 @@ class Salary_record extends CI_Controller {
         $clockoutForget = 0;
         $alpha2 = 0;
         $latePenalty = 0;
-
+        $sick = 0;
         $deduction = [];
 
         foreach($emp['deduction'] as $idx => $d){
@@ -314,18 +321,23 @@ class Salary_record extends CI_Controller {
           if($d['deduction_type'] == 'late penalty'){
             $latePenalty += $d['amount'];
           }
+          if($d['deduction_type'] == 'mmc'){
+            $sick += $d['amount'];
+          }
         }
 
         $deduction['clockout_late'] = $clockoutLatePenalty;
         $deduction['clockout_forget'] = $clockoutForget;
         $deduction['alpha-2'] = $alpha2;
         $deduction['late_penalty'] = $latePenalty;
+        $deduction['sick'] = $sick;
 
         unset($employees[$index]['deduction']);
         $employees[$index]['minus'][] = ['name' => 'Clockout Late Penalty', 'value' => $clockoutLatePenalty];
         $employees[$index]['minus'][] = ['name' => 'Clockout Forget', 'value' => $clockoutForget];
         $employees[$index]['minus'][] = ['name' => 'Alpha-2', 'value' => $alpha2];
         $employees[$index]['minus'][] = ['name' => 'Late Penalty', 'value' => $latePenalty];
+        $employees[$index]['minus'][] = ['name' => 'Denda sakit', 'value' => $sick];
       }
 
       foreach($employees as $index => $emp){          
@@ -445,6 +457,7 @@ class Salary_record extends CI_Controller {
         $clockoutForget = 0;
         $alpha2 = 0;
         $latePenalty = 0;
+        $sick = 0;
 
         $deduction = [];
 
@@ -467,6 +480,7 @@ class Salary_record extends CI_Controller {
         $deduction['clockout_forget'] = $clockoutForget;
         $deduction['alpha-2'] = $alpha2;
         $deduction['late_penalty'] = $latePenalty;
+        $deduction['sick'] = $sick;
 
         unset($employee['deduction']);
         
@@ -481,6 +495,9 @@ class Salary_record extends CI_Controller {
         }
         if($latePenalty > 0){
           $employee['minus'][] = ['name' => 'Terlambat', 'value' => $latePenalty];
+        }
+        if($sick > 0){
+          $employee['minus'][] = ['name' => 'Denda sakit', 'value' => $sick];
         }
 
         foreach($this->db->query("select * from benefit b join employee_benefit eb on b.benefit_id = eb.benefit_id where b.company_id = ? and eb.employee_id = ?",[$company, $employee['pegawai_id']])->result_array() as $idx => $b){
