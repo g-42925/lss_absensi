@@ -363,6 +363,14 @@ class Req_permission extends CI_Controller {
     }
 
     public function cut($employeeId,$startFrom,$until){
+      $check_izin = $this->db->query("SELECT tri.tipe_request FROM tx_request_izin tri JOIN tx_request_izin_pegawai trip ON tri.request_izin_id = trip.request_izin_id WHERE trip.pegawai_id = ? AND tri.tanggal_request = ? AND tri.tanggal_request_end = ?", [$employeeId, $startFrom, $until])->row_array();
+
+      if (!$check_izin || $check_izin['tipe_request'] !== 's') {
+          $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-danger p-cg" role="alert">Fungsi ini hanya untuk karyawan dengan izin sakit.</div></div>');
+          redirect('req_permission');
+          return;
+      }
+
       $tanggalX = new DateTime($startFrom);
       $tanggalZ = new DateTime($until);
       $tanggalZ->modify('+1 day');
