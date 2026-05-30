@@ -516,7 +516,7 @@ class Salary_record extends CI_Controller {
           }
         }
 
-        foreach($this->db->query("select * from reimburse_claim where employee_id = ? and date between ? and ?",[$employee['pegawai_id'],date('Y-'.$month.'-1'),date('Y-'.$month.'-t')])->result_array() as $idx => $rmb){
+        foreach($this->db->query("select * from reimburse_claim where employee_id = ? and date between ? and ? and status = ?",[$employee['pegawai_id'],date('Y-'.$month.'-1'),date('Y-'.$month.'-t'),'approved'])->result_array() as $idx => $rmb){
           $reimburse = $this->db->query("select * from reimburse where reimburse_id = ?",[$rmb['reimburse_id']])->row_array();
           $employee['plus'][] = ['name' => $reimburse['reimburse_name'], 'value' => $rmb['value']];
         }
