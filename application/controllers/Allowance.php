@@ -177,7 +177,7 @@ class Allowance extends CI_Controller {
         'name' => $this->input->post('name'),
         'period' => 'monthly',
         'foa' => $this->input->post('foa'),
-        'boa' => false
+        'fol' => $this->input->post('fol')
       ];
 
       $q = $this->db->insert(
@@ -229,7 +229,8 @@ class Allowance extends CI_Controller {
     public function monthly_edit_process($id){
       $data = [
         'name' => $this->input->post('name'),
-        'foa' => $this->input->post('foa')
+        'foa' => $this->input->post('foa'),
+        'fol' => $this->input->post('fol')
       ];
 
       $this->db->set(

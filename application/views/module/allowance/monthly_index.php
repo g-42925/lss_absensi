@@ -14,6 +14,7 @@
           <tr class="text-center">
             <th>Name</th>
             <th>Forfeit on absence</th>
+            <th>Forfeit on late</th>
             <th>Action</th>
           </tr>
         </thead>
@@ -22,6 +23,7 @@
           <tr class="text-center">
             <td class="text-capitalize"><?= $r['name'];?></td>
             <td><?= $r['foa'] == 1 ? 'yes' : 'no' ?></td>
+            <td><?= $r['fol'] == 1 ? 'yes' : 'no' ?></td>
             <td>
               <a href="<?= base_url().'allowance/monthly_edit/'.$r['allowance_id'].'?failed=false' ?>" class="btn p-1">
                 <i class="ti ti-settings"></i>

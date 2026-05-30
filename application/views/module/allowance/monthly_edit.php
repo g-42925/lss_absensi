@@ -30,6 +30,21 @@
               </label>
              </div>
           </div>
+          <div class="flex flex-col gap-3">
+            <label class="block text-gray-600 font-medium md:w-1/3">
+              Forfeit on late <span class="text-red-500">*</span>
+            </label>
+            <div class="mt-1 md:mt-0 md:w-2/3 space-x-6">
+              <label class="inline-flex items-center">
+                <input <?= $data['fol'] == 1 ? 'checked':'' ?> type="radio" name="fol" value="1" class="form-radio text-blue-600">
+                <span class="ml-2 text-gray-700">Yes</span>
+              </label>
+              <label class="inline-flex items-center">
+                <input <?= $data['fol'] == 0 ? 'checked':'' ?> type="radio" name="fol" value="0" class="form-radio text-blue-600">
+                <span class="ml-2 text-gray-700">No</span>
+              </label>
+             </div>
+          </div>
          
         </div>
         <div class="pt-5 text-end">

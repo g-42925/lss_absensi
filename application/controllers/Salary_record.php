@@ -150,12 +150,19 @@ class Salary_record extends CI_Controller {
             $awalBulan = date('Y-m-01');
             $akhirBulan = date('Y-m-t');       
             $recap = $this->db->query("select * from recap where employee_id = ? and date between ? and ? and required = ?",[$emp['pegawai_id'],$awalBulan,$akhirBulan,true])->result_array();
+            $absences = $this->db->query("select * from tx_absensi where employee_id = ? and date between ? and ?",[$emp['pegawai_id'],$awalBulan,$akhirBulan])->result_array();
             foreach($this->db->query("select * from allowance a join employee_allowance ea on a.allowance_id = ea.allowance_id where a.company_id = ? and ea.employee_id = ?",[$company, $emp['pegawai_id']])->result_array() as $idx => $a){
             if($a['value'] > 0){
               if($a['period'] == 'monthly'){
                 if($a['foa']){
                   if(count(array_filter($recap, fn($r) => $r['isAlpha'] == 1)) < 1){
-                    $employees[$index]['plus'][] = ['name' => $a['name'], 'value' => $a['value']];
+                    $hasil = array_filter($absences, function($item) {
+                        return $item['isLate'] == 1;
+                    });
+
+                    if(count($hasil) < 1){
+                      $employees[$index]['plus'][] = ['name' => $a['name'], 'value' => $a['value']];
+                    }
                   }
                 }
                 else{
@@ -352,17 +359,25 @@ class Salary_record extends CI_Controller {
         $awalBulan = date('Y-'.$month.'-01');
         $akhirBulan = date('Y-'.$month.'-t');       
         $recap = $this->db->query("select * from recap where employee_id = ? and date between ? and ? and required = ?",[$emp['pegawai_id'],$awalBulan,$akhirBulan,true])->result_array();
+        $absences = $this->db->query("select * from tx_absensi where employee_id = ? and date between ? and ?",[$emp['pegawai_id'],$awalBulan,$akhirBulan])->result_array();
+
         foreach($this->db->query("select * from allowance a join employee_allowance ea on a.allowance_id = ea.allowance_id where a.company_id = ? and ea.employee_id = ?",[$company, $emp['pegawai_id']])->result_array() as $idx => $a){
           if($a['value'] > 0){
             if($a['period'] == 'monthly'){
-              if($a['foa']){
-                if(count(array_filter($recap, fn($r) => $r['isAlpha'] == 1)) < 1){
+                if($a['foa']){
+                  if(count(array_filter($recap, fn($r) => $r['isAlpha'] == 1)) < 1){
+                    $hasil = array_filter($absences, function($item) {
+                        return $item['isLate'] == 1;
+                    });
+
+                    if(count($hasil) < 1){
+                      $employees[$index]['plus'][] = ['name' => $a['name'], 'value' => $a['value']];
+                    }
+                  }
+                }
+                else{
                   $employees[$index]['plus'][] = ['name' => $a['name'], 'value' => $a['value']];
                 }
-              }
-              else{
-                $employees[$index]['plus'][] = ['name' => $a['name'], 'value' => $a['value']];
-              }
             }
             if($a['period'] == 'daily'){
               if($a['boa']){
@@ -512,18 +527,24 @@ class Salary_record extends CI_Controller {
         $awalBulan = date('Y-m-01');
         $akhirBulan = date('Y-m-t');       
         $recap = $this->db->query("select * from recap where employee_id = ? and date between ? and ? and required = ?",[$employee['pegawai_id'],$awalBulan,$akhirBulan,true])->result_array();
-     
+        $absences = $this->db->query("select * from tx_absensi where employee_id = ? and date between ? and ?",[$employee['pegawai_id'],$awalBulan,$akhirBulan])->result_array();
         foreach($this->db->query("select * from allowance a join employee_allowance ea on a.allowance_id = ea.allowance_id where a.company_id = ? and ea.employee_id = ?",[$company, $employee['pegawai_id']])->result_array() as $idx => $a){
           if($a['value'] > 0){
             if($a['period'] == 'monthly'){
-              if($a['foa']){
-                if(count(array_filter($recap, fn($r) => $r['isAlpha'] == 1)) < 1){
-                  $employee['plus'][] = ['name' => $a['name'], 'value' => $a['value']];
+                if($a['foa']){
+                  if(count(array_filter($recap, fn($r) => $r['isAlpha'] == 1)) < 1){
+                    $hasil = array_filter($absences, function($item) {
+                        return $item['isLate'] == 1;
+                    });
+
+                    if(count($hasil) < 1){
+                      $employees[$index]['plus'][] = ['name' => $a['name'], 'value' => $a['value']];
+                    }
+                  }
                 }
-              }
-              else{
-                $employee['plus'][] = ['name' => $a['name'], 'value' => $a['value']];
-              }
+                else{
+                  $employees[$index]['plus'][] = ['name' => $a['name'], 'value' => $a['value']];
+                }
             }
             if($a['period'] == 'daily'){
               if($a['boa']){
