@@ -129,6 +129,7 @@ class Salary_record extends CI_Controller {
           $employees[$index]['minus'][] = ['name' => 'Alpha-2', 'value' => $alpha2];
           $employees[$index]['minus'][] = ['name' => 'Late Penalty', 'value' => $latePenalty];
         }
+        
 
         foreach($employees as $index => $emp){          
           foreach($this->db->query("select * from benefit b join employee_benefit eb on b.benefit_id = eb.benefit_id where b.company_id = ? and eb.employee_id = ?",[$company, $emp['pegawai_id']])->result_array() as $idx => $b){
@@ -194,7 +195,7 @@ class Salary_record extends CI_Controller {
           $basicIncome = $isFebruari ? ($isKabisat ? $emp['salary'] / 24 : $emp['salary'] / 25) : $emp['salary'] / 26;
           $income = $recap * $basicIncome;
 
-        $employees[$index]['income'] = $income;
+          $employees[$index]['income'] = $income;
           $employees[$index]['totalPlus'] = array_sum(array_column($emp['plus'] ?? [], 'value')) + $income;
           $employees[$index]['totalMinus'] = array_sum(array_column($emp['minus'] ?? [], 'value'));
           

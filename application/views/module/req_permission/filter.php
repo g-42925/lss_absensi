@@ -116,6 +116,7 @@
                     </div>
                   </div>
                 </div>
+              </div>
               </td>
               <td>
                 <div class="modal fade" id="delRow<?=$row['request_izin_id'];?>" tabindex="-1" aria-hidden="true">

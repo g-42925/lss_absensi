@@ -77,9 +77,8 @@ foreach ($datas as $row):
                 data-bs-target="#delRow<?= $row['request_izin_id']; ?>">
                 <i class="ti ti-trash"></i>
               </a>
-              <a href="#" class="<?= $row['tipe_request'] == " s" ? "" : "hidden"?> btn p-1" data-bs-toggle="modal"
-                data-bs-target="#cutRow
-                <?= $row['request_izin_id']; ?>" title="payroll">
+              <a href="#" class="<?= $row['tipe_request'] == "s" ? "" : "hidden"?> btn p-1" data-bs-toggle="modal"
+                data-bs-target="#cutRow<?= $row['request_izin_id']; ?>" title="payroll">
                 <i class="ti ti-scissors"></i>
               </a>
               <a href="<?= base_url('req_permission/print/' . $row['request_izin_id']); ?>" class="btn p-1">
@@ -106,6 +105,7 @@ foreach ($datas as $row):
                     </div>
                   </div>
                 </div>
+              </div>
             </td>
             <td>
               <div class="modal fade" id="delRow<?= $row['request_izin_id']; ?>" tabindex="-1" aria-hidden="true">
