@@ -400,7 +400,7 @@ class Req_permission extends CI_Controller {
               $data = [
                   'deduction_id' => uniqid(),
                   'employee_id' => $employeeId,
-                  'deduction_type' => 'mmc',
+                  'deduction_type' => 'denda sakit',
                   'date' => $tanggal->format('Y-m-d'),
                   'amount' => $amount,
                   'note' => '...'
