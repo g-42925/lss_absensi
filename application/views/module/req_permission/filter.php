@@ -28,7 +28,7 @@
       </div>
     </div>
     <div class="card-datatable table-responsive">
-      <table class="table border-top" id="dataTableatt text-center">
+      <table class="table border-top text-center" id="dataTableatt">
         <thead>
           <tr>
             <th class="w-s-n">Date</th>
@@ -38,7 +38,8 @@
             <th>Photo</th>
             <th>Status</th>
             <th>Remain</th>
-            <th class="text-end w-s-n">...</th>
+            <th>...</th>
+
           </tr>
         </thead>
         <tbody>
@@ -56,6 +57,9 @@
               <?php } ?>
             </td>
             <td class="w-s-n">
+              <?= $row['created_at']?>
+            </td>
+            <td class="w-s-n">
               <?= $row['nama_pegawai'] ?> (<?= $row['pegawai_id']; ?>)
             </td>
             <td class="w-s-n">
@@ -68,7 +72,7 @@
               <?= $row['is_status'] ?>
             </td>
             <td class="w-s-n">
-            <td><?= $row['remain'] == '0' ? '0':$row['remain'] ?></td>
+              <?= $row['jumlah_cuti'] ?>
             </td>
             <?php if ($status == "csh"): ?>
               <td align="right">

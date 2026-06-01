@@ -124,6 +124,12 @@ class Mobile extends CI_Controller{
         [$pegawaiId]
     )->result_array();
     
+    
+    $exceptionPending = $this->db->query("SELECT * 
+        FROM exception where employee_id = ? and type='Cuti setengah hari' and status = '0'",
+        [$pegawaiId]
+    )->num_rows();
+
     $approved = $this->db->query("SELECT * 
         FROM tx_request_izin_pegawai x 
         JOIN tx_request_izin y 
@@ -145,6 +151,7 @@ class Mobile extends CI_Controller{
         $differencePendingDays[] = $difference;
     }
     
+
     foreach($approved as $f){
         $tanggalAwal = new DateTime($f['tanggal_request']);
         $tanggalAkhir = new DateTime($f['tanggal_request_end']);
@@ -158,7 +165,7 @@ class Mobile extends CI_Controller{
 
         $result = [
             "list"   => $all,
-            "quota"  => (12 - (array_sum($differencePendingDays) + array_sum($differenceApprovedDays)) - ($exception/2)),
+            "quota"  => $r1['jumlah_cuti'] - array_sum($differencePendingDays) - ($exceptionPending / 2),
             "used"   => array_sum($differencePendingDays) + array_sum($differenceApprovedDays) + ($exception / 2)
         ];
 

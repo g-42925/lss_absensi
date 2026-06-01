@@ -151,21 +151,24 @@ class Salary_record extends CI_Controller {
             $akhirBulan = date('Y-m-t');       
             $recap = $this->db->query("select * from recap where employee_id = ? and date between ? and ? and required = ?",[$emp['pegawai_id'],$awalBulan,$akhirBulan,true])->result_array();
             $absences = $this->db->query("select * from tx_absensi where pegawai_id = ? and tanggal_absen between ? and ?",[$emp['pegawai_id'],$awalBulan,$akhirBulan])->result_array();
-            foreach($this->db->query("select * from allowance a join employee_allowance ea on a.allowance_id = ea.allowance_id where a.company_id = ? and ea.employee_id = ?",[$company, $emp['pegawai_id']])->result_array() as $idx => $a){
-            if($a['value'] > 0){
-              if($a['period'] == 'monthly'){
+        foreach($this->db->query("select * from allowance a join employee_allowance ea on a.allowance_id = ea.allowance_id where a.company_id = ? and ea.employee_id = ?",[$company, $emp['pegawai_id']])->result_array() as $idx => $a){
+          if($a['value'] > 0){
+            if($a['period'] == 'monthly'){
                 if($a['foa']){
                   if(count(array_filter($recap, fn($r) => $r['isAlpha'] == 1)) < 1){
-                    $hasil = array_filter($absences, function($item) {
+                    if($a['fol']){
+                      $hasil = array_filter($absences, function($item) {
                         return $item['isLate'] == 1;
-                    });
-
-                    if($a['fol'] && count($hasil) > 1){
+                      });
+                      if(count($hasil) < 1){
+                        $employees[$index]['plus'][] = ['name' => $a['name'], 'value' => $a['value']];
+                      }
+                    }
+                    else{
                       $employees[$index]['plus'][] = ['name' => $a['name'], 'value' => $a['value']];
                     }
                   }
                 }
-
                 if($a['fol']){
                   $hasil = array_filter($absences, function($item) {
                     return $item['isLate'] == 1;
@@ -178,18 +181,18 @@ class Salary_record extends CI_Controller {
                 if(!$a['foa'] && !$a['fol']){
                   $employees[$index]['plus'][] = ['name' => $a['name'], 'value' => $a['value']];
                 }
+            }
+            if($a['period'] == 'daily'){
+              if($a['boa']){
+                $alphaFilter = count(array_filter($recap, fn($r) => $r['isAlpha'] == 1));
+                $employees[$index]['plus'][] = ['name' => $a['name'], 'value' => $a['value'] * (count($recap) - $alphaFilter)];
               }
-              if($a['period'] == 'daily'){
-                if($a['boa']){
-                  $alphaFilter = count(array_filter($recap, fn($r) => $r['isAlpha'] == 1));
-                  $employees[$index]['plus'][] = ['name' => $a['name'], 'value' => $a['value'] * (count($recap) - $alphaFilter)];
-                }
-                else{
-                  $employees[$index]['plus'][] = ['name' => $a['name'], 'value' => $a['value'] * count($recap)];
-                }
+              else{
+                $employees[$index]['plus'][] = ['name' => $a['name'], 'value' => $a['value'] * count($recap)];
               }
             }
           }
+        }
         }
 
         foreach($employees as $index => $emp){
@@ -217,21 +220,17 @@ class Salary_record extends CI_Controller {
           $akhirBulan = date('Y-m-t');
           $recap = $this->db->query("select * from recap where employee_id = ? and date between ? and ? and required = ?",[$emp['pegawai_id'],$awalBulan,$akhirBulan,true])->num_rows();
           $basicIncome = $isFebruari ? ($isKabisat ? $emp['salary'] / 24 : $emp['salary'] / 25) : $emp['salary'] / 26;
-          $income = $recap * $basicIncome;
-
-          $employees[$index]['income'] = $income;
-          $employees[$index]['totalPlus'] = array_sum(array_column($emp['plus'] ?? [], 'value')) + $income;
-          $employees[$index]['totalMinus'] = array_sum(array_column($emp['minus'] ?? [], 'value'));
           
-          $income = $income - array_sum(array_column($emp['minus'] ?? [], 'value'));
-          $income = $income + array_sum(array_column($emp['plus'] ?? [], 'value'));
+          $employees[$index]['totalMinus'] = array_sum(array_column($emp['minus'] ?? [], 'value'));
 
-          $employees[$index]['thp'] = $income;
+          $employees[$index]['income'] = ($recap * $basicIncome) + array_sum(array_column($emp['plus'] ?? [], 'value'));
+          $employees[$index]['thp'] = $employees[$index]['income'] - $employees[$index]['totalMinus'];
         }
 
 
         $data['employees'] = $employees;
         
+
         if ($this->input->get('export') == 'excel') {
             $this->load->view('module/salary_record/excel', $data);
             return;
@@ -365,22 +364,25 @@ class Salary_record extends CI_Controller {
         }
       }
 
-      foreach($employees as $index => $emp){   
-        $awalBulan = date('Y-'.$month.'-01');
-        $akhirBulan = date('Y-'.$month.'-t');       
-        $recap = $this->db->query("select * from recap where employee_id = ? and date between ? and ? and required = ?",[$emp['pegawai_id'],$awalBulan,$akhirBulan,true])->result_array();
-        $absences = $this->db->query("select * from tx_absensi where pegawai_id = ? and tanggal_absen between ? and ?",[$emp['pegawai_id'],$awalBulan,$akhirBulan])->result_array();
-
+        foreach($employees as $index => $emp){   
+            $awalBulan = date('Y-m-01');
+            $akhirBulan = date('Y-m-t');       
+            $recap = $this->db->query("select * from recap where employee_id = ? and date between ? and ? and required = ?",[$emp['pegawai_id'],$awalBulan,$akhirBulan,true])->result_array();
+            $absences = $this->db->query("select * from tx_absensi where pegawai_id = ? and tanggal_absen between ? and ?",[$emp['pegawai_id'],$awalBulan,$akhirBulan])->result_array();
         foreach($this->db->query("select * from allowance a join employee_allowance ea on a.allowance_id = ea.allowance_id where a.company_id = ? and ea.employee_id = ?",[$company, $emp['pegawai_id']])->result_array() as $idx => $a){
           if($a['value'] > 0){
             if($a['period'] == 'monthly'){
                 if($a['foa']){
                   if(count(array_filter($recap, fn($r) => $r['isAlpha'] == 1)) < 1){
-                    $hasil = array_filter($absences, function($item) {
+                    if($a['fol']){
+                      $hasil = array_filter($absences, function($item) {
                         return $item['isLate'] == 1;
-                    });
-
-                    if($a['fol'] && count($hasil) > 1){
+                      });
+                      if(count($hasil) < 1){
+                        $employees[$index]['plus'][] = ['name' => $a['name'], 'value' => $a['value']];
+                      }
+                    }
+                    else{
                       $employees[$index]['plus'][] = ['name' => $a['name'], 'value' => $a['value']];
                     }
                   }
@@ -409,7 +411,7 @@ class Salary_record extends CI_Controller {
             }
           }
         }
-      }
+        }
 
       foreach($employees as $index => $emp){
         foreach($this->db->query("select * from reimburse_claim where employee_id = ? and Date(date) between ? and ? and status = ?",[$emp['pegawai_id'],date('Y-'.$month.'-1'),date('Y-'.$month.'-t'),'approved'])->result_array() as $idx => $rmb){
@@ -438,16 +440,10 @@ class Salary_record extends CI_Controller {
         $akhirBulan = date('Y-'.$month.'-t');
         $recap = $this->db->query("select * from recap where employee_id = ? and date between ? and ? and required = ?",[$emp['pegawai_id'],$awalBulan,$akhirBulan,true])->num_rows();
         $basicIncome = $isFebruari ? ($isKabisat ? $emp['salary'] / 24 : $emp['salary'] / 25) : $emp['salary'] / 26;
-        $income = $recap * $basicIncome;
 
-        $employees[$index]['income'] = $income;
-        $employees[$index]['totalPlus'] = array_sum(array_column($emp['plus'] ?? [], 'value')) + $income;
         $employees[$index]['totalMinus'] = array_sum(array_column($emp['minus'] ?? [], 'value'));
-        
-        $income = $income - array_sum(array_column($emp['minus'] ?? [], 'value'));
-        $income = $income + array_sum(array_column($emp['plus'] ?? [], 'value'));
-
-        $employees[$index]['thp'] = $income;
+        $employees[$index]['income'] = ($recap * $basicIncome) + array_sum(array_column($emp['plus'] ?? [], 'value'));
+        $employees[$index]['thp'] = $employees[$index]['income'] - $employees[$index]['totalMinus'];
       }
 
 
@@ -618,12 +614,9 @@ class Salary_record extends CI_Controller {
         $employee['totalPlus'] = array_sum(array_column($employee['plus'] ?? [], 'value')) + $income;
         $employee['totalMinus'] = array_sum(array_column($employee['minus'] ?? [], 'value'));
         
-        $income = $income - array_sum(array_column($employee['minus'] ?? [], 'value'));
-        $income = $income + array_sum(array_column($employee['plus'] ?? [], 'value'));
 
-
-
-        $employee['thp'] = $income;
+        $employee['totalIncome'] = $income + array_sum(array_column($employee['plus'] ?? [], 'value'));
+        $employee['thp'] = ($income + array_sum(array_column($employee['plus'] ?? [], 'value'))) - array_sum(array_column($employee['minus'] ?? [], 'value'));
 
         $data['emp'] = $employee;
 
@@ -632,7 +625,6 @@ class Salary_record extends CI_Controller {
 
         $data['periode'] = $monthList[$month-1].' '.$tahun;
         
-
         $this->load->view('templates/header', $data);
         $this->load->view('templates/sidemenu', $data);
         $this->load->view('templates/sidenav', $data);

@@ -132,7 +132,7 @@
               </td>
               <td class="px-4 py-4">
                 <div class="space-y-1 text-sm">
-                  <?= number_format($emp['totalPlus']) ?>
+                  <?= number_format($emp['income']) ?>
                 </div>
               </td>
               <td class="px-4 py-4">
@@ -141,7 +141,7 @@
                 </div>
               </td>
               <td class="px-4 py-4">
-                <?= number_format(round($emp['thp'],0)) ?>
+                  <?= $emp['thp'] ?>
               </td>
               <td class="px-4 py-4">
                 <a href="<?= base_url('salary_record/slip/'.$filter.'/'.$emp['pegawai_id']) ?>" class="">

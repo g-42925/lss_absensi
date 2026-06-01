@@ -103,7 +103,7 @@
           <div class="w-full md:w-1/2">
             <div class="flex justify-between py-1">
               <div class="text-sm text-gray-600">Total Penghasilan</div>
-              <div class="font-medium"><?= number_format($emp['income'],2) ?></div>
+              <div class="font-medium"><?= number_format($emp['totalIncome'],2) ?></div>
             </div>
             <div class="flex justify-between py-1">
               <div class="text-sm text-gray-600">Total Potongan</div>
