@@ -36,6 +36,7 @@
             <th class="w-s-n">Requested By</th>
             <th>Category</th>
             <th>Photo</th>
+            <th>Reason</th>
             <th>Status</th>
             <th>Remain</th>
             <th>...</th>
@@ -67,7 +68,10 @@
             </td>
             <td class="text-capitalize">
               <a target="_blank" href="<?= $row['image'] == "-" ? "" : base_url('image/index').'/'.basename($row['image']) ?>"><i class="ti ti-photo"></i></a>
-            </td>  
+            </td>
+            <td>
+              <?= array_key_exists('catatan_awal', $row) ? $row['catatan_awal'] : $row['reason'] ?>
+            </td>
             <td class="w-s-n">
               <?= $row['is_status'] ?>
             </td>

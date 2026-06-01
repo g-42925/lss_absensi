@@ -36,6 +36,7 @@
             <th class="w-s-n">Requested At</th>
             <th>Category</th>
             <th>Photo</th>
+            <th>Reason</th>
             <th>Status</th>
             <th>Remain</th>
             <th class="text-end w-s-n">...</th>
@@ -65,6 +66,9 @@ foreach ($datas as $row):
             <td class="w-s-n">
               <a target="_blank" href="<?= $row['image'] == " -" ? "" : base_url('image/index') . '/' .basename($row['image'])?>"><i class="ti ti-photo"></i></a>
             </td>
+            <td class="w-s-n">
+              <?= $row['catatan_awal']?>
+            </td>           
             <td class="w-s-n">
               <?= $row['is_status']?>
             </td>
