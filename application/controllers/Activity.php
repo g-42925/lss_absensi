@@ -1,8 +1,7 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Activity extends CI_Controller
-{
+class Activity extends CI_Controller{
     public $email;
     public $session;
     public $form_validation;
@@ -22,8 +21,7 @@ class Activity extends CI_Controller
         $this->load->model('user/req_permission_model', 'rp');
     }
 
-    public function filter($date)
-    {
+    public function filter($date){
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Aktivitas';
         $data['title']      = 'Aktivitas';
@@ -42,8 +40,7 @@ class Activity extends CI_Controller
         $this->load->view('templates/fscript-html-end', $data);
     }
 
-    public function index()
-    {
+    public function index(){
         cek_menu_access();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Aktivitas';

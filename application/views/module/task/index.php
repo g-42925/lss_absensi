@@ -56,6 +56,6 @@
 <script type="text/javascript">
   function filtertglAbsensi(){
     var valx = $('.filtertglabsensi').val();
-    window.location.href='<?=base_url('task/filter/');?>'+valx;
+    window.location.href = `<?=base_url('activity/filter/');?>`+valx;
   }
 </script>

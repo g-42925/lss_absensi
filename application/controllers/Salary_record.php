@@ -221,6 +221,7 @@ class Salary_record extends CI_Controller {
           $recap = $this->db->query("select * from recap where employee_id = ? and date between ? and ? and required = ?",[$emp['pegawai_id'],$awalBulan,$akhirBulan,true])->num_rows();
           $basicIncome = $isFebruari ? ($isKabisat ? $emp['salary'] / 24 : $emp['salary'] / 25) : $emp['salary'] / 26;
           
+          $employees[$index]['totalPlus'] = array_sum(array_column($emp['plus'] ?? [], 'value'));
           $employees[$index]['totalMinus'] = array_sum(array_column($emp['minus'] ?? [], 'value'));
 
           $employees[$index]['income'] = ($recap * $basicIncome) + array_sum(array_column($emp['plus'] ?? [], 'value'));
@@ -441,6 +442,7 @@ class Salary_record extends CI_Controller {
         $recap = $this->db->query("select * from recap where employee_id = ? and date between ? and ? and required = ?",[$emp['pegawai_id'],$awalBulan,$akhirBulan,true])->num_rows();
         $basicIncome = $isFebruari ? ($isKabisat ? $emp['salary'] / 24 : $emp['salary'] / 25) : $emp['salary'] / 26;
 
+        $employees[$index]['totalPlus'] = array_sum(array_column($emp['plus'] ?? [], 'value'));
         $employees[$index]['totalMinus'] = array_sum(array_column($emp['minus'] ?? [], 'value'));
         $employees[$index]['income'] = ($recap * $basicIncome) + array_sum(array_column($emp['plus'] ?? [], 'value'));
         $employees[$index]['thp'] = $employees[$index]['income'] - $employees[$index]['totalMinus'];
@@ -478,6 +480,7 @@ class Salary_record extends CI_Controller {
     
         $awalBulan = date('Y-'.$month.'-01');
         $akhirBulan = date('Y-'.$month.'-t');
+
         
         $deduction = $this->db->query("select * from salary_deduction where employee_id = $employee[pegawai_id] and date between '$awalBulan' and '$akhirBulan'")->result_array();
         
