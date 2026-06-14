@@ -23,6 +23,14 @@ class Data extends CI_Controller {
         $this->load->model('user/attendance_model', 'att');
     }
     
+    public function kick($id){
+        $this->db->where('pegawai_id',$id);
+
+        $this->db->update('m_pegawai',['signed_in' => false]);
+          
+        redirect('karyawan/data');
+    }
+    
     public function filter(){
 			cek_menu_access();
 			$data['htmlpagejs'] = 'none';

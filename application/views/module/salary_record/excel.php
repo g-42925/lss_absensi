@@ -45,7 +45,7 @@ if(isset($months)) {
     </style>
 </head>
 <body>
-    <h3>Data Gaji Karyawan - Periode <?= $monthName ?> <?= date('Y') ?></h3>
+    <h3>Data Gaji Karyawan - Periode <?= $monthName ?> <?= date('Y') ?> (GrandTotal : <?= $thpGrandTotal ?>)</h3>
     <table>
         <thead>
             <tr>

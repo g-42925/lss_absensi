@@ -41,7 +41,7 @@
           <tr class="text-center">
             <td><?= $row['nik'];?></td>
             <td><?= $row['divisi'];?></td>
-            <td><?= $row['nama_pegawai'];?></td>
+            <td><span class="<?= $row['signed_in'] ? 'text-red-900':'' ?>"><?= $row['nama_pegawai'];?></span></td>
             <td><?= $row['nomor_pegawai'];?></td>
             <td><?= $row['address'] == "" ? "-":$row['address']; ?></td>
             <td><?= $row['jumlah_cuti'] ?> </td>
@@ -68,6 +68,9 @@
               </a>
               <a href="<?= base_url('payroll/filter/').$row['pegawai_id'] ?>" class="btn p-1" title="payroll">
                 <i class="ti ti-calendar"></i>
+              </a>
+              <a href="<?= base_url('karyawan/data/kick/').$row['pegawai_id'] ?>" class="btn p-1" title="kick">
+                <i class="ti ti-user-x"></i>
               </a>
               <!-- Konfirmasi Hapus -->
               <div class="modal fade" id="delRow<?=$row['pegawai_id'];?>" tabindex="-1" aria-hidden="true">
