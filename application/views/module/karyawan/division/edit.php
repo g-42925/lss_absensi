@@ -69,7 +69,7 @@
                             Restriction Absen masuk <span class="text-red-500">*</span>
                         </label>
                         <div class="mt-1 md:mt-0 md:w-2/3">
-                            <input type="text" value="<?= $current['restriction'] ?>" name="restriction" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <input placeholder="dalam satuan menit" type="text" value="<?= $current['restriction'] ?>" name="restriction" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                         </div>
                     </div>
 
@@ -78,7 +78,7 @@
                             Restriction Absen pulang <span class="text-red-500">*</span>
                         </label>
                         <div class="mt-1 md:mt-0 md:w-2/3">
-                            <input type="text" value="<?= $current['clockout_restriction'] ?>" name="clockoutRestriction" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <input type="text" placeholder="dalam satuan menit" value="<?= $current['clockout_restriction'] ?>" name="clockoutRestriction" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                         </div>
                     </div>
 
@@ -184,10 +184,6 @@
                             <label class="inline-flex items-center">
                                 <input <?= $current['alpha_penalty_type'] == "percent" ? 'checked':'' ?> type="radio" name="alphaPenaltyType" value="percent" class="form-radio text-blue-600">
                                 <span class="ml-2 text-gray-700">Percent</span>
-                            </label>
-                            <label class="inline-flex items-center">
-                                <input <?= $current['alpha_penalty_type'] == "no" ? 'checked':'' ?> type="radio" name="alphaPenaltyType" value="no" class="form-radio text-blue-600">
-                                <span class="ml-2 text-gray-700">No</span>
                             </label>
                         </div>
                     </div>

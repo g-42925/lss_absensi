@@ -73,10 +73,10 @@
 
                     <div class="flex flex-col md:flex-row md:items-center">
                         <label for="penalty-nominal" class="block text-gray-600 font-medium md:w-1/3">
-                            Restriksi absen masuk <span class="text-red-500">*</span>
+                            Restriction absen masuk <span class="text-red-500">*</span>
                         </label>
                         <div class="mt-1 md:mt-0 md:w-2/3">
-                            <input type="text" value="0" name="restriction" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <input placeholder="dalam satuan menit" type="text" value="0" name="restriction" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                         </div>
                     </div>
 
@@ -85,7 +85,7 @@
                             Restriction absen pulang <span class="text-red-500">*</span>
                         </label>
                         <div class="mt-1 md:mt-0 md:w-2/3">
-                            <input type="text" value="0" name="clockoutRestriction" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <input type="text" placeholder="dalam satuan menit" value="0" name="clockoutRestriction" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                         </div>
                     </div>
 

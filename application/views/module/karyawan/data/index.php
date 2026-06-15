@@ -41,7 +41,7 @@
           <tr class="text-center">
             <td><?= $row['nik'];?></td>
             <td><?= $row['divisi'];?></td>
-            <td><span class="<?= $row['signed_in'] ? 'text-red-900':'' ?>"><?= $row['nama_pegawai'];?></span></td>
+            <td><span class="<?= $row['signed_in'] ? 'text-blue-900':'' ?>"><?= $row['nama_pegawai'];?></span></td>
             <td><?= $row['nomor_pegawai'];?></td>
             <td><?= $row['address'] == "" ? "-":$row['address']; ?></td>
             <td><?= $row['jumlah_cuti'] ?> </td>

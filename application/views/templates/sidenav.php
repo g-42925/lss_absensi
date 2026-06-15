@@ -5,6 +5,7 @@
             $count_pending = count_pending();
             $count_lembur = count_lembur();
             $count_izin = count_izin();
+            $count_active = count_active_sessions();
           ?>
 
           <!-- Navbar -->
@@ -159,6 +160,70 @@
                   </ul>
                 </li>
                 <!--/ Request Izin -->
+
+                <!--/ Active Login Sessions -->
+                <li class="nav-item dropdown-notifications navbar-dropdown dropdown me-3 me-xl-1">
+                  <a
+                    class="nav-link dropdown-toggle hide-arrow"
+                    href="javascript:void(0);"
+                    data-bs-toggle="dropdown"
+                    data-bs-auto-close="outside"
+                    aria-expanded="false" title="Active Sessions">
+                    <i class="ti ti-devices ti-md"></i>
+                    <?php if($count_active['num'] > 0): ?>
+                    <span class="badge bg-warning rounded-pill badge-notifications"><?=$count_active['num'];?></span>
+                    <?php endif; ?>
+                  </a>
+                  <ul class="dropdown-menu dropdown-menu-end py-0">
+                    <li class="dropdown-menu-header border-bottom">
+                      <div class="dropdown-header d-flex align-items-center py-3">
+                        <h5 class="text-body mb-0 me-auto">Manajemen Sesi Login</h5>
+                        <a
+                          href="javascript:void(0)"
+                          class="dropdown-notifications-all text-body"
+                          data-bs-toggle="tooltip"
+                          data-bs-placement="top"
+                          title="Sesi Login Aktif"
+                          ><i class="ti ti-devices fs-4"></i
+                        ></a>
+                      </div>
+                    </li>
+                    <li class="dropdown-notifications-list scrollable-container">
+                      <ul class="list-group list-group-flush">
+                        <?php $no=1; foreach ($count_active['result'] as $row) : if($no > 2) break; ?>
+                        <li class="list-group-item list-group-item-action dropdown-notifications-item">
+                          <div class="d-flex">
+                            <div class="flex-shrink-0 me-3">
+                              <div class="avatar">
+                                <span class="avatar-initial rounded-circle bg-label-warning"
+                                  ><i class="ti ti-user"></i
+                                ></span>
+                              </div>
+                            </div>
+                            <div class="flex-grow-1">
+                              <h6 class="mb-1"><?=$row['nama_pegawai'];?></h6>
+                              <p class="mb-0 ft-12 text-muted">Akses aktif</p>
+                            </div>
+                          </div>
+                        </li>
+                        <?php $no++; endforeach; ?>
+                        <?php if($count_active['num'] == 0): ?>
+                        <li class="list-group-item list-group-item-action dropdown-notifications-item">
+                           <p class="text-center text-muted mb-0 my-3">Tidak ada sesi login aktif saat ini.</p>
+                        </li>
+                        <?php endif; ?>
+                      </ul>
+                    </li>
+                    <li class="dropdown-menu-footer border-top">
+                      <a
+                        href="<?=base_url('karyawan/data/manage_kick');?>"
+                        class="dropdown-item d-flex justify-content-center text-primary p-2 h-px-40 mb-1 align-items-center">
+                        Kelola Semua Sesi
+                      </a>
+                    </li>
+                  </ul>
+                </li>
+                <!--/ Active Login Sessions -->
 
                 <!--/ Data Lembur -->
                 <li class="nav-item dropdown-notifications navbar-dropdown dropdown me-3 me-xl-1 d-none">

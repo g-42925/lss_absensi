@@ -30,6 +30,48 @@ class Data extends CI_Controller {
           
         redirect('karyawan/data');
     }
+
+    public function manage_kick() {
+        cek_menu_access();
+        $data['htmlpagejs'] = 'none';
+        $data['nmenu']      = 'Karyawan';
+        $data['title']      = 'Active Login Sessions';
+        $data['namalabel']  = $data['title'];
+        $data['auth']       = authUser();
+        
+        $companyId = $this->session->userdata('company_id');
+
+        // Get all employees who are signed_in = true/1
+        $data['datas'] = $this->db->query("SELECT * FROM m_pegawai WHERE company_id = ? AND signed_in = 1", [$companyId])->result_array();
+
+        $divisions = $this->db->query("SELECT * FROM divisions WHERE company_id = ?", [$companyId])->result_array();
+
+        foreach($data['datas'] as $index => $d){
+            $division = $this->db->query("SELECT * FROM divisions WHERE id = ?", [$d['division_id']])->row_array();
+            $data['datas'][$index]['divisi'] = $division ? $division['division_name'] : '-';
+        }
+
+        $data['divisions'] = $divisions;
+
+        $this->load->view('templates/header', $data);
+        $this->load->view('templates/sidemenu', $data);
+        $this->load->view('templates/sidenav', $data);
+        $this->load->view('module/karyawan/data/kick_list', $data);
+        $this->load->view('templates/footer', $data);
+        $this->load->view('templates/fscript-html-end', $data);
+    }
+
+    public function kick_all() {
+        cek_menu_access();
+        $companyId = $this->session->userdata('company_id');
+
+        $this->db->where('company_id', $companyId);
+        $this->db->where('signed_in', 1);
+        $this->db->update('m_pegawai', ['signed_in' => false]);
+          
+        $this->session->set_flashdata('message', '<div class="alert alert-success mt-3" role="alert">Semua karyawan yang aktif berhasil dikick!</div>');
+        redirect('karyawan/data/manage_kick');
+    }
     
     public function filter(){
 			cek_menu_access();

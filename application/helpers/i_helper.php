@@ -210,6 +210,15 @@ function count_lembur() {
     return array('num'=>$result->num_rows(), 'result'=>$result->result_array());
 }
 
+function count_active_sessions() {
+    $CI = get_instance();
+    $companyId = $CI->session->userdata('company_id');
+    if(!$companyId) return array('num'=> 0, 'result'=> []);
+    
+    $result = $CI->db->query("SELECT * FROM m_pegawai WHERE company_id = ? AND signed_in = 1", [$companyId]);
+    return array('num'=>$result->num_rows(), 'result'=>$result->result_array());
+}
+
 function indo($tgl = null){
     if ($tgl!=null) {
         $date = substr($tgl,0,10);
