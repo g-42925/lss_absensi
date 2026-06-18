@@ -2994,4 +2994,339 @@ function login(){
     
     return $this->output->set_content_type('application/json')->set_output(json_encode($data));
   }
+  
+  function syncout(){
+    $today = date('N');
+    $tanggalHariIni = date('Y-m-d');
+    $json = file_get_contents('php://input');
+    $post = json_decode($json,true);
+    $eParam = [$post['empId'],1,date('Y-m-d'),'Lupa absen'];
+    $data = ['jam_keluar' => $post['captureTime'],'foto_absen_keluar' => $post['photo']];
+    $emp = $this->db->query("select * from m_pegawai where pegawai_id = ?",[$post['empId']])->row_array();
+    $division = $this->db->query("select * from divisions where id = ?",[$emp['division_id']])->row_array();
+    $lastDefaultStatus = $this->db->query("SELECT * FROM tx_absensi where pegawai_id = ? ORDER BY tanggal_absen DESC LIMIT 1",[$post['empId']])->row_array();
+    $e = $this->db->query("select * from exception where employee_id = ? and status = ? and date = ? and type = ?",$eParam)->row_array();
+    $q = "select * from m_pola_kerja mpk join m_pola_kerja_det mpkd on mpk.pola_kerja_id = mpkd.pola_kerja_id where mpk.pola_kerja_id = ? and is_day = ?";
+    $workSystem = explode("-",$division['work_system']);
+    
+    if(!$emp['signed_in']){
+      http_response_code(200);
+      echo json_encode(["success" => false]);
+    }
+    else{
+        if($workSystem[0] == "s"){
+          $captureTime =  new DateTime($lastDefaultStatus['tanggal_absen'] . ' ' . $post['captureTime']);
+          $q = "select * from employee_shift es join shift_detail sd on es.shift_detail_id = sd.shift_detail_id where employee_id = ?";
+          $shift = $this->db->query($q,[$post['empId']])->row_array();
+          $dateTime1 = new DateTime($lastDefaultStatus['tanggal_absen']. ' ' . $shift['clock_out']); // y
+          $tolerance = (clone $dateTime1)->modify("+{$shift['tardiness_tolerance']} minutes");
+          $limit = $dateTime1->modify("+{$division['clockout_restriction']} minutes");
+          $sDTDiff = $captureTime->diff($tolerance);
+          $sDTDiffMinutes = ($sDTDiff->days * 24 * 60) + ($sDTDiff->h * 60) + $sDTDiff->i;
+          if($captureTime > $limit){
+            if($e){
+                $this->db->where('pegawai_id',$post["empId"]);
+                $this->db->where('absen_id',$lastDefaultStatus["absen_id"]);
+                $q2 = $this->db->update('tx_absensi',$data);
+               
+                if($q2){
+                  $this->db->where('pegawai_id',$post['empId']);
+                  $this->db->update('m_pegawai',['signed_in' => false]);
+                  echo json_encode(["success" => true]);
+                }
+                else{
+                  echo json_encode(["success" => false]);
+                }
+            }
+            else{
+              echo json_encode(["success" => false]);
+            }
+          }
+          else{
+            $this->db->where('pegawai_id',$post["empId"]);
+            $this->db->where('absen_id',$lastDefaultStatus["absen_id"]);
+            $q2 = $this->db->update('tx_absensi',$data);
+               
+            if($q2){
+              $this->db->where('pegawai_id',$post['empId']);
+              $this->db->update('m_pegawai',['signed_in' => false]);
+              echo json_encode(["success" => true]);
+            }
+            else{
+              echo json_encode(["success" => false]);
+            }
+          }
+        }
+        else{
+          $param = [$workSystem[1],$today];
+          $captureTime =  new DateTime($lastDefaultStatus['tanggal_absen'] . ' ' . $post['captureTime']);
+          $pattern = $this->db->query($q,$param)->row_array();
+          $dateTime1 = new DateTime($lastDefaultStatus['tanggal_absen']. ' ' . $pattern['jam_pulang']);
+          $tolerance = (clone $dateTime1)->modify("+{$pattern['toleransi_terlambat']} minutes");
+          $limit = $dateTime1->modify("+{$division['clockout_restriction']} minutes");
+          $sDTDiff = $captureTime->diff($tolerance);
+          $sDTDiffMinutes = ($sDTDiff->days * 24 * 60) + ($sDTDiff->h * 60) + $sDTDiff->i;
+          if($captureTime > $limit){
+            if($e){
+                $this->db->where('pegawai_id',$post["empId"]);
+                $this->db->where('absen_id',$lastDefaultStatus["absen_id"]);
+                $q2 = $this->db->update('tx_absensi',$data);
+               
+                if($q2){
+                  $this->db->where('pegawai_id',$post['empId']);
+                  $this->db->update('m_pegawai',['signed_in' => false]);
+                  echo json_encode(["success" => true]);
+                }
+                else{
+                  echo json_encode(["success" => false]);
+                }
+            }
+            else{
+              echo json_encode(["success" => false]);
+            }
+          }
+          else{
+            $this->db->where('pegawai_id',$post["empId"]);
+            $this->db->where('absen_id',$lastDefaultStatus["absen_id"]);
+            $q2 = $this->db->update('tx_absensi',$data);
+               
+            if($q2){
+              $this->db->where('pegawai_id',$post['empId']);
+              $this->db->update('m_pegawai',['signed_in' => false]);
+              echo json_encode(["success" => true]);
+            }
+            else{
+              echo json_encode(["success" => false]);
+            }
+          }          
+        }
+    }
+
+  }
+  
+  function syncin(){
+    $json = file_get_contents('php://input');
+    $syncParam = json_decode($json, true);
+    $emp = $this->db->query("select * from m_pegawai where pegawai_id = ?",[$syncParam['empId']])->row_array();
+    $division = $this->db->query("select * from divisions where id = ?",[$emp['division_id']])->row_array();
+    $lastDefaultStatus = $this->db->query("SELECT * FROM tx_absensi where pegawai_id = ? ORDER BY tanggal_absen DESC LIMIT 1",[$syncParam['empId']])->row_array();
+    $workSystem = explode("-",$division['work_system']);
+    if(!in_array($lastDefaultStatus['is_status'], ['free', 'off', 'c', 'i', 's'])){
+      if($workSystem[0] == "s"){
+        $param = [$workSystem[0],date('Y-m-d')];
+        $captureTime = new DateTime($lastDefaultStatus['tanggal_absen'] . ' ' . $syncParam['captureTime']);
+        $employee = $this->db->query("select * from m_pegawai where pegawai_id = ?",[$syncParam['empId']])->row_array();
+        $shift = $this->db->query("select * from employee_shift es join shift_detail sd on es.shift_detail_id = sd.shift_detail_id where employee_id = ?",[$syncParam['empId']])->row_array(); // x
+        $dateTime1 = new DateTime($lastDefaultStatus['tanggal_absen']. ' ' . $shift['clock_in']); // y
+        $tolerance = (clone $dateTime1)->modify("+{$shift['tardiness_tolerance']} minutes");
+        $limit = (clone $tolerance)->modify("+{$division['restriction']} minutes");
+        $sDLDiff = $captureTime->diff($limit);
+        $sDLDiffMinutes = ($sDLDiff->days * 24 * 60) + ($sDLDiff->h * 60) + $sDLDiff->i;
+        $sDTDiff = $captureTime->diff($tolerance);
+        $sDTDiffMinutes = ($sDTDiff->days * 24 * 60) + ($sDTDiff->h * 60) + $sDTDiff->i;
+
+         
+        if(!$emp['signed_in']){
+            if($captureTime > $limit){
+                $params = [$syncParam['empId'],1,date('Y-m-d'),1];
+                $data = ['is_status' => 'hhk','jam_masuk' => $syncParam['captureTime'],'foto_absen_masuk' => $syncParam['photo']];
+                $e = $this->db->query("select * from exception where employee_id = ? and status = ? and date = ? and is_csh = ?",$params)->row_array();
+                if($e){
+                    $this->db->where('absen_id',$lastDefaultStatus["absen_id"]);
+                    $this->db->update('tx_absensi',$data);
+                    $this->db->where('pegawai_id',$syncParam['empId']);
+                    $this->db->update('m_pegawai',['signed_in' => true]);
+                    echo json_encode(["success" => true]);
+                }
+                else{
+                    echo json_encode(["success" => false,'message' => 'err1']);   
+                }
+            }
+            if($captureTime < $limit && $captureTime > $tolerance){
+              $eParam = [$emp['pegawai_id'],date('Y-m-d')];
+              $data = ['is_status' => 'hhk','jam_masuk' => $syncParam['captureTime'],'foto_absen_masuk' => $syncParam['photo']];
+              $e = $this->db->query("select * from exception where employee_id = ? and date = ? and status = 1 order by created_at desc limit 1",$eParam)->row_array();
+              $exception = $e ? $e : ['is_csh' => false,'type' => ''];
+              
+              if($division['late_penalty']){
+                $data1 = [
+                    'deduction_id' => uniqid(),
+                    'employee_id' => $syncParam['empId'],
+                    'deduction_type' => 'late penalty',
+                    'date' => date('Y-m-d'),
+                    'amount' => $division['penalty_nominal'],
+                    'note' => '...'
+                ];
+                $this->db->trans_begin();
+                    
+                if(!$exception['is_csh']){
+                  $q1 = $this->db->insert('salary_deduction',$data1);
+                }
+                    
+                $this->db->where('absen_id',$lastDefaultStatus["absen_id"]);
+                    
+                $dataAbsensi = $exception['is_csh'] ? $data : [
+                      ...$data,
+                      'isLate' => 'true'
+                    ];
+                    
+                $q2 = $this->db->update('tx_absensi',$dataAbsensi);
+    
+                if($q1 && $q2){
+                    $this->db->where('pegawai_id',$syncParam['empId']);
+                    $this->db->update('m_pegawai',['signed_in' => true]);
+                    $this->db->trans_commit();
+                    echo json_encode(["success" => true]);
+                }
+                else{
+                    $this->db->trans_rollback();
+                    echo json_encode(["success" => false, 'message' => 'err2']);
+                }
+              }
+              else{
+                  $data = ['is_status' => 'hhk','jam_masuk' => $syncParam['captureTime'],'foto_absen_masuk' => $syncParam['photo']];
+                  $this->db->where('absen_id',$lastDefaultStatus["absen_id"]);
+                  $dataAbsensi = $exception['is_csh'] ? $data : [...$data,'isLate' => 'true'];
+                  $this->db->where('absen_id',$lastDefaultStatus["absen_id"]);
+                  $q2 = $this->db->update('tx_absensi',$dataAbsensi);
+                  if($q2){
+                    $this->db->where('pegawai_id',$syncParam['empId']);
+                    $this->db->update('m_pegawai',['signed_in' => true]);
+                    echo json_encode(["success" => true]);
+                  }
+                  else{
+                    echo json_encode(["success" => false, 'message' => 'err3']);
+                  }
+              }
+            }
+            if($captureTime < $tolerance){
+                if($captureTime < $dateTime1->modify('-1 hour')){
+                    echo json_encode(["success" => false]);
+                }
+                else{
+                  $data = ['is_status' => 'hhk','jam_masuk' => $syncParam['captureTime'],'foto_absen_masuk' => $syncParam['photo']];
+                  $this->db->where('pegawai_id',$syncParam['empId']);
+                  $this->db->where('tanggal_absen',date('Y-m-d'));
+                  $q = $this->db->update('tx_absensi',$data);
+                  if($q){
+                    $this->db->where('pegawai_id',$syncParam['empId']);
+                    $this->db->update('m_pegawai',['signed_in' => true]);
+                    echo json_encode(["success" => true]);
+                  }
+                  else{
+                    echo json_encode(["success" => false, 'message' => 'err4']);
+                  }
+                }
+            }
+        }  
+      }
+      else{
+          $param = [$workSystem[1],date('Y-m-d')];
+          $captureTime =  new DateTime($lastDefaultStatus['tanggal_absen'] . ' ' . $syncParam['captureTime']);
+          $employee = $this->db->query("select * from m_pegawai where pegawai_id = ?",[$syncParam['empId']])->row_array();
+          $pattern = $this->db->query("select * from m_pola_kerja mpk join m_pola_kerja_det mpkd on mpk.pola_kerja_id = mpkd.pola_kerja_id where mpk.pola_kerja_id = ? and is_day = ?",[$workSystem[1],date('N')])->row_array();
+          $dateTime1 = new DateTime($lastDefaultStatus['tanggal_absen']. ' ' . $pattern['jam_masuk']);
+          $tolerance = (clone $dateTime1)->modify("+{$pattern['toleransi_terlambat']} minutes");
+          $limit = (clone $tolerance)->modify("+{$division['restriction']} minutes");
+          $sDLDiff = $captureTime->diff($limit);
+          $sDLDiffMinutes = ($sDLDiff->days * 24 * 60) + ($sDLDiff->h * 60) + $sDLDiff->i;
+          $sDTDiff = $captureTime->diff($tolerance);
+          $sDTDiffMinutes = ($sDTDiff->days * 24 * 60) + ($sDTDiff->h * 60) + $sDTDiff->i;     
+          
+          if(!$emp['signed_in']){
+            if($captureTime > $limit){
+                $params = [$syncParam['empId'],1,date('Y-m-d'),1];
+                $data = ['is_status' => 'hhk','jam_masuk' => $syncParam['captureTime'],'foto_absen_masuk' => $syncParam['photo']];
+                $e = $this->db->query("select * from exception where employee_id = ? and status = ? and date = ? and is_csh = ?",$params)->row_array();
+                if($e){
+                    $this->db->where('absen_id',$lastDefaultStatus["absen_id"]);
+                    $this->db->update('tx_absensi',$data);
+                    $this->db->where('pegawai_id',$syncParam['empId']);
+                    $this->db->update('m_pegawai',['signed_in' => true]);
+                    echo json_encode(["success" => true]);
+                }
+                else{
+                    echo json_encode(["success" => false,'message' => 'err1']);   
+                }
+            }
+            if($captureTime < $limit && $captureTime > $tolerance){
+              $eParam = [$emp['pegawai_id'],date('Y-m-d')];
+              $data = ['is_status' => 'hhk','jam_masuk' => $syncParam['captureTime'],'foto_absen_masuk' => $syncParam['photo']];
+              $e = $this->db->query("select * from exception where employee_id = ? and date = ? and status = 1 order by created_at desc limit 1",$eParam)->row_array();
+              $exception = $e ? $e : ['is_csh' => false,'type' => ''];
+              
+              if($division['late_penalty']){
+                $data1 = [
+                    'deduction_id' => uniqid(),
+                    'employee_id' => $syncParam['empId'],
+                    'deduction_type' => 'late penalty',
+                    'date' => date('Y-m-d'),
+                    'amount' => $division['penalty_nominal'],
+                    'note' => '...'
+                ];
+                $this->db->trans_begin();
+                    
+                if(!$exception['is_csh']){
+                  $q1 = $this->db->insert('salary_deduction',$data1);
+                }
+                    
+                $this->db->where('absen_id',$lastDefaultStatus["absen_id"]);
+                    
+                $dataAbsensi = $exception['is_csh'] ? $data : [
+                      ...$data,
+                      'isLate' => 'true'
+                    ];
+                    
+                $q2 = $this->db->update('tx_absensi',$dataAbsensi);
+    
+                if($q1 && $q2){
+                    $this->db->where('pegawai_id',$syncParam['empId']);
+                    $this->db->update('m_pegawai',['signed_in' => true]);
+                    $this->db->trans_commit();
+                    echo json_encode(["success" => true]);
+                }
+                else{
+                    $this->db->trans_rollback();
+                    echo json_encode(["success" => false, 'message' => 'err2']);
+                }
+              }
+              else{
+                  $data = ['is_status' => 'hhk','jam_masuk' => $syncParam['captureTime'],'foto_absen_masuk' => $syncParam['photo']];
+                  $this->db->where('absen_id',$lastDefaultStatus["absen_id"]);
+                  $dataAbsensi = $exception['is_csh'] ? $data : [...$data,'isLate' => 'true'];
+                  $this->db->where('absen_id',$lastDefaultStatus["absen_id"]);
+                  $q2 = $this->db->update('tx_absensi',$dataAbsensi);
+                  if($q2){
+                    $this->db->where('pegawai_id',$syncParam['empId']);
+                    $this->db->update('m_pegawai',['signed_in' => true]);
+                    echo json_encode(["success" => true]);
+                  }
+                  else{
+                    echo json_encode(["success" => false, 'message' => 'err3']);
+                  }
+              }
+            }
+            if($captureTime < $tolerance){
+                if($captureTime < $dateTime1->modify('-1 hour')){
+                    echo json_encode(["success" => false]);
+                }
+                else{
+                  $data = ['is_status' => 'hhk','jam_masuk' => $syncParam['captureTime'],'foto_absen_masuk' => $syncParam['photo']];
+                  $this->db->where('pegawai_id',$syncParam['empId']);
+                  $this->db->where('tanggal_absen',date('Y-m-d'));
+                  $q = $this->db->update('tx_absensi',$data);
+                  if($q){
+                    $this->db->where('pegawai_id',$syncParam['empId']);
+                    $this->db->update('m_pegawai',['signed_in' => true]);
+                    echo json_encode(["success" => true]);
+                  }
+                  else{
+                    echo json_encode(["success" => false, 'message' => 'err4']);
+                  }
+                }
+            }
+        }          
+      }
+    }
+  }
 }
