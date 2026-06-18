@@ -101,7 +101,9 @@ class Data_model extends CI_Model {
           'j_masuk' => '00:00',
           'j_pulang' => '00:00',
           'j_toleransi' => '00:00',
-          's_istirahat_photo' => ''
+          's_istirahat_photo' => '',
+          'foto_absen_masuk' => 'no',
+          'foto_absen_keluar' => 'no'
         ];
 
         $this->db->insert(
