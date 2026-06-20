@@ -97,7 +97,7 @@
                 <a target="_blank" href="https://www.google.com/maps?q=<?= $row['point_latitude'] ?>,<?= $row['point_longitude'] ?>" class="btn p-1" data-toggle="tooltip" title="Lihat Map">
                   <i class="ti ti-map-pin ft-13"></i>
                 </a>
-                <?php if (strpos($row['foto_absen_masuk'], '{') !== false || strpos(strtolower($row['foto_absen_masuk']), 'error') !== false || strpos(strtolower($row['foto_absen_masuk']), 'exceeded') !== false) { ?>
+                <?php $foto_masuk = (string)$row['foto_absen_masuk']; if (strpos($foto_masuk, '{') !== false || strpos(strtolower($foto_masuk), 'error') !== false || strpos(strtolower($foto_masuk), 'exceeded') !== false) { ?>
                 <a href="javascript:void(0);" class="btn p-1 text-danger" data-toggle="tooltip" title="Error/Quota Exceeded">
                   <i class="ti ti-photo-off ft-13"></i>
                 </a>
@@ -118,7 +118,7 @@
                 <a target="_blank" href="https://www.google.com/maps?q=<?= $row['s_istirahat_latitude'] ?>,<?= $row['s_istirahat_longitude'] ?>" class="btn p-1" data-toggle="tooltip" title="Lihat Map">
                   <i class="ti ti-map-pin ft-13"></i>
                 </a>
-                <?php if (strpos($row['s_istirahat_photo'], '{') !== false || strpos(strtolower($row['s_istirahat_photo']), 'error') !== false || strpos(strtolower($row['s_istirahat_photo']), 'exceeded') !== false) { ?>
+                <?php $foto_ist = (string)$row['s_istirahat_photo']; if (strpos($foto_ist, '{') !== false || strpos(strtolower($foto_ist), 'error') !== false || strpos(strtolower($foto_ist), 'exceeded') !== false) { ?>
                 <a href="javascript:void(0);" class="btn p-1 text-danger" data-toggle="tooltip" title="Error/Quota Exceeded">
                   <i class="ti ti-photo-off ft-13"></i>
                 </a>
@@ -150,7 +150,7 @@
                 <a target="_blank" href="https://www.google.com/maps?q=<?= $row['latitude_keluar'] ?>,<?= $row['longitude_keluar'] ?>" class="btn p-1" data-toggle="tooltip" title="Lihat Map">
                   <i class="ti ti-map-pin ft-13"></i>
                 </a>
-                <?php if (strpos($row['foto_absen_keluar'], '{') !== false || strpos(strtolower($row['foto_absen_keluar']), 'error') !== false || strpos(strtolower($row['foto_absen_keluar']), 'exceeded') !== false) { ?>
+                <?php $foto_keluar = (string)$row['foto_absen_keluar']; if (strpos($foto_keluar, '{') !== false || strpos(strtolower($foto_keluar), 'error') !== false || strpos(strtolower($foto_keluar), 'exceeded') !== false) { ?>
                 <a href="javascript:void(0);" class="btn p-1 text-danger" data-toggle="tooltip" title="Error/Quota Exceeded">
                   <i class="ti ti-photo-off ft-13"></i>
                 </a>

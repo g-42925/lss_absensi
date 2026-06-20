@@ -28,14 +28,15 @@ class Image extends CI_Controller {
      
       $content = curl_exec($ch);
       $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+      $contentType = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
       curl_close($ch);
 
       if ($content === false || $httpCode !== 200) {
-        show_404();
-        return;
+        header("HTTP/1.1 404 Not Found");
+        exit;
       }
 
-      header("Content-Type: image/jpeg");
+      header("Content-Type: " . ($contentType ? $contentType : "image/jpeg"));
       echo $content;
   }
 }
