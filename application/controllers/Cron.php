@@ -314,6 +314,7 @@ class Cron extends CI_Controller {
     }
     
     public function deduction(){
+      $this->db->query("SET time_zone = '+07:00'");
       $companies = $this->db->query("select * from companies")->result_array();
 
       foreach($companies as $company){
