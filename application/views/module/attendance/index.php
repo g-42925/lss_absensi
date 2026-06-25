@@ -66,7 +66,7 @@
               <select class="form-control <?=$bgs;?>" name="status" id="status<?=$row['pid'];?>" required="" onchange="updateStatus('status','<?=$row['pid'];?>',this.value)" <?php if ($row['is_request']>0) { echo 'disabled'; } ?>>               
                 <option value="ts" <?= $row['is_status'] == 'ts' ? 'selected':'' ?>>Belum ada status [TS]</option>
                 <option value="on duty" <?= $row['is_status'] == 'on duty' ? 'selected':'' ?>>Bertugas di luar</option>
-                <option value="alpha-2" <?= $row['is_status'] == 'alpha-2' ? 'selected':'' ?>>Alpha-2</option>                                
+                <option value="alpha-2" <?= $row['is_status'] == 'alpha-2' ? 'selected':'' ?>>Alpha</option>                                
                 <option value="alpha-1" <?= $row['is_status'] == 'alpha-1' ? 'selected':'' ?>>Alpha-1</option>                
                 <option value="alpha-0" <?= $row['is_status'] == 'alpha-0' ? 'selected':'' ?>>Alpha-0</option>                
                 <option value="free" <?= $row['is_status'] == 'off' ? 'selected':'' ?>>Off</option>                                                             
@@ -101,6 +101,7 @@
                 <a target="_blank" href="<?= $row['is_status'] === 'hhk' ? htmlspecialchars(base_url('image/index').'/'.basename($row['foto_absen_masuk'])) : '' ?>" class="btn p-1" data-toggle="tooltip" title="Lihat Foto Absen">
                   <i class="ti ti-photo ft-13"></i>
                 </a>
+                <?=  $row['isOfflineIn'] ? '<i class="ti ti-wifi"></i>':''  ?>
                 <?php } ?>
               </div>
               <?php } ?>
@@ -154,6 +155,7 @@
                 <a target="_blank" href="<?= $row['is_status'] === 'hhk' ? htmlspecialchars(base_url('image/index').'/'.basename($row['foto_absen_keluar'])) : '' ?>" class="btn p-1" data-toggle="tooltip" title="Lihat Foto Absen">
                   <i class="ti ti-photo ft-13"></i>
                 </a>
+                <?= $row['isOfflineOut'] ? '<i class="ti ti-wifi"></i>':''  ?>
                 <?php } ?>
               </div>
               <?php } ?>

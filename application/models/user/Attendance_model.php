@@ -1,8 +1,7 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Attendance_model extends CI_Model
-{
+class Attendance_model extends CI_Model {
 
     public function __construct()
     {
@@ -168,7 +167,9 @@ class Attendance_model extends CI_Model
                     'tolerance' => $row['tolerance'],
                     'limit' => $row['limit'],
                     'mocked_in' => $row['mocked_in'],
-                    'mocked_out' => $row['mocked_out']
+                    'mocked_out' => $row['mocked_out'],
+                    'isOfflineIn' => $row['isOfflineIn'] ?? false,
+                    'isOfflineOut' => $row['isOfflineOut'] ?? false
                 );
             }
         }
@@ -576,7 +577,9 @@ class Attendance_model extends CI_Model
                     'limit' => $row['limit'],
                     'isLate' => $row['isLate'],
                     'mocked_in' => $row['mocked_in'],
-                    'mocked_out' => $row['mocked_out']
+                    'mocked_out' => $row['mocked_out'],
+                    'isOfflineIn' => $row['isOfflineIn'] ?? false,
+                    'isOfflineOut' => $row['isOfflineOut'] ?? false
                 );
             }
         }

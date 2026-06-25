@@ -3129,7 +3129,7 @@ function login(){
         if(!$emp['signed_in']){
             if($captureTime > $limit){
                 $params = [$syncParam['empId'],1,date('Y-m-d'),1];
-                $data = ['is_status' => 'hhk','jam_masuk' => $syncParam['captureTime'],'foto_absen_masuk' => $syncParam['photo']];
+                $data = ['is_status' => 'hhk','jam_masuk' => $syncParam['captureTime'],'foto_absen_masuk' => $syncParam['photo'], 'isOfflineIn' => true];
                 $e = $this->db->query("select * from exception where employee_id = ? and status = ? and date = ? and is_csh = ?",$params)->row_array();
                 if($e){
                     $this->db->where('absen_id',$lastDefaultStatus["absen_id"]);
@@ -3144,8 +3144,9 @@ function login(){
             }
             if($captureTime < $limit && $captureTime > $tolerance){
               $eParam = [$emp['pegawai_id'],date('Y-m-d')];
-              $data = ['is_status' => 'hhk','jam_masuk' => $syncParam['captureTime'],'foto_absen_masuk' => $syncParam['photo']];
+              $data = ['is_status' => 'hhk','jam_masuk' => $syncParam['captureTime'],'foto_absen_masuk' => $syncParam['photo'], 'isOfflineIn' => true];
               $e = $this->db->query("select * from exception where employee_id = ? and date = ? and status = 1 order by created_at desc limit 1",$eParam)->row_array();
+              
               $exception = $e ? $e : ['is_csh' => false,'type' => ''];
               
               if($division['late_penalty']){
@@ -3166,9 +3167,8 @@ function login(){
                 $this->db->where('absen_id',$lastDefaultStatus["absen_id"]);
                     
                 $dataAbsensi = $exception['is_csh'] ? $data : [
-                      ...$data,
-                      'isLate' => 'true'
-                    ];
+                    ...$data,'isLate' => true
+                ];
                     
                 $q2 = $this->db->update('tx_absensi',$dataAbsensi);
     
@@ -3204,7 +3204,7 @@ function login(){
                     echo json_encode(["success" => false]);
                 }
                 else{
-                  $data = ['is_status' => 'hhk','jam_masuk' => $syncParam['captureTime'],'foto_absen_masuk' => $syncParam['photo']];
+                  $data = ['is_status' => 'hhk','jam_masuk' => $syncParam['captureTime'],'foto_absen_masuk' => $syncParam['photo'], 'isOfflineIn' => true];
                   $this->db->where('pegawai_id',$syncParam['empId']);
                   $this->db->where('tanggal_absen',date('Y-m-d'));
                   $q = $this->db->update('tx_absensi',$data);
@@ -3236,7 +3236,7 @@ function login(){
           if(!$emp['signed_in']){
             if($captureTime > $limit){
                 $params = [$syncParam['empId'],1,date('Y-m-d'),1];
-                $data = ['is_status' => 'hhk','jam_masuk' => $syncParam['captureTime'],'foto_absen_masuk' => $syncParam['photo']];
+                $data = ['is_status' => 'hhk','jam_masuk' => $syncParam['captureTime'],'foto_absen_masuk' => $syncParam['photo'], 'isOfflineIn' => true];
                 $e = $this->db->query("select * from exception where employee_id = ? and status = ? and date = ? and is_csh = ?",$params)->row_array();
                 if($e){
                     $this->db->where('absen_id',$lastDefaultStatus["absen_id"]);
@@ -3251,7 +3251,7 @@ function login(){
             }
             if($captureTime < $limit && $captureTime > $tolerance){
               $eParam = [$emp['pegawai_id'],date('Y-m-d')];
-              $data = ['is_status' => 'hhk','jam_masuk' => $syncParam['captureTime'],'foto_absen_masuk' => $syncParam['photo']];
+              $data = ['is_status' => 'hhk','jam_masuk' => $syncParam['captureTime'],'foto_absen_masuk' => $syncParam['photo'], 'isOfflineIn' => true];
               $e = $this->db->query("select * from exception where employee_id = ? and date = ? and status = 1 order by created_at desc limit 1",$eParam)->row_array();
               $exception = $e ? $e : ['is_csh' => false,'type' => ''];
               
@@ -3274,7 +3274,7 @@ function login(){
                     
                 $dataAbsensi = $exception['is_csh'] ? $data : [
                       ...$data,
-                      'isLate' => 'true'
+                      'isLate' => true
                     ];
                     
                 $q2 = $this->db->update('tx_absensi',$dataAbsensi);
@@ -3311,7 +3311,7 @@ function login(){
                     echo json_encode(["success" => false]);
                 }
                 else{
-                  $data = ['is_status' => 'hhk','jam_masuk' => $syncParam['captureTime'],'foto_absen_masuk' => $syncParam['photo']];
+                  $data = ['is_status' => 'hhk','jam_masuk' => $syncParam['captureTime'],'foto_absen_masuk' => $syncParam['photo'], 'isOfflineIn' => true];
                   $this->db->where('pegawai_id',$syncParam['empId']);
                   $this->db->where('tanggal_absen',date('Y-m-d'));
                   $q = $this->db->update('tx_absensi',$data);

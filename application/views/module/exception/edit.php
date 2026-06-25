@@ -74,7 +74,6 @@
         </div>
         <div class="pt-5 text-end">
           <a href="javascript:window.history.back();" class="btn btn-label-secondary me-sm-3 me-1">Batal</a>
-          <button type="button" class="btn btn-primary" onclick="window.print()">Cetak</button>
           <button type="submit" class="btn btn-primary">Simpan Data</button>
         </div>
       </form>
