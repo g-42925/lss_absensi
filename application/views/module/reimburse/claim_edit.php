@@ -27,7 +27,7 @@
           </div>
 
           <div class="col-xl-12 col-md-12 col-sm-12">
-            <label class="form-label">Reimburse Name<i class="text-danger">*</i></label>
+            <label class="form-label">Reimburse value<i class="text-danger">*</i></label>
             <input value="<?= $data['value'] ?>" readonly type="text" class="form-control" name="value" autocomplete="off" />
           </div>
 

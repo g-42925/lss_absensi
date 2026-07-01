@@ -13,9 +13,16 @@
         <div class="row g-3">
           <div class="col-xl-6 col-md-6 col-sm-6">
             <div class="mb-3">
-              <input id="addressmaploc" type="text" class="form-control" placeholder="Cari lokasi disini..." />
+              <input 
+                id="addressmaploc" 
+                type="text" 
+                placeholder="Cari lokasi disini..."
+                class="form-control"
+                autocomplete="off"
+              />
             </div>
-            <div id="googleMap" style="width:100%;height:400px;"></div>
+            <div id="search-result" class="list-group"></div>
+            <div id="map" style="width:100%;height:400px;"></div>
           </div>
           <div class="col-xl-6 col-md-6 col-sm-6">
             <div class="row g-3">
@@ -38,13 +45,26 @@
               <div class="col-xl-12 col-md-12">
                 <label class="form-label" for="multicol-country">Radius<i class="text-danger">*</i></label>
                 <select class="select2 form-select" name="radius" id="radiusgbgl" required onchange="changeradius()">
+                  <option value="5">0 Meter</option>
                   <option value="10">10 Meter</option>
+                  <option value="15">15 Meter</option>
                   <option value="20">20 Meter</option>
+                  <option value="25">25 Meter</option>
                   <option value="30">30 Meter</option>
+                  <option value="35">35 Meter</option>
                   <option value="40">40 Meter</option>
-                  <option value="50" selected>50 Meter</option>
+                  <option value="45">45 Meter</option>
+                  <option value="50">50 Meter</option>
+                  <option value="55">55 Meter</option>
+                  <option value="60">60 Meter</option>
+                  <option value="65">65 Meter</option>
+                  <option value="70">70 Meter</option>
+                  <option value="75">75 Meter</option>
+                  <option value="80">80 Meter</option>
+                  <option value="85">85 Meter</option>
+                  <option value="90">90 Meter</option>
+                  <option value="95">95 Meter</option>
                   <option value="100">100 Meter</option>
-                  <option value="150">150 Meter</option>
                 </select>
               </div>
             </div>
@@ -60,110 +80,65 @@
 </div>
 <!-- / Content -->
 
-<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&key=AIzaSyDeY_0v4-MA7fDR8mf9Ssw6_skjyTFGbE0&libraries=places"></script>
- 
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
 <script>
-  var marker;
-  var circle;
-  var lat = -6.597617272074636;
-  var lng = 106.7995548248291;
-  var latlng;
-  
-  var mapProp= {
-    center: new google.maps.LatLng(lat,lng),
-    zoom:15,
-    fullscreenControl: false,
-    streetViewControl: false
-  };
-  var map = new google.maps.Map(document.getElementById("googleMap"),mapProp);
-  var geocoder = new google.maps.Geocoder();
+  var attribute = '&copy; OpenStreetMap contributors';
+  var map = L.map('map').setView([51.505, -0.09], 13);
+ 
+  L.tileLayer('https://tiles.locationiq.com/v3/streets/r/{z}/{x}/{y}.png?key=pk.d06328c7edafb1675ef1d1914ec2acd4',{attribution: attribute}).addTo(map);
 
-  google.maps.event.addDomListener(window, 'load', initialize);
+  map.on('click', function(e) {
+    var lat = e.latlng.lat;
+    var lng = e.latlng.lng;
+    document.getElementById('latitude_gl').value = lat;
+    document.getElementById('longitude_gb').value = lng;
+  });
 
-  function initialize() {
+  const searchInput = document.getElementById("addressmaploc");
+  const resultBox = document.getElementById("search-result");
 
-    var input = document.getElementById('addressmaploc');
-    var autocomplete = new google.maps.places.Autocomplete(input);
-    autocomplete.addListener('place_changed', function () {
-      var place = autocomplete.getPlace();
+  searchInput.addEventListener("keyup", async function(){
+    const keyword = this.value;
 
-      latlng = place.geometry['location'];
-      lat = place.geometry['location'].lat();
-      lng = place.geometry['location'].lng();
-
-      if (place.geometry.viewport) {
-        map.fitBounds(place.geometry.viewport);
-      } else {
-        map.setCenter(place.geometry.location);
-        map.setZoom(15);
-      }
-
-      initialize_sec();
-
-    });
-
-    google.maps.event.addListener(map, 'click', function(event) {
-      
-      latlng = event.latLng;
-      lat = event.latLng.lat();
-      lng = event.latLng.lng();
-
-      initialize_sec();
-
-    });
-    
-  }
-
-  function initialize_sec() {
-    if (latlng!='') {
-
-      if (typeof marker !== 'undefined'){ marker.setMap(); }
-      if (typeof circle !== 'undefined'){ circle.setMap(); }
-
-      document.getElementById("latitude_gl").value = lat;
-      document.getElementById("longitude_gb").value = lng;
-
-      marker = new google.maps.Marker({position: latlng, map: map});
-
-      geocoder.geocode({ 'latLng': latlng }, function (results, status) {
-        if (status == google.maps.GeocoderStatus.OK) {
-          if (results[1]) {
-            document.getElementById("alamat_locglgb").value = results[1].formatted_address;
-          } else {
-            alert('No results found, please try again.');
-          }
-        } else {
-          alert('Geocoder failed due to: ' + status);
-        }
-      });
-
-      circle = new google.maps.Circle({
-        center: latlng,
-        map: map,
-        radius: Number(document.getElementById("radiusgbgl").value), // in meters.
-        fillColor: '#FF6600',
-        fillOpacity: 0.3,
-        strokeColor: "#FFF",
-        strokeWeight: 0
-      });
+    if(keyword.length < 3){
+      resultBox.innerHTML = "";
+      return;
     }
-  }
 
-  function changeradius() {
-    
-    if (typeof marker !== 'undefined'){ marker.setMap(); }
-    if (typeof circle !== 'undefined'){ circle.setMap(); }
+    const res = await fetch(
+      `https://us1.locationiq.com/v1/search?key=pk.d06328c7edafb1675ef1d1914ec2acd4&q=${encodeURIComponent(keyword)}&format=json&countrycodes=id`
+    );
 
-    marker = new google.maps.Marker({position: latlng, map: map});
+    const data = await res.json();
 
-    circle = new google.maps.Circle({
-      center: latlng,
-      map: map,
-      radius: Number(document.getElementById("radiusgbgl").value), // in meters.
-      fillColor: '#FF6600',
-      fillOpacity: 0.3,
-      strokeColor: "#FFF",
-      strokeWeight: 0
+    resultBox.innerHTML = "";
+
+    data.forEach(item=>{
+
+        resultBox.innerHTML += `
+            <a
+                class="list-group-item list-group-item-action"
+                data-lat="${item.lat}"
+                data-lon="${item.lon}"
+                data-address="${item.display_name}"
+            >
+                ${item.display_name}
+            </a>
+        `;
+
     });
-  }
+
+    resultBox.addEventListener("click",function(e){
+      if(!e.target.dataset.lat) return;
+
+      document.getElementById("latitude_gl").value = e.target.dataset.lat;
+      document.getElementById("longitude_gb").value = e.target.dataset.lon;
+      document.getElementById("alamat_locglgb").value = e.target.dataset.address;
+
+      map.setView([e.target.dataset.lat, e.target.dataset.lon], 15);
+      L.marker([e.target.dataset.lat, e.target.dataset.lon]).addTo(map);
+      resultBox.innerHTML = ''
+    })
+  })
 </script>

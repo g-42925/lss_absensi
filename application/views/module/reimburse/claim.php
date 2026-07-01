@@ -30,6 +30,9 @@
               <a href="<?= base_url().'reimburse/claim_edit/'.$r['reimburse_id'].'/'.$r['reimburse_claim_id'].'?failed=false' ?>" class="btn p-1">
                 <i class="ti ti-settings"></i>
               </a>
+              <a href="<?= base_url().'reimburse/claim_delete/'.$r['reimburse_id'].'/'.$r['reimburse_claim_id'].'?failed=false' ?>" class="btn p-1">
+                <i class="ti ti-trash"></i>
+              </a>
             </td>
           </tr>
           <?php $no++; endforeach; ?>

@@ -145,19 +145,14 @@ class Locations extends CI_Controller {
             redirect('locations/edit/'.$id.'?failed=false');
         } 
         else {
-            $query = $this->db->get_where('m_lokasi', ['nama_lokasi' => $unama, 'is_del' => 'n', 'lokasi_id!=' => $id])->num_rows();
-            if ($query < 1) {
-                $res = $this->lokasi->edit_proses($id);
-                if ($res==true) {
-                    redirect('locations');
-                }else{
-                    $this->session->set_flashdata('message', '<div class="alert alert-danger p-cg" role="alert">Proses gagal, silahkan coba lagi.</div>');
-                    redirect('locations/edit/'.$id.'?failed=false');
-                }
-            } 
-            else {
-                $this->session->set_flashdata('message', '<div class="alert alert-warning p-cg" role="alert">Proses gagal, nama lokasi <b>"'.$unama.'"</b> ini sudah digunakan.</div>');
-                redirect('locations/edit/'.$id.'?failed=true');
+            $res = $this->lokasi->edit_proses($id);
+            
+            if ($res) {
+                redirect('locations');
+            }
+            else{
+                $this->session->set_flashdata('message', '<div class="alert alert-danger p-cg" role="alert">Proses gagal, silahkan coba lagi.</div>');
+                redirect('locations/edit/'.$id.'?failed=false');
             }
         }
     }

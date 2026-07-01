@@ -7,10 +7,6 @@ use Aws\Exception\AwsException;
 defined('BASEPATH') or exit('No direct script access allowed');
 
 class Filebase extends CI_Controller {
-    public function __construct() {
-        parent::__construct();
-    }
-
     public $att;
     public $email;
     public $session;
@@ -26,31 +22,24 @@ class Filebase extends CI_Controller {
         $s3 = new S3Client([
             'version'     => 'latest',
             'region'      => 'us-east-1',
-            'endpoint'    => 'https://s3.filebase.com',
+            'endpoint'    => 'https://o3-rc3.akave.xyz',
             'use_path_style_endpoint' => false,
             'credentials' => [
-                'key'    => 'B8F0135956143AE0685E',
-                'secret' => 'gKrbIZJnzLWBXZ0VGQvnlAumvngpBH35PsXN5zUp'
-            ],
-            'Metadata' => [
-              'cid' => 'true'
-            ],
+                'key'    => 'O3_0F49YS93DCVX51CM0',
+                'secret' => 'Wp4izs5aiR73rJFyOX6rWNnVmWDae1rqAf1NUFeR'
+            ]
         ]);
         
-        $file = $_FILES['file']['tmp_name'];
 
-        // file dari form android
-
-        $result = $s3->putObject([
-          'Bucket' => 'leryn-storage',
-          'Key' => 'absensi/'.$rootDir.'/unknown/'. $fileName,
-          'SourceFile' => $file,
+        $s3->putObject([
+          'Bucket' => 'project-alpha',
+          'Key' => 'absensi_'.$rootDir .'_unknown/'.$fileName,
+          'SourceFile' =>  $_FILES['file']['tmp_name'],
           'ContentType' => 'image/png',
         ]);
+        
+        echo $fileName;
 
-        $cid = $result['@metadata']['headers']['x-amz-meta-cid']; 
-
-        echo "https://wooden-plum-woodpecker.myfilebase.com/ipfs/".$cid;        
     }
     
     public function exception($fileName,$id){
@@ -60,31 +49,24 @@ class Filebase extends CI_Controller {
         $s3 = new S3Client([
             'version'     => 'latest',
             'region'      => 'us-east-1',
-            'endpoint'    => 'https://s3.filebase.com',
+            'endpoint'    => 'https://o3-rc3.akave.xyz',
             'use_path_style_endpoint' => false,
             'credentials' => [
-                'key'    => 'B8F0135956143AE0685E',
-                'secret' => 'gKrbIZJnzLWBXZ0VGQvnlAumvngpBH35PsXN5zUp'
-            ],
-            'Metadata' => [
-              'cid' => 'true'
-            ],
+                'key'    => 'O3_0F49YS93DCVX51CM0',
+                'secret' => 'Wp4izs5aiR73rJFyOX6rWNnVmWDae1rqAf1NUFeR'
+            ]
         ]);
         
-        $file = $_FILES['file']['tmp_name'];
 
-        // file dari form android
 
-        $result = $s3->putObject([
-          'Bucket' => 'leryn-storage',
-          'Key' => 'absensi/'.$rootDir.'/exception/'. $fileName,
-          'SourceFile' => $file,
+        $s3->putObject([
+          'Bucket' => 'project-alpha',
+          'Key' => 'absensi_'.$rootDir .'_exception/'.$fileName,
+          'SourceFile' => $_FILES['file']['tmp_name'],
           'ContentType' => 'image/png',
         ]);
-
-        $cid = $result['@metadata']['headers']['x-amz-meta-cid']; 
-
-        echo "https://wooden-plum-woodpecker.myfilebase.com/ipfs/".$cid;        
+        
+        echo $fileName;
     }
     
     public function task($fileName,$id){
@@ -94,31 +76,38 @@ class Filebase extends CI_Controller {
         $s3 = new S3Client([
             'version'     => 'latest',
             'region'      => 'us-east-1',
-            'endpoint'    => 'https://s3.filebase.com',
+            'endpoint'    => 'https://o3-rc3.akave.xyz',
             'use_path_style_endpoint' => false,
             'credentials' => [
-                'key'    => 'B8F0135956143AE0685E',
-                'secret' => 'gKrbIZJnzLWBXZ0VGQvnlAumvngpBH35PsXN5zUp'
-            ],
-            'Metadata' => [
-              'cid' => 'true'
-            ],
+                'key'    => 'O3_0F49YS93DCVX51CM0',
+                'secret' => 'Wp4izs5aiR73rJFyOX6rWNnVmWDae1rqAf1NUFeR'
+            ]
         ]);
-        
-        $file = $_FILES['file']['tmp_name'];
-
-        // file dari form android
 
         $result = $s3->putObject([
-          'Bucket' => 'leryn-storage',
-          'Key' => 'absensi/'.$rootDir .'/task/'. $fileName,
-          'SourceFile' => $file,
+          'Bucket' => 'project-alpha',
+          'Key' => 'absensi_'.$rootDir .'_task/'.$fileName,
+          'SourceFile' => $_FILES['file']['tmp_name'],
           'ContentType' => 'image/png',
         ]);
+        
+        echo $fileName;
 
-        $cid = $result['@metadata']['headers']['x-amz-meta-cid']; 
+        // $cmd = $s3->getCommand('GetObject', [
+        //     'Bucket' => 'project-alpha',
+        //     'Key'    => 'absensi_'.$rootDir.'_task/'.$fileName,
+        // ]);
+        
+        // $request = $s3->createPresignedRequest($cmd, '+1 day');
+        
+        // $url = (string) $request->getUri();
+        
+        // echo $url;
+        
+        // die();
 
-        echo "https://wooden-plum-woodpecker.myfilebase.com/ipfs/".$cid;        
+
+        // echo "https://wooden-plum-woodpecker.myfilebase.com/ipfs/".$cid;        
     }
 
     
@@ -129,64 +118,50 @@ class Filebase extends CI_Controller {
         $s3 = new S3Client([
             'version'     => 'latest',
             'region'      => 'us-east-1',
-            'endpoint'    => 'https://s3.filebase.com',
+            'endpoint'    => 'https://o3-rc3.akave.xyz',
             'use_path_style_endpoint' => false,
             'credentials' => [
-                'key'    => 'B8F0135956143AE0685E',
-                'secret' => 'gKrbIZJnzLWBXZ0VGQvnlAumvngpBH35PsXN5zUp'
-            ],
-            'Metadata' => [
-              'cid' => 'true'
-            ],
+                'key'    => 'O3_0F49YS93DCVX51CM0',
+                'secret' => 'Wp4izs5aiR73rJFyOX6rWNnVmWDae1rqAf1NUFeR'
+            ]
         ]);
         
-        $file = $_FILES['file']['tmp_name'];
 
-        // file dari form android
-
-        $result = $s3->putObject([
-          'Bucket' => 'leryn-storage',
-          'Key' => 'absensi/'.$rootDir .'/attendance/'. $fileName,
-          'SourceFile' => $file,
+        $s3->putObject([
+          'Bucket' => 'project-alpha',
+          'Key' => 'absensi_'.$rootDir .'_task/'.$fileName,
+          'SourceFile' =>  $_FILES['file']['tmp_name'],
           'ContentType' => 'image/png',
         ]);
 
-        $cid = $result['@metadata']['headers']['x-amz-meta-cid']; 
 
-        echo "https://wooden-plum-woodpecker.myfilebase.com/ipfs/".$cid;        
+        echo $fileName;
+        
     }
 
     public function upload($fileName) {
-
+        $company = $this->db->query("select * from companies where id = ?",[$id])->row_array();
+        $rootDir = explode('@', $company['email'])[0];
+        
         $s3 = new S3Client([
             'version'     => 'latest',
             'region'      => 'us-east-1',
-            'endpoint'    => 'https://s3.filebase.com',
+            'endpoint'    => 'https://o3-rc3.akave.xyz',
             'use_path_style_endpoint' => false,
             'credentials' => [
-                'key'    => 'B8F0135956143AE0685E',
-                'secret' => 'gKrbIZJnzLWBXZ0VGQvnlAumvngpBH35PsXN5zUp'
-            ],
-            'Metadata' => [
-              'cid' => 'true'
-            ],
+                'key'    => 'O3_0F49YS93DCVX51CM0',
+                'secret' => 'Wp4izs5aiR73rJFyOX6rWNnVmWDae1rqAf1NUFeR'
+            ]
         ]);
         
-        $file = $_FILES['file']['tmp_name'];
-
-        // file dari form android
-
-        $result = $s3->putObject([
-          'Bucket' => 'leryn-storage',
-          'Key'    => $fileName,
-          'SourceFile' => $file,
+        $s3->putObject([
+          'Bucket' => 'project-alpha',
+          'Key' => 'absensi_'.$rootDir .'_unknown/'.$fileName,
+          'SourceFile' =>  $_FILES['file']['tmp_name'],
           'ContentType' => 'image/png',
         ]);
 
-        $cid = $result['@metadata']['headers']['x-amz-meta-cid']; 
-
-        echo "https://wooden-plum-woodpecker.myfilebase.com/ipfs/".$cid;
-
+        echo $fileName;
     }
 
 }

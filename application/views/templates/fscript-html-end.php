@@ -94,6 +94,8 @@
     <script src="<?=base_url('assets/temp/');?>assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.js"></script>
     <script src="<?=base_url('assets/temp/');?>assets/vendor/libs/jquery-timepicker/jquery-timepicker.js"></script>
     <script src="<?=base_url('assets/temp/');?>assets/vendor/libs/pickr/pickr.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
 
     <!-- Page JS -->
     <?php if ($htmlpagejs=='auth' || $htmlpagejs=='signup') { ?>

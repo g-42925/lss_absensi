@@ -14,7 +14,6 @@
           <tr>
             <th>Nama&nbsp;Lokasi</th>
             <th>Alamat</th>
-            <th>Karyawan</th>
             <th class="text-end" width="15%">Action</th>
           </tr>
         </thead>
@@ -23,11 +22,7 @@
           <tr>
             <td><?= $row['nama_lokasi'];?></td>
             <td><?= $row['alamat_lokasi'];?></td>
-            <td><?= $row['total'];?></td>
             <td align="right">
-              <a href="<?=base_url('locations/assign/'.$row['lokasi_id']).'?failed=false';?>" class="btn p-1" title="Pengaturan Lokasi Karyawan">
-                <i class="ti ti-user-plus"></i>
-              </a>
               <a href="<?=base_url('locations/edit/'.$row['lokasi_id']).'?failed=false';?>" class="btn p-1">
                 <i class="ti ti-edit"></i>
               </a>

@@ -111,7 +111,7 @@ class Reimburse extends CI_Controller {
     }
 
     public function claim($id){
-       cek_menu_access();
+        cek_menu_access();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Bonus & Tunjangan';
         $data['title']      = 'Reimburse';
@@ -221,6 +221,25 @@ class Reimburse extends CI_Controller {
       else {
         $this->db->trans_commit();
         redirect('reimburse');
+
+      }      
+    }
+
+    function claim_delete($reimburseId, $claimId){
+      isEditable();
+      $this->db->trans_begin();  // to start db transaction
+      $this->db->delete('reimburse_claim',['reimburse_claim_id' => $claimId]);
+      if($this->db->trans_status() === FALSE) {
+        $this->db->trans_rollback();
+        $this->session->set_flashdata(
+            'message',
+            '<div class="alert alert-danger">Proses gagal. Silakan coba lagi.</div>'
+        );
+        redirect('reimburse/claim/'.$reimburseId.'?failed=true');
+      } 
+      else {
+        $this->db->trans_commit();
+        redirect('reimburse/claim/'.$reimburseId);
 
       }      
     }

@@ -423,7 +423,8 @@ class Salary_record extends CI_Controller
 
     foreach ($employees as $index => $emp) {
       $awalBulan = date('Y-m-01', strtotime(date('Y') . '-' . $month . '-01'));
-      $akhirBulan = date('Y-m-t', strtotime($awalBulan));
+      $akhirBulan = date('Y-m-t 23:59:59', strtotime($awalBulan));
+
       foreach ($this->db->query("select * from reimburse_claim where employee_id = ? and Date(date) between ? and ? and status = ?", [$emp['pegawai_id'], $awalBulan, $akhirBulan, 'approved'])->result_array() as $idx => $rmb) {
         $reimburse = $this->db->query("select * from reimburse where reimburse_id = ?", [$rmb['reimburse_id']])->row_array();
         $employees[$index]['plus'][] = ['name' => $reimburse['reimburse_name'], 'value' => $rmb['value']];
@@ -476,8 +477,7 @@ class Salary_record extends CI_Controller
     $this->load->view('templates/fscript-html-end', $data);
   }
 
-  public function slip($month, $empId)
-  {
+  public function slip($month, $empId){
 
     $data['htmlpagejs'] = 'none';
     $data['nmenu']      = 'Rekap Gaji';
@@ -601,7 +601,7 @@ class Salary_record extends CI_Controller
     }
 
     $awalBulan = date('Y-m-01', strtotime(date('Y') . '-' . $month . '-01'));
-    $akhirBulan = date('Y-m-t', strtotime($awalBulan));
+    $akhirBulan = date('Y-m-t 23:59:59', strtotime($awalBulan));
     foreach ($this->db->query("select * from reimburse_claim where employee_id = ? and date between ? and ? and status = ?", [$employee['pegawai_id'], $awalBulan, $akhirBulan, 'approved'])->result_array() as $idx => $rmb) {
       $reimburse = $this->db->query("select * from reimburse where reimburse_id = ?", [$rmb['reimburse_id']])->row_array();
       $employee['plus'][] = ['name' => $reimburse['reimburse_name'], 'value' => $rmb['value']];

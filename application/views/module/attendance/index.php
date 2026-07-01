@@ -101,7 +101,7 @@
                 <a target="_blank" href="<?= $row['is_status'] === 'hhk' ? htmlspecialchars(base_url('image/index').'/'.basename($row['foto_absen_masuk'])) : '' ?>" class="btn p-1" data-toggle="tooltip" title="Lihat Foto Absen">
                   <i class="ti ti-photo ft-13"></i>
                 </a>
-                <?=  $row['isOfflineIn'] ? '<i class="ti ti-wifi text-red-900"></i>':'<i class="ti ti-wifi"></i>'  ?>
+                <?=  $row['isOfflineIn'] ? '<i class="ti ti-wifi text-red-900"></i>':''  ?>
                 <?php } ?>
               </div>
               <?php } ?>
@@ -155,7 +155,7 @@
                 <a target="_blank" href="<?= $row['is_status'] === 'hhk' ? htmlspecialchars(base_url('image/index').'/'.basename($row['foto_absen_keluar'])) : '' ?>" class="btn p-1" data-toggle="tooltip" title="Lihat Foto Absen">
                   <i class="ti ti-photo ft-13"></i>
                 </a>
-                <?= $row['isOfflineOut'] ? '<i class="ti ti-wifi text-red-900"></i>':'<i class="ti ti-wifi"></i>'  ?>
+                <?= $row['isOfflineOut'] ? '<i class="ti ti-wifi text-red-900"></i>':''  ?>
                 <?php } ?>
               </div>
               <?php } ?>

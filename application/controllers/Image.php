@@ -1,5 +1,9 @@
 <?php
 
+use Aws\S3\S3Client;
+use Aws\Credentials\Credentials;
+use Aws\Exception\AwsException;
+
 defined('BASEPATH') or exit('No direct script access allowed');
 
 class Image extends CI_Controller {
@@ -15,10 +19,35 @@ class Image extends CI_Controller {
     public $upload;
     public $pagination;
   
-	  public function index($cid) {
-      $fileUrl = "https://wooden-plum-woodpecker.myfilebase.com/ipfs/" . $cid;
 
-      $ch = curl_init($fileUrl);
+  function index($fileName){
+      $companyId = $this->session->userdata('company_id');
+      $company = $this->db->query("select * from companies where id = ?",[$companyId])->row_array();
+      $rootDir = explode('@', $company['email'])[0];
+
+      $s3 = new S3Client([
+          'version'     => 'latest',
+          'region'      => 'us-east-1',
+          'endpoint'    => 'https://o3-rc3.akave.xyz',
+          'use_path_style_endpoint' => false,
+          'credentials' => [
+              'key'    => 'O3_0F49YS93DCVX51CM0',
+              'secret' => 'Wp4izs5aiR73rJFyOX6rWNnVmWDae1rqAf1NUFeR'
+          ]
+      ]);
+
+
+      $cmd = $s3->getCommand('GetObject', [
+          'Bucket' => 'project-alpha',
+          'Key'    => 'absensi_'.$rootDir.'_task/'.$fileName,
+      ]);
+      
+      $request = $s3->createPresignedRequest($cmd, '+1 day');
+      
+      $url = (string) $request->getUri();
+      
+      $ch = curl_init($url);
+     
       curl_setopt_array($ch, [
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_FOLLOWLOCATION => true,
@@ -38,5 +67,6 @@ class Image extends CI_Controller {
 
       header("Content-Type: " . ($contentType ? $contentType : "image/jpeg"));
       echo $content;
+
   }
 }
