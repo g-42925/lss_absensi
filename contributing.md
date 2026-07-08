@@ -4,7 +4,7 @@ CodeIgniter is a community driven project and accepts contributions of code and 
 
 Issues are a quick way to point out a bug. If you find a bug or documentation error in CodeIgniter then please check a few things first:
 
-1. There is not already an open Issue
+1. There is not already an open Issue.
 2. The issue has already been fixed (check the develop branch, or look for closed Issues)
 3. Is it something really obvious that you can fix yourself?
 
@@ -69,7 +69,7 @@ Hard way The best way to contribute is to "clone" your fork of CodeIgniter to yo
 1. [Set up Git](https://help.github.com/en/articles/set-up-git) (Windows, Mac & Linux)
 2. Go to the [CodeIgniter repo](https://github.com/bcit-ci/CodeIgniter)
 3. [Fork it](https://help.github.com/en/articles/fork-a-repo)
-4. [Clone](https://help.github.com/en/articles/fetching-a-remote#clone) your forked CodeIgniter repo: git@github.com:<your-name>/CodeIgniter.git.
+4. [Clone](https://help.github.com/en/articles/fetching-a-remote#clone) your forked CodeIgniter repo: <git@github.com>:<your-name>/CodeIgniter.git.
 5. Checkout the "develop" branch. At this point you are ready to start making changes.
 6. Fix existing bugs on the Issue tracker after taking a look to see nobody else is working on them.
 7. [Commit](https://help.github.com/en/articles/adding-a-file-to-a-repository-using-the-command-line) the files
