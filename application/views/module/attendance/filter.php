@@ -102,7 +102,7 @@
                   <i class="ti ti-photo-off ft-13"></i>
                 </a>
                 <?php } else { ?>
-                <a target="_blank" href="<?= htmlspecialchars($row['foto_absen_masuk'] ?: '#') ?>" class="btn p-1" data-toggle="tooltip" title="Lihat Foto Absen">
+                <a target="_blank" href="<?= $row['foto_absen_masuk'] ?>" class="btn p-1" data-toggle="tooltip" title="Lihat Foto Absen">
                   <i class="ti ti-photo ft-13"></i>
                 </a>
                 <?= $row['isOfflineIn'] ? '<i class="ti ti-wifi text-red-900"></i>':''  ?>
@@ -156,7 +156,7 @@
                   <i class="ti ti-photo-off ft-13"></i>
                 </a>
                 <?php } else { ?>
-                <a target="_blank" href="<?= htmlspecialchars($row['foto_absen_keluar'] ?: '#') ?>" class="btn p-1" data-toggle="tooltip" title="Lihat Foto Absen">
+                <a target="_blank" href="<?= $row['foto_absen_keluar'] ?>" class="btn p-1" data-toggle="tooltip" title="Lihat Foto Absen">
                   <i class="ti ti-photo ft-13"></i>
                 </a>
                 <?= $row['isOfflineOut'] ? '<i class="ti ti-wifi text-red-900"></i>':''  ?>

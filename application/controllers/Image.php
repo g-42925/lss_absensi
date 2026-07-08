@@ -19,8 +19,9 @@ class Image extends CI_Controller {
     public $upload;
     public $pagination;
   
+  
 
-  function index($fileName){
+    function view($path,$fileName){
       $companyId = $this->session->userdata('company_id');
       $company = $this->db->query("select * from companies where id = ?",[$companyId])->row_array();
       $rootDir = explode('@', $company['email'])[0];
@@ -35,12 +36,13 @@ class Image extends CI_Controller {
               'secret' => 'Wp4izs5aiR73rJFyOX6rWNnVmWDae1rqAf1NUFeR'
           ]
       ]);
+      
 
-
-      $cmd = $s3->getCommand('GetObject', [
-          'Bucket' => 'project-alpha',
-          'Key'    => 'absensi_'.$rootDir.'_task/'.$fileName,
+      $cmd = $s3->getCommand('GetObject',[
+        'Bucket' => 'project-alpha',
+        'Key' => 'absensi_'.$rootDir.'_'.$path.'/'.$fileName
       ]);
+
       
       $request = $s3->createPresignedRequest($cmd, '+1 day');
       
