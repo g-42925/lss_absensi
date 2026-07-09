@@ -107,34 +107,18 @@
             <small class="text-muted">Tanggal terjadinya pelanggaran.</small>
           </div>
 
-          <!-- Lokasi Kejadian -->
-          <div class="col-xl-6 col-md-6 col-sm-12">
-            <label class="form-label" for="location">
-              Lokasi Kejadian
+          <!--  penalty nominal -->
+          <div class="col-6">
+            <label class="form-label" for="penalty_nominal">
+              Penalty Nominal
             </label>
             <input
-              type="text"
+              value="<?= htmlspecialchars($warning['penalty']); ?>"
+              type="number"
               class="form-control"
-              id="location"
-              name="location"
-              value="<?= htmlspecialchars($warning['location'] ?? ''); ?>"
-              placeholder="Contoh: Ruang Produksi, Lantai 2"
-              autocomplete="off"
-            />
-          </div>
-
-          <!-- Ketentuan yang Dilanggar -->
-          <div class="col-12">
-            <label class="form-label" for="regulation">
-              Ketentuan / Pasal yang Dilanggar
-            </label>
-            <input
-              type="text"
-              class="form-control"
-              id="regulation"
-              name="regulation"
-              value="<?= htmlspecialchars($warning['regulation'] ?? ''); ?>"
-              placeholder="Contoh: Pasal 5 ayat 2 Peraturan Perusahaan tentang Kehadiran"
+              id="penalty_nominal"
+              name="penalty"
+              placeholder="Contoh: 100000"
               autocomplete="off"
             />
           </div>

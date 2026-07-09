@@ -21,6 +21,7 @@
             <th>Judul</th>
             <th>Deskripsi Pelanggaran</th>
             <th>Tgl. Kejadian</th>
+            <th>Sanksi</th>
             <th>Dibuat</th>
             <th>...</th>
           </tr>
@@ -51,6 +52,7 @@
               </span>
             </td>
             <td><?= date('d M Y', strtotime($r['date'])); ?></td>
+            <td>Rp. <?= number_format($r['penalty'], 0, ',', '.'); ?></td>
             <td><small><?= date('d M Y', strtotime($r['createdAt'])); ?></small></td>
             <td>
                 <div class="d-flex gap-1 justify-content-center">
@@ -60,13 +62,16 @@
                     <a href="<?= base_url('warning/print/' . $r['id']); ?>" class="btn btn-sm btn-icon btn-primary" title="Cetak">
                         <i class="ti ti-printer"></i>
                     </a>
+                    <a href="<?= base_url('warning/delete/' . $r['id']); ?>" class="btn btn-sm btn-icon btn-outline-danger" title="Hapus" onclick="return confirm('Apakah Anda yakin ingin menghapus surat peringatan ini?');">
+                        <i class="ti ti-trash"></i>
+                    </a>
                 </div>
             </td>
           </tr>
           <?php endforeach; ?>
           <?php if (empty($data)): ?>
           <tr>
-            <td colspan="8" class="text-center text-muted py-4">
+            <td colspan="9" class="text-center text-muted py-4">
               Belum ada surat peringatan. <a href="<?= base_url('warning/add'); ?>">Tambah sekarang</a>
             </td>
           </tr>

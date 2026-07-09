@@ -91,8 +91,7 @@ class Warning extends CI_Controller{
             'title'      => $this->input->post('title'),
             'violation'  => $this->input->post('violation'),
             'date'       => $this->input->post('date'),
-            'location'   => $this->input->post('location'),
-            'regulation' => $this->input->post('regulation'),
+            'penalty'    => $this->input->post('penalty'),
             'createdAt'  => date('Y-m-d'),
         ];
 
@@ -155,8 +154,7 @@ class Warning extends CI_Controller{
             'title'      => $this->input->post('title'),
             'violation'  => $this->input->post('violation'),
             'date'       => $this->input->post('date'),
-            'location'   => $this->input->post('location'),
-            'regulation' => $this->input->post('regulation'),
+            'penalty'    => $this->input->post('penalty'),
         ];
 
         $this->db->where('id', $id);
@@ -211,5 +209,23 @@ class Warning extends CI_Controller{
         $this->load->view('templates/header', $data);
         $this->load->view('module/warning/print', $data);
         $this->load->view('templates/fscript-html-end', $data);
+    }
+
+    public function delete($id = null){
+        cek_menu_access();
+        isEditable();
+        
+        if (!$id) { redirect('warning'); }
+
+        $this->db->where('id', $id);
+        $q = $this->db->delete('warning');
+
+        if ($q) {
+            $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-success p-cg" role="alert">Surat Peringatan berhasil dihapus.</div></div>');
+        } else {
+            $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-danger p-cg" role="alert">Proses gagal, silahkan coba lagi.</div></div>');
+        }
+        
+        redirect('warning');
     }
 }
