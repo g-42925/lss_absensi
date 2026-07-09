@@ -98,6 +98,36 @@
             <small class="text-muted">Tanggal terjadinya pelanggaran.</small>
           </div>
 
+          <!-- Lokasi Kejadian -->
+          <div class="col-xl-6 col-md-6 col-sm-12">
+            <label class="form-label" for="location">
+              Lokasi Kejadian
+            </label>
+            <input
+              type="text"
+              class="form-control"
+              id="location"
+              name="location"
+              placeholder="Contoh: Ruang Produksi, Lantai 2"
+              autocomplete="off"
+            />
+          </div>
+
+          <!-- Ketentuan yang Dilanggar -->
+          <div class="col-12">
+            <label class="form-label" for="regulation">
+              Ketentuan / Pasal yang Dilanggar
+            </label>
+            <input
+              type="text"
+              class="form-control"
+              id="regulation"
+              name="regulation"
+              placeholder="Contoh: Pasal 5 ayat 2 Peraturan Perusahaan tentang Kehadiran"
+              autocomplete="off"
+            />
+          </div>
+
         </div><!-- /.row -->
 
         <div class="pt-5 text-end">

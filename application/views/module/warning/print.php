@@ -1,5 +1,5 @@
 <?php
-// Helpers
+// ─── Helpers ────────────────────────────────────────────────────────────────
 $w   = $warning;
 $cmp = $company ?? [];
 
@@ -8,296 +8,449 @@ $levelWords = ['', 'PERTAMA', 'KEDUA', 'KETIGA'];
 $levelLabel = $levelWords[$levelNum] ?? 'PERTAMA';
 $spCode     = 'SP-' . $levelNum;
 
-// Dates
-$dateKejadian  = !empty($w['date'])      ? date('d F Y', strtotime($w['date']))      : '...';
-$dateCreated   = !empty($w['createdAt']) ? date('d F Y', strtotime($w['createdAt'])) : date('d F Y');
+// Indonesian month names
+function tglIndo($date) {
+    if (empty($date)) return '...............';
+    $bulan = ['','Januari','Februari','Maret','April','Mei','Juni',
+              'Juli','Agustus','September','Oktober','November','Desember'];
+    $d = strtotime($date);
+    return date('d', $d) . ' ' . $bulan[(int)date('m', $d)] . ' ' . date('Y', $d);
+}
 
-// SP berlaku 6 bulan sejak tanggal kejadian
+$dateKejadian  = tglIndo($w['date'] ?? '');
+$dateCreated   = tglIndo($w['createdAt'] ?? date('Y-m-d'));
 $dateStart     = !empty($w['date']) ? $w['date'] : date('Y-m-d');
-$dateEnd       = date('d F Y', strtotime($dateStart . ' +6 months'));
-$dateStartFmt  = date('d F Y', strtotime($dateStart));
+$dateEnd       = tglIndo(date('Y-m-d', strtotime($dateStart . ' +6 months')));
+$dateStartFmt  = tglIndo($dateStart);
 
-$companyName   = htmlspecialchars($cmp['company_name'] ?? '................................');
-$companyCity   = '................................'; // tidak ada kolom kota, bisa dikembangkan
+// Company fields
+$companyName   = htmlspecialchars($cmp['company_name']  ?? '');
+$companyAddr   = htmlspecialchars($cmp['address']       ?? '');
+$companyEmail  = htmlspecialchars($cmp['email']         ?? '');
+$companyPhone  = htmlspecialchars($cmp['mobile']        ?? '');
+$companyWeb    = htmlspecialchars($cmp['website']       ?? '');
 
-$empName       = htmlspecialchars($w['nama_pegawai']  ?? '................................');
-$empNik        = htmlspecialchars($w['nik'] ?? $w['id_pegawai'] ?? '................................');
-$empPosition   = htmlspecialchars($w['position_name'] ?? '................................');
-$empDivision   = htmlspecialchars($w['division_name'] ?? '................................');
+// City extracted from address (first part before comma, if any)
+$cityRaw       = '';
+if (!empty($cmp['address'])) {
+    $parts   = explode(',', $cmp['address']);
+    $cityRaw = trim(end($parts));
+}
+$companyCity   = !empty($cityRaw) ? $cityRaw : '...............';
 
-$spNumber      = htmlspecialchars($w['sp_number'] ?? '................................');
+// Employee fields
+$empName       = htmlspecialchars($w['nama_pegawai']    ?? '');
+$empNik        = htmlspecialchars($w['nik'] ?? $w['id_pegawai'] ?? '');
+$empPosition   = htmlspecialchars($w['position_name']   ?? '................................');
+$empDivision   = htmlspecialchars($w['division_name']   ?? '................................');
+
+// Warning fields
+$spNumber      = htmlspecialchars($w['sp_number']       ?? '');
+$spTitle       = htmlspecialchars($w['title']           ?? '');
 $violation     = nl2br(htmlspecialchars($w['violation'] ?? ''));
-$spTitle       = htmlspecialchars($w['title'] ?? '');
+$location      = htmlspecialchars($w['location']        ?? '................................');
+$regulation    = htmlspecialchars($w['regulation']      ?? '................................');
+
+// Auth (signer)
+$signerName    = htmlspecialchars($auth['nama_lengkap'] ?? '');
+$signerRole    = htmlspecialchars($auth['nama_role']    ?? '');
+
+// Company logo
+$logoPath = '';
+if (!empty($cmp['company_id'])) {
+    $candidates = [
+        FCPATH . 'assets/company/' . $cmp['company_id'] . '.png',
+        FCPATH . 'assets/company/' . $cmp['company_id'] . '.jpg',
+        FCPATH . 'assets/img/logo/' . $cmp['company_id'] . '.png',
+    ];
+    foreach ($candidates as $c) {
+        if (file_exists($c)) { $logoPath = base_url(str_replace(FCPATH, '', $c)); break; }
+    }
+}
 ?>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Times+New+Roman&family=EB+Garamond:ital,wght@0,400;0,600;0,700;1,400&display=swap');
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Surat Peringatan <?= $spCode; ?> – <?= $spTitle; ?></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=EB+Garamond:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <style>
+    /* ── Reset ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  body.print-body {
-    background: #e8e8e8;
-    font-family: 'EB Garamond', 'Times New Roman', Georgia, serif;
-    font-size: 13pt;
-    color: #111;
-    margin: 0;
-    padding: 0;
-  }
+    body {
+      background: #d1d5db;
+      font-family: 'EB Garamond', 'Georgia', serif;
+      font-size: 13pt;
+      color: #111;
+    }
 
-  .print-toolbar {
-    position: fixed;
-    top: 0; left: 0; right: 0;
-    z-index: 100;
-    background: #1e293b;
-    padding: 10px 24px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,.4);
-  }
-  .print-toolbar h6 {
-    color: #f1f5f9;
-    margin: 0;
-    flex: 1;
-    font-family: 'Inter', sans-serif;
-    font-size: 13px;
-    font-weight: 500;
-  }
-  .btn-print {
-    background: #3b82f6;
-    color: #fff;
-    border: none;
-    border-radius: 6px;
-    padding: 7px 18px;
-    font-size: 13px;
-    cursor: pointer;
-    font-family: 'Inter', sans-serif;
-    display: flex; align-items: center; gap: 6px;
-  }
-  .btn-print:hover { background: #2563eb; }
-  .btn-back {
-    background: transparent;
-    color: #94a3b8;
-    border: 1px solid #475569;
-    border-radius: 6px;
-    padding: 6px 14px;
-    font-size: 13px;
-    cursor: pointer;
-    font-family: 'Inter', sans-serif;
-    text-decoration: none;
-  }
-  .btn-back:hover { color: #fff; border-color: #94a3b8; }
+    /* ── Toolbar ── */
+    .toolbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 200;
+      background: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 24px;
+      box-shadow: 0 2px 10px rgba(0,0,0,.45);
+    }
+    .toolbar-title {
+      flex: 1;
+      color: #e2e8f0;
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+    }
+    .toolbar-title span {
+      color: #94a3b8;
+      font-weight: 400;
+    }
+    .btn-back {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: transparent;
+      color: #94a3b8;
+      border: 1px solid #334155;
+      border-radius: 6px;
+      padding: 6px 14px;
+      font-size: 13px;
+      font-family: 'Inter', sans-serif;
+      text-decoration: none;
+      transition: all .2s;
+    }
+    .btn-back:hover { color: #f1f5f9; border-color: #64748b; }
+    .btn-print {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: #2563eb;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 7px 18px;
+      font-size: 13px;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      transition: background .2s;
+    }
+    .btn-print:hover { background: #1d4ed8; }
 
-  .page-wrap {
-    padding: 80px 0 40px;
-    display: flex;
-    justify-content: center;
-  }
+    /* ── Page wrapper ── */
+    .page-wrap {
+      padding: 72px 0 60px;
+      display: flex;
+      justify-content: center;
+    }
 
-  /* -- Paper -- */
-  .sp-paper {
-    width: 210mm;
-    min-height: 297mm;
-    background: #fff;
-    padding: 20mm 22mm 22mm 28mm; /* left wider for binding */
-    box-shadow: 0 4px 32px rgba(0,0,0,.18);
-    position: relative;
-    box-sizing: border-box;
-  }
+    /* ── A4 Paper ── */
+    .sp-paper {
+      width: 210mm;
+      min-height: 297mm;
+      background: #fff;
+      padding: 18mm 20mm 24mm 28mm;
+      box-shadow: 0 8px 40px rgba(0,0,0,.22);
+      position: relative;
+    }
 
-  /* Kop Surat */
-  .kop {
-    border-bottom: 3px double #111;
-    padding-bottom: 10px;
-    margin-bottom: 18px;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-  }
-  .kop .kop-logo {
-    width: 60px; height: 60px;
-    border: 2px solid #111;
-    border-radius: 4px;
-    object-fit: contain;
-    flex-shrink: 0;
-  }
-  .kop .kop-logo-placeholder {
-    width: 60px; height: 60px;
-    border: 2px solid #bbb;
-    border-radius: 4px;
-    display: flex; align-items: center; justify-content: center;
-    color: #bbb; font-size: 11px; text-align: center; line-height: 1.2;
-  }
-  .kop-info { flex: 1; }
-  .kop-info .company { font-size: 17pt; font-weight: 700; line-height: 1.2; letter-spacing: .3px; }
-  .kop-info .address { font-size: 9.5pt; color: #444; margin-top: 3px; }
+    /* ── Kop Surat ── */
+    .kop {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding-bottom: 10px;
+      border-bottom: 4px double #111;
+      margin-bottom: 22px;
+    }
+    .kop-logo {
+      width: 68px; height: 68px;
+      object-fit: contain;
+      flex-shrink: 0;
+    }
+    .kop-logo-box {
+      width: 68px; height: 68px;
+      border: 2px dashed #ccc;
+      border-radius: 4px;
+      display: flex; align-items: center; justify-content: center;
+      color: #bbb; font-size: 10px; text-align: center;
+      line-height: 1.3; flex-shrink: 0;
+    }
+    .kop-text { flex: 1; }
+    .kop-company {
+      font-size: 18pt;
+      font-weight: 700;
+      line-height: 1.15;
+      letter-spacing: .4px;
+      text-transform: uppercase;
+    }
+    .kop-address {
+      font-size: 9.5pt;
+      color: #555;
+      margin-top: 4px;
+      line-height: 1.5;
+    }
+    .kop-contact {
+      font-size: 9pt;
+      color: #666;
+      margin-top: 2px;
+    }
 
-  /* Judul SP */
-  .sp-heading {
-    text-align: center;
-    margin: 12px 0 6px;
-  }
-  .sp-heading h2 {
-    font-size: 14pt;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin: 0 0 2px;
-    text-decoration: underline;
-  }
-  .sp-nomor {
-    text-align: center;
-    font-size: 10.5pt;
-    color: #333;
-    margin-bottom: 18px;
-  }
+    /* ── Judul Surat ── */
+    .sp-title {
+      text-align: center;
+      margin: 4px 0 2px;
+    }
+    .sp-title h2 {
+      display: inline-block;
+      font-size: 14pt;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      border-bottom: 2px solid #111;
+      padding-bottom: 2px;
+    }
+    .sp-nomor {
+      text-align: center;
+      font-size: 11pt;
+      color: #333;
+      margin-bottom: 22px;
+    }
 
-  /* Body text */
-  .sp-body { line-height: 1.8; }
+    /* ── Body ── */
+    .sp-body { line-height: 1.1; }
+    .sp-body p { margin-bottom: 10px; text-align: justify; }
 
-  .sp-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 6px 0 12px 20px;
-    font-size: 12.5pt;
-  }
-  .sp-table td { padding: 1px 0; vertical-align: top; }
-  .sp-table td:first-child { width: 130px; white-space: nowrap; }
-  .sp-table td:nth-child(2) { width: 16px; text-align: center; }
+    /* identity tables */
+    .id-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 4px 0 14px 24px;
+      font-size: 12.5pt;
+    }
+    .id-table td { padding: 1px 0; vertical-align: top; }
+    .id-table td:first-child { width: 145px; white-space: nowrap; }
+    .id-table td.sep    { width: 14px; text-align: center; }
 
-  .sp-violation {
-    border-left: 3px solid #333;
-    padding: 8px 14px;
-    margin: 8px 0 8px 20px;
-    background: #f9f9f9;
-    font-style: italic;
-    line-height: 1.7;
-  }
+    /* violation block */
+    .violation-block {
+      margin: 6px 0 14px 24px;
+      border-left: 3px solid #444;
+      padding: 8px 16px;
+      background: #f8f8f8;
+      line-height: 1.7;
+    }
 
-  .sp-list {
-    margin: 6px 0 10px 36px;
-    padding: 0;
-  }
-  .sp-list li { margin-bottom: 4px; }
+    /* expectation list */
+    .expect-list {
+      margin: 6px 0 14px 40px;
+      padding: 0;
+      list-style: decimal;
+    }
+    .expect-list li { margin-bottom: 4px; }
 
-  .sp-closing { margin-top: 20px; }
+    /* ── Signature section ── */
+    .sig-date {
+      text-align: right;
+      margin-top: 24px;
+      margin-bottom: 10px;
+      font-size: 12pt;
+    }
+    .sig-wrap {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      margin-top: 10px;
+      page-break-inside: avoid;
+    }
+    .sig-block { flex: 1; text-align: center; }
+    .sig-role {
+      font-weight: 700;
+      font-size: 12pt;
+      margin-bottom: 6px;
+    }
+    .sig-note {
+      font-size: 10pt;
+      color: #555;
+      font-style: italic;
+      margin-bottom: 64px;
+    }
+    .sig-line {
+      display: inline-block;
+      min-width: 160px;
+      border-top: 1px solid #333;
+      padding-top: 4px;
+      font-weight: 700;
+      font-size: 12pt;
+    }
+    .sig-pos {
+      display: block;
+      font-size: 10.5pt;
+      color: #555;
+      margin-top: 2px;
+    }
 
-  /* Tanda tangan */
-  .ttd-wrap {
-    display: flex;
-    gap: 30px;
-    margin-top: 36px;
-    page-break-inside: avoid;
-  }
-  .ttd-block {
-    flex: 1;
-    text-align: center;
-  }
-  .ttd-label { font-weight: 700; margin-bottom: 4px; font-size: 12pt; }
-  .ttd-desc  { font-size: 10.5pt; color: #444; margin-bottom: 60px; font-style: italic; }
-  .ttd-name  { border-top: 1px solid #333; padding-top: 4px; font-weight: 700; min-width: 140px; display: inline-block; font-size: 12pt; }
-  .ttd-pos   { font-size: 10.5pt; color: #444; }
+    /* ── Print media ── */
+    @media print {
+      body        { background: #fff; }
+      .toolbar    { display: none !important; }
+      .page-wrap  { padding: 0; }
+      .sp-paper   { box-shadow: none; margin: 0; width: 100%; min-height: unset; }
+    }
+  </style>
+</head>
+<body>
 
-  /* Print media */
-  @media print {
-    body.print-body { background: #fff; }
-    .print-toolbar  { display: none !important; }
-    .page-wrap      { padding: 0; }
-    .sp-paper       { box-shadow: none; margin: 0; width: 100%; min-height: unset; }
-  }
-</style>
-
-<body class="print-body">
-
-<!-- Toolbar (hidden on print) -->
-<div class="print-toolbar">
-  <a href="<?= base_url('warning'); ?>" class="btn-back">&#8592; Kembali</a>
-  <h6>Preview — Surat Peringatan <?= $spCode; ?> &middot; <?= $spTitle; ?></h6>
+<!-- ═══ Toolbar ═══ -->
+<div class="toolbar">
+  <a href="<?= base_url('warning'); ?>" class="btn-back">
+    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M15.41 16.58L10.83 12l4.58-4.59L14 6l-6 6 6 6z"/></svg>
+    Kembali
+  </a>
+  <p class="toolbar-title">
+    Preview &mdash; <strong><?= $spCode; ?></strong>
+    <span>/ <?= $spTitle; ?></span>
+  </p>
   <button class="btn-print" onclick="window.print()">
-    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M6 9V2h12v7H6zm0 5H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-2v6H6v-6zm2 4h8v-4H8v4zm-2-7a1 1 0 1 0 2 0 1 1 0 0 0-2 0z"/></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" viewBox="0 0 24 24">
+      <path d="M6 9V2h12v7H6zm0 5H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-2v6H6v-6zm2 4h8v-4H8v4zm-2-7a1 1 0 1 0 2 0 1 1 0 0 0-2 0z"/>
+    </svg>
     Cetak
   </button>
 </div>
 
+<!-- ═══ Paper ═══ -->
 <div class="page-wrap">
 <div class="sp-paper">
 
-  <!-- ===== JUDUL ===== -->
-  <div class="sp-heading">
+  <!-- KOP SURAT -->
+  <div class="kop">
+    <div class="">
+      <img src="<?= $company['logo'] ?>" alt="Logo" class="kop-logo">
+    </div>
+    <div class="kop-text">
+      <div class="kop-company"><?= $companyName ?: '&nbsp;'; ?></div>
+      <?php if ($companyAddr): ?>
+        <div class="kop-address"><?= $companyAddr; ?></div>
+      <?php endif; ?>
+      <?php if ($companyPhone || $companyEmail || $companyWeb): ?>
+        <div class="kop-contact">
+          <?php if ($companyPhone) echo 'Telp: ' . $companyPhone; ?>
+          <?php if ($companyEmail) echo ($companyPhone ? ' &nbsp;|&nbsp; ' : '') . 'Email: ' . $companyEmail; ?>
+          <?php if ($companyWeb)   echo ($companyPhone || $companyEmail ? ' &nbsp;|&nbsp; ' : '') . $companyWeb; ?>
+        </div>
+      <?php endif; ?>
+    </div>
+  </div>
+  <!-- /KOP SURAT -->
+
+  <!-- JUDUL -->
+  <div class="sp-title">
     <h2>Surat Peringatan <?= $levelLabel; ?> (<?= $spCode; ?>)</h2>
   </div>
   <div class="sp-nomor">Nomor: <?= $spNumber; ?></div>
 
-  <!-- ===== BADAN SURAT ===== -->
+  <!-- BADAN SURAT -->
   <div class="sp-body">
 
     <p>Yang bertanda tangan di bawah ini:</p>
 
-    <table class="sp-table">
+    <table class="id-table">
       <tr>
-        <td>Nama</td><td>:</td>
-        <td><?= htmlspecialchars($auth['nama_lengkap'] ?? '................................'); ?></td>
+        <td>Nama</td><td class="sep">:</td>
+        <td><?= $signerName ?: '________________________________'; ?></td>
       </tr>
       <tr>
-        <td>Jabatan</td><td>:</td>
-        <td><?= htmlspecialchars($auth['nama_role'] ?? '................................'); ?></td>
+        <td>Jabatan</td><td class="sep">:</td>
+        <td><?= $signerRole ?: $position['name'] ?></td>
       </tr>
       <tr>
-        <td>Perusahaan</td><td>:</td>
-        <td><?= $companyName; ?></td>
+        <td>Perusahaan</td><td class="sep">:</td>
+        <td><?= $companyName ?: $signerName; ?></td>
       </tr>
     </table>
 
     <p>Dengan ini memberikan Surat Peringatan <?= $levelLabel; ?> kepada:</p>
 
-    <table class="sp-table">
+    <table class="id-table">
       <tr>
-        <td>Nama</td><td>:</td>
+        <td>Nama</td><td class="sep">:</td>
         <td><strong><?= $empName; ?></strong></td>
       </tr>
       <tr>
-        <td>NIK</td><td>:</td>
+        <td>NIK</td><td class="sep">:</td>
         <td><?= $empNik; ?></td>
       </tr>
       <tr>
-        <td>Jabatan</td><td>:</td>
+        <td>Jabatan</td><td class="sep">:</td>
         <td><?= $empPosition; ?></td>
       </tr>
       <tr>
-        <td>Divisi</td><td>:</td>
+        <td>Divisi</td><td class="sep">:</td>
         <td><?= $empDivision; ?></td>
       </tr>
     </table>
 
-    <p>Berdasarkan hasil evaluasi dan/atau laporan yang diterima, Saudara telah melakukan pelanggaran terhadap ketentuan perusahaan, yaitu:</p>
+    <p>
+      Berdasarkan hasil evaluasi dan/atau laporan yang diterima, Saudara telah melakukan pelanggaran
+      terhadap ketentuan perusahaan, yaitu:
+    </p>
 
-    <table class="sp-table">
-      <tr>
-        <td>Pelanggaran</td><td>:</td>
-        <td><strong><?= $spTitle; ?></strong></td>
-      </tr>
-      <tr>
-        <td>Waktu Kejadian</td><td>:</td>
-        <td><?= $dateKejadian; ?></td>
-      </tr>
-    </table>
-
-    <div class="sp-violation">
+    <div class="violation-block">
       <?= $violation; ?>
     </div>
 
+    <table class="id-table">
+      <tr>
+        <td>Waktu kejadian</td><td class="sep">:</td>
+        <td><?= $dateKejadian; ?></td>
+      </tr>
+      <tr>
+        <td>Ketentuan yang dilanggar</td><td class="sep">:</td>
+        <td><?= $warning['title']; ?></td>
+      </tr>
+    </table>
+
     <p>
-      Sehubungan dengan hal tersebut, perusahaan memberikan Surat Peringatan <?= $levelLabel; ?> (<?= $spCode; ?>)
-      sebagai bentuk pembinaan agar Saudara tidak mengulangi pelanggaran yang sama maupun pelanggaran lainnya.
+      Sehubungan dengan hal tersebut, perusahaan memberikan Surat Peringatan <?= $levelLabel; ?>
+      (<?= $spCode; ?>) sebagai bentuk pembinaan agar Saudara tidak mengulangi pelanggaran yang sama
+      maupun pelanggaran lainnya.
     </p>
 
     <p>
-      Apabila Saudara kembali melakukan pelanggaran selama masa berlaku surat ini, perusahaan berhak mengambil
-      tindakan disipliner sesuai dengan ketentuan yang berlaku, termasuk pemberian Surat Peringatan berikutnya
-      atau tindakan lain sesuai peraturan perusahaan dan peraturan perundang-undangan.
+      Apabila Saudara kembali melakukan pelanggaran selama masa berlaku surat ini, perusahaan berhak
+      mengambil tindakan disipliner sesuai dengan ketentuan yang berlaku
     </p>
 
+    <p>
+      Demikian surat ini dibuat untuk menjadi perhatian dan dilaksanakan sebagaimana mestinya.
+    </p>
 
-    <div class="sp-closing">
-      <p>Demikian surat ini dibuat untuk menjadi perhatian dan dilaksanakan sebagaimana mestinya.</p>
+    <!-- Tanggal & Tanda Tangan -->
+    <div class="sig-date"><?= $companyCity; ?>, <?= $dateCreated; ?></div>
+
+    <div class="sig-wrap">
+
+      <!-- Pihak Perusahaan -->
+      <div class="sig-block">
+        <div class="sig-role">Pihak Perusahaan</div>
+        <div class="sig-note">Tanda Tangan:</div>
+        <span class="sig-line"><?= $signerName; ?></span>
+        <span class="sig-pos"><?= $signerRole; ?></span>
+      </div>
+
+      <!-- Penerima Surat -->
+      <div class="sig-block">
+        <div class="sig-role">Penerima Surat</div>
+        <div class="sig-note">
+          Saya menyatakan telah menerima<br>dan membaca Surat Peringatan ini.
+        </div>
+        <span class="sig-line"><?= $empName; ?></span>
+        <span class="sig-pos">Karyawan</span>
+      </div>
+
     </div>
+    <!-- /Tanda tangan -->
 
   </div><!-- /.sp-body -->
 
@@ -305,3 +458,4 @@ $spTitle       = htmlspecialchars($w['title'] ?? '');
 </div><!-- /.page-wrap -->
 
 </body>
+</html>

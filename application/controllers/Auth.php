@@ -58,15 +58,18 @@ class Auth extends CI_Controller {
                         'permission_id' => $user['permission_id'],
                         'company_id'    => $user['company_id'],
                         'nama_lengkap'  => $user['nama_lengkap'],
+                        'position_id'   => $user['position_id'],
                         'login_expired' => time() + $rememberDuration
                     ];
                     $this->session->set_userdata($data);
                     redirect('auth');
-                } else {
+                } 
+                else {
                     $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">Kata sandi tidak sesuai. "'.$password.'" </div>');
                     redirect('auth');
                 }
-            } else {
+            } 
+            else {
                 $this->session->set_flashdata('message', '<div class="alert alert-warning" role="alert">"'.$email.'" tidak aktif, hubungi tim support untuk informasi lebih lanjut.</div>');
                 redirect('auth');
             }

@@ -91,6 +91,8 @@ class Warning extends CI_Controller{
             'title'      => $this->input->post('title'),
             'violation'  => $this->input->post('violation'),
             'date'       => $this->input->post('date'),
+            'location'   => $this->input->post('location'),
+            'regulation' => $this->input->post('regulation'),
             'createdAt'  => date('Y-m-d'),
         ];
 
@@ -153,6 +155,8 @@ class Warning extends CI_Controller{
             'title'      => $this->input->post('title'),
             'violation'  => $this->input->post('violation'),
             'date'       => $this->input->post('date'),
+            'location'   => $this->input->post('location'),
+            'regulation' => $this->input->post('regulation'),
         ];
 
         $this->db->where('id', $id);
@@ -191,10 +195,13 @@ class Warning extends CI_Controller{
         if (!$warning) { redirect('warning'); }
 
         // Company info
-        $company = $this->db->get_where('company_information', ['company_id' => $warning['company_id']])->row_array();
+
+        $company = $this->db->query("select * from companies where id = ?",[$this->session->userdata('company_id')])->row_array();
+        $position = $this->db->query("select * from position where id = ?",[$this->session->userdata('position_id')])->row_array();
 
         $data['warning']    = $warning;
         $data['company']    = $company;
+        $data['position']   = $position;
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Warning';
         $data['title']      = 'Surat Peringatan';
