@@ -22,7 +22,6 @@ class Attendance extends CI_Controller {
     }
 
     public function division($div){
-        cek_menu_access();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Kehadiran Harian';
         $data['title']      = 'Kehadiran Harian';
@@ -57,7 +56,6 @@ class Attendance extends CI_Controller {
 		}
 
     public function filter(){
-        cek_menu_access();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Kehadiran Harian';
         $data['title']      = 'Kehadiran Harian';
@@ -150,7 +148,6 @@ class Attendance extends CI_Controller {
     }
 
     public function index($tgl = null) {
-        cek_menu_access();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Kehadiran Harian';
         $data['title']      = 'Kehadiran Harian';
@@ -191,7 +188,6 @@ class Attendance extends CI_Controller {
     }
 
     public function alpha($tgl = null){
-        cek_menu_access();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Kehadiran Harian';
         $data['title']      = 'Kehadiran Harian';
@@ -222,12 +218,10 @@ class Attendance extends CI_Controller {
     }
 
     public function absensi($tgl,$tipe,$idp,$value) {
-        cek_menu_access();
         $res = $this->att->absensi_proses($tgl,$tipe,$idp,$value);
     }
 
     public function action($inout,$id,$tipe) {
-        cek_menu_access();
         $data['inout'] = $inout;
         $data['tipe'] = $tipe;
         $data['datas'] = $this->db->get_where('tx_absensi', ['absen_id' => $id])->row_array();
@@ -235,7 +229,6 @@ class Attendance extends CI_Controller {
     }
 
     public function req_cancel($idp = null,$tgl = null) {
-        cek_menu_access();
 
         if ($idp==null || $tgl==null) { redirect('attendance'); }
         $check = $this->db->get_where('m_pegawai', ['pegawai_id' => $idp]);

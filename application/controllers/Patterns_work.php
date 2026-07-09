@@ -21,7 +21,6 @@ class Patterns_work extends CI_Controller {
     }
 
     public function index() {
-        cek_menu_access();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Pola Kerja';
         $data['title']      = 'Mingguan';
@@ -41,7 +40,6 @@ class Patterns_work extends CI_Controller {
     }
 
     public function shift(){
-        cek_menu_access();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Pola Kerja';
         $data['title']      = 'Shift';
@@ -190,8 +188,6 @@ class Patterns_work extends CI_Controller {
     }
 
     public function  shift_off_set($id){
-      cek_menu_access();
-      isEditable();
       $data['htmlpagejs'] = 'none';
       $data['nmenu']      = 'Pola Kerja';
       $data['title']      = 'Shift';
@@ -308,9 +304,6 @@ class Patterns_work extends CI_Controller {
     }
 
     public function shift_detail_edit_proses($shiftId,$id){
-        cek_menu_access();
-        isEditable();
-
         $data = [
           'shift_id' => $this->input->post(
             'shiftId'
@@ -503,7 +496,6 @@ class Patterns_work extends CI_Controller {
     }
 
     public function add_proses() {
-        cek_menu_access();
         $unama  = $this->input->post('nama');
 
         $this->form_validation->set_rules('nama', 'Nama', 'trim|required|xss_clean|htmlspecialchars');
@@ -571,7 +563,6 @@ class Patterns_work extends CI_Controller {
     }
 
     public function edit_proses($id = null) {
-        cek_menu_access();
         $unama  = $this->input->post('nama');
 
             if ($id==null) { redirect('patterns_work'); }
@@ -617,7 +608,6 @@ class Patterns_work extends CI_Controller {
     }
 
     public function hapus($id){
-        cek_menu_access();
         
         $data['auth'] = authUser();
 
@@ -639,7 +629,6 @@ class Patterns_work extends CI_Controller {
     }
 
     public function assign($id = null) {
-        cek_menu_access();
 
         if ($id==null) { redirect('patterns_work'); }
         $check = $this->db->get_where('m_pola_kerja', ['pola_kerja_id' => $id]);
@@ -669,7 +658,6 @@ class Patterns_work extends CI_Controller {
     }
 
     public function assign_proses($id = null) {
-        cek_menu_access();
         
         $data['auth'] = authUser();
 
@@ -701,7 +689,6 @@ class Patterns_work extends CI_Controller {
     }
 
     public function hapus_assign($id = null, $idx = null){
-        cek_menu_access();
         
         $data['auth'] = authUser();
 

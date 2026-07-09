@@ -41,7 +41,12 @@
           <tr class="text-center">
             <td><?= $row['nik'];?></td>
             <td><?= $row['divisi'];?></td>
-            <td><span class="<?= $row['signed_in'] ? 'text-blue-900':'' ?>"><?= $row['nama_pegawai'];?></span></td>
+            <td>
+              <span class="<?= $row['signed_in'] ? 'text-blue-900':'' ?>"><?= $row['nama_pegawai'];?></span>
+              <?php if(isset($row['latest_sp']) && $row['latest_sp']): ?>
+                <span class="badge bg-danger ms-2" style="font-size: 0.7em;">SP <?= $row['latest_sp'] ?></span>
+              <?php endif; ?>
+            </td>
             <td><?= $row['nomor_pegawai'];?></td>
             <td><?= $row['address'] == "" ? "-":$row['address']; ?></td>
             <td><?= $row['jumlah_cuti'] ?> </td>

@@ -32,7 +32,7 @@ class Data extends CI_Controller {
     }
 
     public function manage_kick() {
-        cek_menu_access();
+        
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Karyawan';
         $data['title']      = 'Active Login Sessions';
@@ -46,6 +46,7 @@ class Data extends CI_Controller {
 
         $divisions = $this->db->query("SELECT * FROM divisions WHERE company_id = ?", [$companyId])->result_array();
 
+        
         foreach($data['datas'] as $index => $d){
             $division = $this->db->query("SELECT * FROM divisions WHERE id = ?", [$d['division_id']])->row_array();
             $data['datas'][$index]['divisi'] = $division ? $division['division_name'] : '-';
@@ -62,7 +63,7 @@ class Data extends CI_Controller {
     }
 
     public function kick_all() {
-        cek_menu_access();
+        
         $companyId = $this->session->userdata('company_id');
 
         $this->db->where('company_id', $companyId);
@@ -74,7 +75,7 @@ class Data extends CI_Controller {
     }
     
     public function filter(){
-			cek_menu_access();
+			
 			$data['htmlpagejs'] = 'none';
 			$data['nmenu']      = 'Karyawan';
 			$data['title']      = 'Data Karyawan';
@@ -93,7 +94,10 @@ class Data extends CI_Controller {
 
 			foreach($data['datas'] as $index => $d){
 				$division = $this->db->query("select * from divisions where id = ?",[$d['division_id']])->row_array();
-				$data['datas'][$index]['divisi'] = $division['division_name'];
+				$data['datas'][$index]['divisi'] = $division ? $division['division_name'] : '-';
+				
+				$warning = $this->db->query("SELECT level FROM warning WHERE employeeId = ? ORDER BY id DESC LIMIT 1", [$d['pegawai_id']])->row_array();
+				$data['datas'][$index]['latest_sp'] = $warning ? $warning['level'] : null;
 			}
 
 			$data['divisions'] = $divisions;
@@ -131,7 +135,7 @@ class Data extends CI_Controller {
     }
 
     public function index() {
-        cek_menu_access();
+        
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Karyawan';
         $data['title']      = 'Data Karyawan';
@@ -146,7 +150,10 @@ class Data extends CI_Controller {
 
         foreach($data['datas'] as $index => $d){
           $division = $this->db->query("select * from divisions where id = ?",[$d['division_id']])->row_array();
-          $data['datas'][$index]['divisi'] = $division['division_name'];
+          $data['datas'][$index]['divisi'] = $division ? $division['division_name'] : '-';
+
+          $warning = $this->db->query("SELECT level FROM warning WHERE employeeId = ? ORDER BY id DESC LIMIT 1", [$d['pegawai_id']])->row_array();
+          $data['datas'][$index]['latest_sp'] = $warning ? $warning['level'] : null;
         }
 
         $data['divisions'] = $divisions;
@@ -164,7 +171,7 @@ class Data extends CI_Controller {
     }
 
     public function add($failed) {
-        cek_menu_access();
+        
         isEditable();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Karyawan';
@@ -193,7 +200,7 @@ class Data extends CI_Controller {
     }
 
     public function add_proses() {
-        cek_menu_access();
+        
         $unama  = $this->input->post('idkar');
 
         $companyId = $this->session->userdata('company_id');
@@ -271,7 +278,7 @@ class Data extends CI_Controller {
     }
 
     public function edit_proses($id = null) {
-        cek_menu_access();
+        
         $unama  = $this->input->post('idkar');
 
             if ($id==null) { redirect('karyawan/data'); }
@@ -316,7 +323,7 @@ class Data extends CI_Controller {
     }
 
     public function hapus($id){
-        cek_menu_access();
+        
         
         $data['auth']       = authUser();
         

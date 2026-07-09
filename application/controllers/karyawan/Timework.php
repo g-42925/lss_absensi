@@ -29,7 +29,6 @@ class Timework extends CI_Controller {
     }
 
     public function index() {
-        cek_menu_access();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Karyawan';
         $data['title']      = 'Waktu Kerja';
@@ -47,7 +46,7 @@ class Timework extends CI_Controller {
     }
 
     public function add($id = null) {
-        cek_menu_access();
+        
         if ($id==null) { redirect('karyawan/timework'); }
 
         $data['htmlpagejs'] = 'none';
@@ -72,13 +71,13 @@ class Timework extends CI_Controller {
     }
 
     public function pola($id = null) {
-        cek_menu_access();
+        
         $data['datas']  = $this->db->get_where('m_pola_kerja_det', ['pola_kerja_id' => $id])->result_array();
         $this->load->view('module/karyawan/timework/pola', $data);
     }
 
     public function add_proses($id = null) {
-        cek_menu_access();
+        
         if ($id==null) { redirect('karyawan/timework'); }
 
         $this->form_validation->set_rules('pola', 'Pola', 'trim|required|xss_clean|htmlspecialchars');
@@ -103,7 +102,7 @@ class Timework extends CI_Controller {
     }
 
     public function edit($id = null) {
-        cek_menu_access();
+        
         if ($id==null) { redirect('karyawan/timework'); }
         $check = $this->db->get_where('m_pegawai_pola', ['pegawai_id' => $id]);
         if ($check->num_rows()==0) { 
@@ -133,7 +132,7 @@ class Timework extends CI_Controller {
     }
 
     public function edit_proses($id = null) {
-        cek_menu_access();
+        
 
         if ($id==null) { redirect('karyawan/timework'); }
         
@@ -165,7 +164,7 @@ class Timework extends CI_Controller {
     }
 
     public function hapus($id){
-        cek_menu_access();
+        
         
         $data['auth']       = authUser();
 
@@ -180,7 +179,7 @@ class Timework extends CI_Controller {
     }
 
     public function record($id = null) {
-        cek_menu_access();
+        
 
         if ($id==null) { redirect('karyawan/timework'); }
         $check = $this->db->get_where('m_pegawai', ['pegawai_id' => $id]);
@@ -209,7 +208,7 @@ class Timework extends CI_Controller {
     }
 
     public function hapus_record($id = null, $idx = null){
-        cek_menu_access();
+        
         
         $data['auth']       = authUser();
 

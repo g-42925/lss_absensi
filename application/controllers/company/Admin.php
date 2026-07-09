@@ -21,7 +21,6 @@ class Admin extends CI_Controller {
     }
 
     public function index() {
-        cek_menu_access();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Perusahaan';
         $data['title']      = 'Admin';
@@ -46,10 +45,11 @@ class Admin extends CI_Controller {
         $data['namalabel']  = $data['title'];
         $data['auth']       = authUser();
         
-
-        $data['company_id'] = $this->session->userdata('company_id');
-        $data['roles']      = $this->other->get_roles($data['company_id']);
+        $companyId = $this->session->userdata('company_id');
+        $data['company_id'] = $companyId;
+        $data['roles']      = $this->other->get_roles($companyId);
         $data['permission'] = $this->other->get_permission();
+        $data['positions']  = $this->db->query("select * from position where company_id='".$companyId."'")->result_array();
         $data['failed'] = $failed;
 
         $this->load->view('templates/header', $data);
@@ -61,7 +61,6 @@ class Admin extends CI_Controller {
     }
 
     public function add_proses() {
-        cek_menu_access();
         $unama  = $this->input->post('email');
         $companyId = $this->session->userdata('company_id');
         $this->form_validation->set_rules('nama', 'Nama', 'trim|required|xss_clean|htmlspecialchars');
@@ -70,14 +69,16 @@ class Admin extends CI_Controller {
         $this->form_validation->set_rules('roles', 'Role/Jabatan', 'trim|required|xss_clean|htmlspecialchars');
         $this->form_validation->set_rules('permission', 'Permission/Izin', 'trim|required|xss_clean|htmlspecialchars');
         $this->form_validation->set_rules('password', 'Password', 'trim|required|xss_clean|htmlspecialchars|min_length[4]');
-
+        $this->form_validation->set_rules('position', 'Posisi', 'trim|required|xss_clean|htmlspecialchars');
         if ($this->form_validation->run() == false) {
             $this->session->set_flashdata('message', '<div class="alert alert-danger p-cg" role="alert">'.validation_errors().'</div>');
             redirect('company/admin/add/1');
-        } else {
+        } 
+        else {
             $query = $this->db->get_where('m_user', ['email_address' => $unama, 'is_del' => 'n'])->num_rows();
             if ($query < 1) {
                 $res = $this->admin->add_proses($companyId);
+                
                 if ($res==true) {
                     $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-success p-cg" role="alert">Data berhasil disimpan.</div></div>');
                     redirect('company/admin');
@@ -115,6 +116,7 @@ class Admin extends CI_Controller {
         $data['edit']       = $check->row_array();
         $data['roles']      = $this->other->get_roles($companyId);
         $data['permission'] = $this->other->get_permission();
+        $data['positions']  = $this->db->query("select * from position where company_id='".$companyId."'")->result_array();
 
         $this->load->view('templates/header', $data);
         $this->load->view('templates/sidemenu', $data);
@@ -125,7 +127,7 @@ class Admin extends CI_Controller {
     }
 
     public function edit_proses($id = null) {
-        cek_menu_access();
+        ;
         $unama  = $this->input->post('email');
 
         if($id==1 && $this->session->userdata('u_id')!=1){
@@ -175,7 +177,6 @@ class Admin extends CI_Controller {
     }
 
     public function hapus($id){
-        cek_menu_access();
 
         if($id==1){
             $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-danger p-cg" role="alert">Akun Admin ini tidak bisa dihapus ya.</div></div>');

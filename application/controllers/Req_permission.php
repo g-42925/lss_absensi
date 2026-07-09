@@ -24,9 +24,7 @@ class Req_permission extends CI_Controller {
         $this->load->model('user/req_permission_model', 'rp');
     }
 
-    public function index($awal = null, $akhir = null) {
-        cek_menu_access();
-        
+    public function index($awal = null, $akhir = null) {        
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Data Request Izin';
         $data['title']      = 'Request Izin';
@@ -59,7 +57,6 @@ class Req_permission extends CI_Controller {
     }
 
     public function filter(){
-        cek_menu_access();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Data Request Izin';
         $data['title']      = 'Request Izin';
@@ -95,7 +92,6 @@ class Req_permission extends CI_Controller {
     }
 
     public function add() {
-        cek_menu_access();
         isEditable();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Data Request Izin';
@@ -116,7 +112,6 @@ class Req_permission extends CI_Controller {
     }
 
     public function add_proses() {
-        cek_menu_access();
         $ukat  = $this->input->post('kat');
         $unama  = $this->input->post('tgl1');
 
@@ -163,7 +158,6 @@ class Req_permission extends CI_Controller {
     }
 
     public function edit($id = null) {
-        cek_menu_access();
         isEditable();
         if ($id==null) { redirect('req_permission'); }
         $check = $this->db->get_where('tx_request_izin', ['request_izin_id' => $id]);
@@ -193,7 +187,6 @@ class Req_permission extends CI_Controller {
     
 
     public function edit_proses($id = null) {
-        cek_menu_access();
 
         if ($id==null) { redirect('req_permission'); }
         $check = $this->db->get_where('tx_request_izin', ['request_izin_id' => $id]);
@@ -311,7 +304,6 @@ class Req_permission extends CI_Controller {
     }
 
     public function hapus($id = null){
-        cek_menu_access();
         
         $data['auth'] = authUser();
 
@@ -335,7 +327,6 @@ class Req_permission extends CI_Controller {
     }
 
     public function download_laporan($mulai,$akhir) {
-        cek_menu_access();
         $data['tgl_awal'] = $mulai;
         $data['tgl_akhir'] = $akhir;
         $data['all_data'] = $this->rp->get_data($mulai,$akhir);
@@ -343,7 +334,6 @@ class Req_permission extends CI_Controller {
     }
 
     public function action($id,$idp) {
-        cek_menu_access();
         $data['datar'] = $this->db->get_where('tx_request_izin', ['request_izin_id' => $id])->row_array();
         $data['datap'] = $this->db->query("SELECT * FROM tx_request_izin_pegawai a LEFT JOIN m_pegawai b ON a.pegawai_id=b.pegawai_id WHERE a.request_izin_id='$id' AND a.pegawai_id='$idp' AND b.is_del='n' ")->row_array();
         $data['datatl'] = $this->rp->get_data_tl($id,$idp);
@@ -351,7 +341,6 @@ class Req_permission extends CI_Controller {
     }
 
     public function download_perid($id,$idp) {
-        cek_menu_access();
         $data['setting'] = pengaturanSistem();
         $data['datar'] = $this->db->get_where('tx_request_izin', ['request_izin_id' => $id])->row_array();        
         $data['datap'] = $this->db->query("SELECT * FROM tx_request_izin_pegawai a LEFT JOIN m_pegawai b ON a.pegawai_id=b.pegawai_id WHERE a.request_izin_id='$id' AND a.pegawai_id='$idp' AND b.is_del='n' ")->row_array();
@@ -426,7 +415,6 @@ class Req_permission extends CI_Controller {
     public function print($id){
       $data['data'] = $this->db->query("select * from tx_request_izin tri join tx_request_izin_pegawai trip on tri.request_izin_id = trip.request_izin_id join m_pegawai mp on trip.pegawai_id = mp.pegawai_id join position p on p.id = mp.position_id join divisions d on mp.division_id = d.id where tri.request_izin_id = ?",[$id])->row_array();
 
-      cek_menu_access();
       $data['htmlpagejs'] = 'none';
       $data['nmenu']      = 'Data Request Izin';
       $data['title']      = 'Request Izin';

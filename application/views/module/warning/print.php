@@ -426,9 +426,6 @@ if (!empty($cmp['company_id'])) {
       Demikian surat ini dibuat untuk menjadi perhatian dan dilaksanakan sebagaimana mestinya.
     </p>
 
-    <!-- Tanggal & Tanda Tangan -->
-    <div class="sig-date"><?= $companyCity; ?>, <?= $dateCreated; ?></div>
-
     <div class="sig-wrap">
 
       <!-- Pihak Perusahaan -->

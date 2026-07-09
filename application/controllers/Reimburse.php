@@ -21,7 +21,6 @@ class Reimburse extends CI_Controller {
     }
 
     public function index() {
-        cek_menu_access();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Bonus & Tunjangan';
         $data['title']      = 'Reimburse';
@@ -111,7 +110,6 @@ class Reimburse extends CI_Controller {
     }
 
     public function claim($id){
-        cek_menu_access();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Bonus & Tunjangan';
         $data['title']      = 'Reimburse';
@@ -131,7 +129,6 @@ class Reimburse extends CI_Controller {
     }
 
     public function claim_edit($reimburseId, $claimId){
-        cek_menu_access();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Bonus & Tunjangan';
         $data['title']      = 'Reimburse';

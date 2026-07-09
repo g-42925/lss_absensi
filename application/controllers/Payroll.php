@@ -21,7 +21,6 @@ class Payroll extends CI_Controller {
     }
 
     public function filter($id) {
-        cek_menu_access();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Karyawan';
         $data['title']      = 'Data Karyawan';
@@ -41,7 +40,6 @@ class Payroll extends CI_Controller {
     }
 
     public function checkV2($empId){
-      cek_menu_access();
       $data['htmlpagejs'] = 'none';
       $data['nmenu']      = 'Karyawan';
       $data['title']      = 'Data Karyawan';
@@ -240,7 +238,6 @@ class Payroll extends CI_Controller {
     }
 
     public function accumulationV2(){
-      cek_menu_access();
     	$data['htmlpagejs'] = 'none';
     	$data['nmenu']      = 'Karyawan';
     	$data['title']      = 'Data Karyawan';
@@ -458,7 +455,6 @@ class Payroll extends CI_Controller {
     }
 
     public function check($empId){
-        cek_menu_access();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Karyawan';
         $data['title']      = 'Data Karyawan';
@@ -871,7 +867,6 @@ class Payroll extends CI_Controller {
 	}
 
     public function accumulation(){
-      cek_menu_access();
       $data['htmlpagejs'] = 'none';
       $data['nmenu']      = 'Karyawan';
       $data['title']      = 'Data Karyawan';

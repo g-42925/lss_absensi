@@ -21,7 +21,6 @@ class Except extends CI_Controller {
     }
 
     public function index() {
-        cek_menu_access();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Data Request Izin';
         $data['title']      = 'Pengecualian';
@@ -45,7 +44,6 @@ class Except extends CI_Controller {
     }
 
     public function filter(){
-        cek_menu_access();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Data Request Izin';
         $data['title']      = 'Pengecualian';

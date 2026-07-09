@@ -194,7 +194,6 @@ class Candidate extends CI_Controller {
     }
 
      public function index() {
-        //cek_menu_access();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Karyawan';
         $data['title']      = 'Recruitment';

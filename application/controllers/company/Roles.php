@@ -21,7 +21,6 @@ class Roles extends CI_Controller {
     }
 
     public function index() {
-        cek_menu_access();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Perusahaan';
         $data['nmenusub']   = 'Jabatan & Izin';
@@ -64,7 +63,7 @@ class Roles extends CI_Controller {
     }
 
     public function add_proses() {
-        cek_menu_access();
+        
         $unama  = $this->input->post('nama');
 
         $this->form_validation->set_rules('nama', 'Nama', 'trim|required|xss_clean|htmlspecialchars');
@@ -125,7 +124,7 @@ class Roles extends CI_Controller {
     }
 
     public function edit_proses($id = null) {
-        cek_menu_access();
+        
 
         if($id==1){
             $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-danger p-cg" role="alert">Jabatan Super Admin ini tidak bisa diedit ya.</div></div>');
@@ -174,7 +173,7 @@ class Roles extends CI_Controller {
     }
 
     public function hapus($id){
-        cek_menu_access();
+        
         
         if($id==1){
             $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-danger p-cg" role="alert">Jabatan Super Admin ini tidak bisa dihapus ya.</div></div>');

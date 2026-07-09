@@ -19,7 +19,7 @@ class Warning extends CI_Controller{
     }
 
     public function index(){
-        cek_menu_access();
+        
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Warning';
         $data['title']      = 'Surat Peringatan';
@@ -46,7 +46,7 @@ class Warning extends CI_Controller{
     }
 
     public function add(){
-        cek_menu_access();
+        
         isEditable();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Warning';
@@ -78,7 +78,7 @@ class Warning extends CI_Controller{
     }
 
     public function add_proses(){
-        cek_menu_access();
+        
         isEditable();
 
         $nik = explode('(', $this->input->post('nik'))[1]; 
@@ -108,7 +108,7 @@ class Warning extends CI_Controller{
     }
 
     public function edit($id = null){
-        cek_menu_access();
+        
         isEditable();
 
         if (!$id) { redirect('warning'); }
@@ -140,7 +140,7 @@ class Warning extends CI_Controller{
     }
 
     public function edit_proses($id = null){
-        cek_menu_access();
+        
         isEditable();
 
         if (!$id) { redirect('warning'); }
@@ -163,14 +163,15 @@ class Warning extends CI_Controller{
         if ($q) {
             $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-success p-cg" role="alert">Surat Peringatan berhasil diperbarui.</div></div>');
             redirect('warning');
-        } else {
+        } 
+        else {
             $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-danger p-cg" role="alert">Proses gagal, silahkan coba lagi.</div></div>');
             redirect('warning/edit/' . $id);
         }
     }
 
     function print($id = null){
-        cek_menu_access();
+        
 
         if (!$id) { redirect('warning'); }
 
@@ -212,8 +213,6 @@ class Warning extends CI_Controller{
     }
 
     public function delete($id = null){
-        cek_menu_access();
-        isEditable();
         
         if (!$id) { redirect('warning'); }
 
@@ -222,7 +221,8 @@ class Warning extends CI_Controller{
 
         if ($q) {
             $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-success p-cg" role="alert">Surat Peringatan berhasil dihapus.</div></div>');
-        } else {
+        } 
+        else {
             $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-danger p-cg" role="alert">Proses gagal, silahkan coba lagi.</div></div>');
         }
         

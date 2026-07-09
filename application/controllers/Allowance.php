@@ -21,7 +21,6 @@ class Allowance extends CI_Controller {
     }
 
     public function index() {
-        cek_menu_access();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Bonus & Tunjangan';
         $data['title']      = 'Harian';
@@ -41,7 +40,6 @@ class Allowance extends CI_Controller {
     }
 
     public function monthly(){
-        cek_menu_access();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Bonus & Tunjangan';
         $data['title']      = 'Bulanan';

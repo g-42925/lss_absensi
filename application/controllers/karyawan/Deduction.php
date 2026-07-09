@@ -23,7 +23,7 @@ class Deduction extends CI_Controller{
     }
 
     public function filter(){
-        cek_menu_access();
+        
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Karyawan';
         $data['title']      = 'Potongan';
@@ -76,7 +76,7 @@ class Deduction extends CI_Controller{
     }
     
     public function index(){
-        cek_menu_access();
+        
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Karyawan';
         $data['title']      = 'Potongan';

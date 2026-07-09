@@ -13,7 +13,6 @@ class Sliders extends CI_Controller {
     }
 
     public function index() {
-        cek_menu_access();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Slider';
         $data['title']      = 'Slider';
@@ -31,7 +30,6 @@ class Sliders extends CI_Controller {
     }
 
     public function add() {
-        cek_menu_access();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Slider';
         $data['title']      = 'Slider';
@@ -47,7 +45,6 @@ class Sliders extends CI_Controller {
     }
 
     public function add_proses() {
-        cek_menu_access();
         $tipe  = $this->input->post('tipe');
 
         $this->form_validation->set_rules('tipe', 'Tipe', 'trim|required|xss_clean|htmlspecialchars');
@@ -93,7 +90,6 @@ class Sliders extends CI_Controller {
     }
 
     public function edit($id = null) {
-        cek_menu_access();
         if ($id==null) { redirect('sliders'); }
         $check = $this->db->get_where('m_slider', ['slider_id' => $id]);
         if ($check->num_rows()==0) { 
@@ -118,7 +114,6 @@ class Sliders extends CI_Controller {
     }
 
     public function edit_proses($id = null) {
-        cek_menu_access();
         $tipe  = $this->input->post('tipe');
 
         if ($id==null) { redirect('sliders'); }
@@ -172,7 +167,6 @@ class Sliders extends CI_Controller {
     }
 
     public function hapus($id){
-        cek_menu_access();
 
         $data['auth'] = authUser();
 

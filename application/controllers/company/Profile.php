@@ -27,7 +27,7 @@ class Profile extends CI_Controller {
     }
 
     public function index() {
-        cek_menu_access();
+        
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Perusahaan';
         $data['title']      = 'Profil';
@@ -48,7 +48,7 @@ class Profile extends CI_Controller {
     }
 
     public function edit($failed) {
-        cek_menu_access();
+        
         isEditable();
         
         $data['htmlpagejs'] = 'none';
@@ -70,7 +70,7 @@ class Profile extends CI_Controller {
     }
 
     public function edit_proses() {
-        cek_menu_access();
+        
         $company = pengaturanSistem();
 
         $companyId = $this->session->userdata('company_id');

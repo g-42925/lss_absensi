@@ -21,7 +21,6 @@ class Assignment extends CI_Controller {
     }
 
     public function index() {
-        cek_menu_access();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Penugasan';
         $data['title']      = '';

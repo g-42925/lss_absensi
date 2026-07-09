@@ -21,7 +21,6 @@ class Loan extends CI_Controller {
     }
 
     public function index() {
-        cek_menu_access();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Hutang & Potongan';
         $data['title']      = 'Hutang';
@@ -116,7 +115,6 @@ class Loan extends CI_Controller {
     }
 
     public function log($id){
-      cek_menu_access();
       $data['htmlpagejs'] = 'none';
       $data['nmenu']      = 'Hutang & Potongan';
       $data['title']      = 'Hutang';

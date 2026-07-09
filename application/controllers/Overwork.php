@@ -26,7 +26,6 @@ class Overwork extends CI_Controller {
     }
 
     public function index() {
-        cek_menu_access();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Data Request Izin';
         $data['title']      = 'Lembur';
@@ -48,7 +47,6 @@ class Overwork extends CI_Controller {
     }
 
     public function edit($employeeOverworkId){
-        cek_menu_access();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Data Request Izin';
         $data['title']      = 'Lembur';

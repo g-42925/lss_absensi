@@ -21,9 +21,7 @@ class Attendance_record extends CI_Controller {
         $this->load->model('user/attendance_record_model', 'attr');
     }
 
-    public function index($awal = null, $akhir = null) {
-        cek_menu_access();
-        
+    public function index($awal = null, $akhir = null) {        
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Rekap Kehadiran';
         $data['title']      = 'Rekap Kehadiran';
@@ -53,9 +51,7 @@ class Attendance_record extends CI_Controller {
         $this->load->view('templates/fscript-html-end', $data);
     }
 
-    public function filter() {
-        cek_menu_access();
-        
+    public function filter() {        
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Rekap Kehadiran';
         $data['title']      = 'Rekap Kehadiran';
@@ -86,7 +82,6 @@ class Attendance_record extends CI_Controller {
     }
 
     public function detail($id = null, $awal = null, $akhir = null) {
-        cek_menu_access();
         if ($id==null) { redirect('attendance_record'); }
         $check = $this->db->get_where('m_pegawai', ['pegawai_id' => $id]);
         if ($check->num_rows()==0) { 
@@ -170,8 +165,6 @@ class Attendance_record extends CI_Controller {
     }
 
     public function download_laporan_detail($id,$mulai,$akhir) {
-
-        cek_menu_access();
         if ($id==null) { redirect('attendance_record'); }
         $check = $this->db->get_where('m_pegawai', ['pegawai_id' => $id]);
         if ($check->num_rows()==0) { 

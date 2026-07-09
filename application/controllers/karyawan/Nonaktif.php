@@ -26,7 +26,6 @@ class Nonaktif extends CI_Controller {
         $this->load->model('user/karyawan/timework_model', 'tw');
     }
     public function index() {
-        cek_menu_access();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Karyawan';
         $data['title']      = 'Nonaktif';

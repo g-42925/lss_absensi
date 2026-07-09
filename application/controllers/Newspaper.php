@@ -13,7 +13,6 @@ class Newspaper extends CI_Controller {
     }
 
     public function index() {
-        cek_menu_access();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Berita';
         $data['title']      = 'Berita';
@@ -31,7 +30,6 @@ class Newspaper extends CI_Controller {
     }
 
     public function add() {
-        cek_menu_access();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Berita';
         $data['title']      = 'Berita';
@@ -47,7 +45,6 @@ class Newspaper extends CI_Controller {
     }
 
     public function add_proses() {
-        cek_menu_access();
         $unama  = $this->input->post('nama');
 
         $this->form_validation->set_rules('nama', 'Nama', 'trim|required|xss_clean|htmlspecialchars');
@@ -57,7 +54,8 @@ class Newspaper extends CI_Controller {
         if ($this->form_validation->run() == false) {
             $this->session->set_flashdata('message', '<div class="alert alert-danger p-cg" role="alert">'.validation_errors().'</div>');
             redirect('newspaper/add');
-        } else {
+        } 
+        else {
             $ceklogo = $_FILES['gambar']['name'];
             $upload = $this->other->upload_gambar('gambar','new','components','img_berita_');
             if($upload['result'] == "success" || $ceklogo==''){
@@ -78,7 +76,6 @@ class Newspaper extends CI_Controller {
     }
 
     public function edit($id = null) {
-        cek_menu_access();
         if ($id==null) { redirect('newspaper'); }
         $check = $this->db->get_where('m_berita', ['berita_id' => $id]);
         if ($check->num_rows()==0) { 
@@ -103,7 +100,6 @@ class Newspaper extends CI_Controller {
     }
 
     public function edit_proses($id = null) {
-        cek_menu_access();
         $unama  = $this->input->post('nama');
 
         if ($id==null) { redirect('newspaper'); }
@@ -142,7 +138,6 @@ class Newspaper extends CI_Controller {
     }
 
     public function hapus($id){
-        cek_menu_access();
 
         $data['auth'] = authUser();
 

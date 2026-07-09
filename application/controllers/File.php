@@ -26,7 +26,6 @@ class File extends CI_Controller {
     }
 
     public function index() {
-        cek_menu_access();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'File';
         $data['title']      = '';
@@ -256,7 +255,6 @@ class File extends CI_Controller {
     }
 
     public function c_config($id){
-      cek_menu_access();
       isEditable();
       $data['htmlpagejs'] = 'none';
       $data['nmenu']      = 'Karyawan';
@@ -297,7 +295,6 @@ class File extends CI_Controller {
     }
 
     public function config($id){
-        cek_menu_access();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Karyawan';
         $data['title']      = 'Data Karyawan';

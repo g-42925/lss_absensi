@@ -21,7 +21,6 @@ class Terkini extends CI_Controller {
     }
 
     public function index($awal = null, $akhir = null) {
-        cek_menu_access();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Data Terkini';
         $data['title']      = 'Data Terkini';
@@ -50,14 +49,12 @@ class Terkini extends CI_Controller {
     }
 
     public function action($id,$tipe) {
-        cek_menu_access();
         $data['tipe'] = $tipe;
         $data['datas'] = $this->db->get_where('tx_lokasi_terkini', ['lt_id' => $id])->row_array();
         $this->load->view('module/terkini/action', $data);
     }
 
     public function hapus($id){
-        cek_menu_access();
 
         $data['auth'] = authUser();
         

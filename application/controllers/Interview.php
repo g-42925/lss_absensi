@@ -29,8 +29,6 @@ class Interview extends CI_Controller {
     }
 
     public function add(){
-        //cek_menu_access();
-        //isCreatable();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Karyawan';
         $data['title']      = 'Recruitment';
@@ -54,8 +52,6 @@ class Interview extends CI_Controller {
     }
 
     public function edit($id){
-        //cek_menu_access();
-        //isEditable();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Karyawan';
         $data['title']      = 'Recruitment';
@@ -171,7 +167,6 @@ class Interview extends CI_Controller {
     }
 
     public function index() {
-        //cek_menu_access();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Karyawan';
         $data['title']      = 'Recruitment';

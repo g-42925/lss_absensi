@@ -13,7 +13,6 @@ class Overtime extends CI_Controller {
     }
 
     public function index() {
-        cek_menu_access();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Data Lembur';
         $data['title']      = 'Data Lembur';
@@ -31,7 +30,6 @@ class Overtime extends CI_Controller {
     }
 
     public function add() {
-        cek_menu_access();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Data Lembur';
         $data['title']      = 'Data Lembur';
@@ -51,7 +49,6 @@ class Overtime extends CI_Controller {
     }
 
     public function add_proses() {
-        cek_menu_access();
         $ukat  = $this->input->post('idp');
         $unama  = $this->input->post('tgl1');
 
@@ -80,7 +77,6 @@ class Overtime extends CI_Controller {
     }
 
     public function edit($id = null) {
-        cek_menu_access();
         if ($id==null) { redirect('overtime'); }
         $check = $this->db->get_where('tx_lembur', ['lembur_id' => $id]);
         if ($check->num_rows()==0) { 
@@ -107,7 +103,6 @@ class Overtime extends CI_Controller {
     }
 
     public function edit_proses($id = null) {
-        cek_menu_access();
 
         if ($id==null) { redirect('overtime'); }
         $check = $this->db->get_where('tx_lembur', ['lembur_id' => $id]);
@@ -145,7 +140,6 @@ class Overtime extends CI_Controller {
     }
 
     public function action($id) {
-        cek_menu_access();
         $data['datal'] = $this->db->get_where('tx_lembur', ['lembur_id' => $id])->row_array();
         $data['userupd'] = dataUser($data['datal']['is_acc_updated']);
         $data['result'] = $this->rp->detail_user_lembur($id);
@@ -153,7 +147,6 @@ class Overtime extends CI_Controller {
     }
 
     public function hapus($id = null){
-        cek_menu_access();
         
         $data['auth']       = authUser();
         

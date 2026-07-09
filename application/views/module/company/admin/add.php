@@ -37,6 +37,19 @@
           </div>
           <div class="col-xl-6 col-md-6 col-sm-6">
             <label class="form-label w-100">
+              Posisi<i class="text-danger">*</i>
+              <span class="float-right">
+                <a href="<?=base_url('company/position');?>">Tambah&nbsp;</a>
+              </span>
+            </label>
+            <select class="select2 form-select" name="position" required>
+              <?php foreach ($positions as $row) : ?>
+              <option value="<?=$row['id'];?>"><?=$row['name'];?></option>
+              <?php endforeach; ?>
+            </select>
+          </div>
+          <div class="col-xl-6 col-md-6 col-sm-6">
+            <label class="form-label w-100">
               Permission/Izin<i class="text-danger">*</i>
               <span class="float-right">
                 <a href="<?=base_url('company/permission');?>">Tambah&nbsp;</a>
@@ -51,7 +64,7 @@
             <label class="form-label">Email<i class="text-danger">*</i></label>
             <input type="email" class="form-control" name="email" placeholder="..." required />
           </div>
-          <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6">
+          <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
             <label class="form-label">Password<i class="text-danger">*</i></label>
             <input type="password" class="form-control" name="password" placeholder="***************" required />
           </div>

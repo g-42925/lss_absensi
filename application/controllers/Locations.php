@@ -22,7 +22,6 @@ class Locations extends CI_Controller {
     }
 
     public function index() {
-        cek_menu_access();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Lokasi Kehadiran';
         $data['title']      = 'Lokasi Kehadiran';
@@ -61,7 +60,6 @@ class Locations extends CI_Controller {
     }
 
     public function add_proses() {
-        cek_menu_access();
         $unama  = $this->input->post('nama');
 
         $this->form_validation->set_rules('alamat', 'Alamat', 'trim|required|xss_clean|htmlspecialchars');
@@ -124,7 +122,6 @@ class Locations extends CI_Controller {
     }
 
     public function edit_proses($id = null) {
-        cek_menu_access();
         $unama  = $this->input->post('nama');
 
         if ($id==null) { redirect('locations'); }
@@ -180,7 +177,6 @@ class Locations extends CI_Controller {
     }
 
     public function assign($id = null) {
-        cek_menu_access();
 
         if ($id==null) { redirect('locations'); }
         $check = $this->db->get_where('m_lokasi', ['lokasi_id' => $id]);
@@ -212,7 +208,6 @@ class Locations extends CI_Controller {
     }
 
     public function assign_proses($id = null) {
-        cek_menu_access();
         
         $data['auth']       = authUser();
 
@@ -241,7 +236,6 @@ class Locations extends CI_Controller {
     }
 
     public function hapus_assign($id = null, $idx = null){
-        cek_menu_access();
         
         $data['auth']       = authUser();
 

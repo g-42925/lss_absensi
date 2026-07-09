@@ -24,7 +24,6 @@ class Task extends CI_Controller
 
     public function index()
     {
-        cek_menu_access();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Task';
         $data['title']      = 'Task Management';
@@ -50,7 +49,6 @@ class Task extends CI_Controller
 
     public function add()
     {
-        cek_menu_access();
         isEditable();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Task';
@@ -70,7 +68,6 @@ class Task extends CI_Controller
 
     public function add_proses()
     {
-        cek_menu_access();
         isEditable();
 
      
@@ -101,7 +98,6 @@ class Task extends CI_Controller
     }
 
     public function edit($id = null){
-        cek_menu_access();
         isEditable();
         
         if ($id == null) { redirect('task/list'); }
@@ -129,7 +125,6 @@ class Task extends CI_Controller
     }
 
     public function edit_proses($id = null){
-        cek_menu_access();
         isEditable();
         
         $nik = explode('(', $this->input->post('nik'))[1]; 
@@ -164,7 +159,6 @@ class Task extends CI_Controller
 
     public function delete($id = null)
     {
-        cek_menu_access();
         isEditable();
         if ($id == null) { redirect('task/list'); }
 
@@ -182,7 +176,6 @@ class Task extends CI_Controller
 
     public function toggle_solved($id = null)
     {
-        cek_menu_access();
         isEditable();
         if ($id == null) { redirect('task/list'); }
 

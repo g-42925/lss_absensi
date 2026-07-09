@@ -22,7 +22,6 @@ class Attendance_approval extends CI_Controller {
     }
 
     public function index($tgl = null) {
-        cek_menu_access();
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Menunggu Persetujuan';
         $data['title']      = 'Menunggu Persetujuan';
@@ -53,8 +52,6 @@ class Attendance_approval extends CI_Controller {
     }
 
     public function acc($tipe = null,$id = null) {
-        cek_menu_access();
-
         if ($tipe==null || $id==null) { redirect('attendance_approval'); }
         $check = $this->db->get_where('tx_absensi', ['absen_id' => $id]);
         $res_check = $check->row_array();
@@ -74,8 +71,6 @@ class Attendance_approval extends CI_Controller {
     }
 
     public function reject($tipe = null,$id = null) {
-        cek_menu_access();
-
         if ($tipe==null || $id==null) { redirect('attendance_approval'); }
         $check = $this->db->get_where('tx_absensi', ['absen_id' => $id]);
         $res_check = $check->row_array();

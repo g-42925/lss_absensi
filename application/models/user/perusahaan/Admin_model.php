@@ -8,10 +8,11 @@ class Admin_model extends CI_Model {
     }
 	
     public function get_data() {
+        $company = $this->session->userdata('company_id');
         $query = $this->db->query("SELECT a.*, c.nama_role, d.nama_permission FROM m_user a 
         	JOIN m_role c ON a.role_id=c.role_id 
         	JOIN m_permission d ON a.permission_id=d.permission_id 
-        	WHERE a.is_del='n'")->result_array();
+        	WHERE a.is_del='n' AND a.company_id='".$company."'")->result_array();
         return $query;
     }
 
@@ -24,9 +25,12 @@ class Admin_model extends CI_Model {
             'email_address'  	=> $this->input->post('email'),
             'password'  		=> password_hash($this->input->post('password'), PASSWORD_DEFAULT),
             'is_status'  		=> $this->input->post('status'),
+            'position_id'       => $this->input->post('position'),
             'created_at'  		=> date('Y-m-d H:i:s'),
-            'permission_id'     => 1
+            'permission_id'     => 1,
+
         ];
+        
         $res = $this->db->insert('m_user', $data);
         return $res;
     }
