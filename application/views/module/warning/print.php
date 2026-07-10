@@ -164,12 +164,12 @@ if (!empty($cmp['company_id'])) {
       margin-bottom: 22px;
     }
     .kop-logo {
-      width: 68px; height: 68px;
+      width: 86px; height: 86px;
       object-fit: contain;
       flex-shrink: 0;
     }
     .kop-logo-box {
-      width: 68px; height: 68px;
+      width: 86px; height: 86px;
       border: 2px dashed #ccc;
       border-radius: 4px;
       display: flex; align-items: center; justify-content: center;
