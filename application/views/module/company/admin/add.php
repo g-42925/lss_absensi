@@ -37,19 +37,6 @@
           </div>
           <div class="col-xl-6 col-md-6 col-sm-6">
             <label class="form-label w-100">
-              Posisi<i class="text-danger">*</i>
-              <span class="float-right">
-                <a href="<?=base_url('company/position');?>">Tambah&nbsp;</a>
-              </span>
-            </label>
-            <select class="select2 form-select" name="position" required>
-              <?php foreach ($positions as $row) : ?>
-              <option value="<?=$row['id'];?>"><?=$row['name'];?></option>
-              <?php endforeach; ?>
-            </select>
-          </div>
-          <div class="col-xl-6 col-md-6 col-sm-6">
-            <label class="form-label w-100">
               Permission/Izin<i class="text-danger">*</i>
               <span class="float-right">
                 <a href="<?=base_url('company/permission');?>">Tambah&nbsp;</a>

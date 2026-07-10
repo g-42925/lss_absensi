@@ -49,8 +49,7 @@ class Admin extends CI_Controller {
         $data['company_id'] = $companyId;
         $data['roles']      = $this->other->get_roles($companyId);
         $data['permission'] = $this->other->get_permission();
-        $data['positions']  = $this->db->query("select * from position where company_id='".$companyId."'")->result_array();
-        $data['failed'] = $failed;
+        $data['failed']     = $failed;
 
         $this->load->view('templates/header', $data);
         $this->load->view('templates/sidemenu', $data);
@@ -69,7 +68,6 @@ class Admin extends CI_Controller {
         $this->form_validation->set_rules('roles', 'Role/Jabatan', 'trim|required|xss_clean|htmlspecialchars');
         $this->form_validation->set_rules('permission', 'Permission/Izin', 'trim|required|xss_clean|htmlspecialchars');
         $this->form_validation->set_rules('password', 'Password', 'trim|required|xss_clean|htmlspecialchars|min_length[4]');
-        $this->form_validation->set_rules('position', 'Posisi', 'trim|required|xss_clean|htmlspecialchars');
         if ($this->form_validation->run() == false) {
             $this->session->set_flashdata('message', '<div class="alert alert-danger p-cg" role="alert">'.validation_errors().'</div>');
             redirect('company/admin/add/1');

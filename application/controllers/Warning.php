@@ -84,6 +84,9 @@ class Warning extends CI_Controller{
         $nik = explode('(', $this->input->post('nik'))[1]; 
         $nik = str_replace(')', '', $nik);
 
+        $issuedBy = explode('(', $this->input->post('issuedBy'))[1];
+        $issuedBy = str_replace(')', '', $issuedBy);
+
         $data = [
             'employeeId' => $nik,
             'sp_number'  => $this->input->post('sp_number'),
@@ -92,6 +95,7 @@ class Warning extends CI_Controller{
             'violation'  => $this->input->post('violation'),
             'date'       => $this->input->post('date'),
             'penalty'    => $this->input->post('penalty'),
+            'issuedBy'   => $issuedBy,
             'createdAt'  => date('Y-m-d'),
         ];
 
@@ -124,12 +128,15 @@ class Warning extends CI_Controller{
 
         if (!$row) { redirect('warning'); }
 
+        $issuedBy = $this->db->query("SELECT * FROM m_pegawai WHERE pegawai_id = ? LIMIT 1", [$row['issuedBy']])->row_array();
+
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Warning';
         $data['title']      = 'Surat Peringatan';
         $data['namalabel']  = 'Edit Surat Peringatan';
         $data['auth']       = authUser();
         $data['warning']    = $row;
+        $data['issuedBy']   = $issuedBy;
 
         $this->load->view('templates/header', $data);
         $this->load->view('templates/sidemenu', $data);
@@ -147,6 +154,8 @@ class Warning extends CI_Controller{
 
         $nik = explode('(', $this->input->post('nik'))[1];
         $nik = str_replace(')', '', $nik);
+        $issuedBy = explode('(', $this->input->post('issuedBy'))[1];
+        $issuedBy = str_replace(')', '', $issuedBy);
 
         $data = [
             'employeeId' => $nik,
@@ -155,6 +164,7 @@ class Warning extends CI_Controller{
             'violation'  => $this->input->post('violation'),
             'date'       => $this->input->post('date'),
             'penalty'    => $this->input->post('penalty'),
+            'issuedBy'   => $issuedBy,
         ];
 
         $this->db->where('id', $id);
@@ -196,11 +206,13 @@ class Warning extends CI_Controller{
         // Company info
 
         $company = $this->db->query("select * from companies where id = ?",[$this->session->userdata('company_id')])->row_array();
-        $position = $this->db->query("select * from position where id = ?",[$this->session->userdata('position_id')])->row_array();
+        $issuedBy = $this->db->query("select * from m_pegawai where pegawai_id = ?",[$warning['issuedBy']])->row_array();
+        $position = $this->db->query("select * from position where id = ?",[$issuedBy['position_id']])->row_array();
 
         $data['warning']    = $warning;
         $data['company']    = $company;
         $data['position']   = $position;
+        $data['issuedBy']   = $issuedBy;
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Warning';
         $data['title']      = 'Surat Peringatan';

@@ -149,7 +149,7 @@ if (!empty($cmp['company_id'])) {
       width: 210mm;
       min-height: 297mm;
       background: #fff;
-      padding: 18mm 20mm 24mm 28mm;
+      padding: 15mm 15mm 15mm 15mm;
       box-shadow: 0 8px 40px rgba(0,0,0,.22);
       position: relative;
     }
@@ -329,12 +329,12 @@ if (!empty($cmp['company_id'])) {
       <img src="<?= $company['logo'] ?>" alt="Logo" class="kop-logo">
     </div>
     <div class="kop-text">
-      <div class="kop-company"><?= $companyName ?: '&nbsp;'; ?></div>
+      <div class="kop-company text-center"><?= $companyName ?: '&nbsp;'; ?></div>
       <?php if ($companyAddr): ?>
-        <div class="kop-address"><?= $companyAddr; ?></div>
+        <div class="kop-address text-center"><?= $companyAddr; ?></div>
       <?php endif; ?>
       <?php if ($companyPhone || $companyEmail || $companyWeb): ?>
-        <div class="kop-contact">
+        <div class="kop-contact text-center">
           <?php if ($companyPhone) echo 'Telp: ' . $companyPhone; ?>
           <?php if ($companyEmail) echo ($companyPhone ? ' &nbsp;|&nbsp; ' : '') . 'Email: ' . $companyEmail; ?>
           <?php if ($companyWeb)   echo ($companyPhone || $companyEmail ? ' &nbsp;|&nbsp; ' : '') . $companyWeb; ?>
@@ -358,11 +358,11 @@ if (!empty($cmp['company_id'])) {
     <table class="id-table">
       <tr>
         <td>Nama</td><td class="sep">:</td>
-        <td><?= $signerName ?: '________________________________'; ?></td>
+        <td><?= $issuedBy['nama_pegawai'] ?></td>
       </tr>
       <tr>
         <td>Jabatan</td><td class="sep">:</td>
-        <td><?= $signerRole ?: $position['name'] ?></td>
+        <td><?= $position['name'] ?></td>
       </tr>
       <tr>
         <td>Perusahaan</td><td class="sep">:</td>
@@ -393,12 +393,10 @@ if (!empty($cmp['company_id'])) {
 
     <p>
       Berdasarkan hasil evaluasi dan/atau laporan yang diterima, Saudara telah melakukan pelanggaran
-      terhadap ketentuan perusahaan, yaitu:
+      terhadap ketentuan perusahaan, yaitu <b><?= $violation; ?></b>
     </p>
 
-    <div class="violation-block">
-      <?= $violation; ?>
-    </div>
+
 
     <table class="id-table">
       <tr>
@@ -432,8 +430,8 @@ if (!empty($cmp['company_id'])) {
       <div class="sig-block">
         <div class="sig-role">Pihak Perusahaan</div>
         <div class="sig-note">Tanda Tangan:</div>
-        <span class="sig-line"><?= $signerName; ?></span>
-        <span class="sig-pos"><?= $signerRole; ?></span>
+        <span class="sig-line"><?= $issuedBy['nama_pegawai']; ?></span>
+        <span class="sig-pos"><?= $position['name']; ?></span>
       </div>
 
       <!-- Penerima Surat -->

@@ -85,6 +85,7 @@
               id="violation"
               name="violation"
               rows="5"
+              maxlength="333"
               placeholder="Uraikan secara detail kronologi dan pelanggaran yang dilakukan karyawan..."
               required
             ><?= htmlspecialchars($warning['violation']); ?></textarea>
@@ -123,6 +124,27 @@
             />
           </div>
 
+
+          <div class="flex flex-col gap-1">
+            <label class="form-label" for="title">
+              Dikeluarkan oleh <i class="text-danger">*</i>
+            </label>
+            <input 
+              name="issuedBy" 
+              value="<?= htmlspecialchars($issuedBy['nama_pegawai'] . ' (' . $issuedBy['pegawai_id'] . ')'); ?>"
+              onKeyUp="onKeyChg2(this)" 
+              id="target3" 
+              list="employees" 
+              placeholder="card id or name" 
+              type="text" 
+              class="p-3 border-2 border-black rounded-md" 
+              placeholder=""
+            />
+            <datalist id="x">
+            </datalist>
+          </div>        
+
+         
         </div><!-- /.row -->
 
         <div class="pt-5 text-end">
@@ -152,6 +174,7 @@
   function parse(data){
     const employees = document.getElementById("employees");
     employees.innerHTML = "";
+    
     data.forEach(e => {
       const option = document.createElement("option");
       option.value = `${e.nama_pegawai} (${e.pegawai_id})`;
@@ -160,10 +183,21 @@
     });
   }
 
+  function onKeyChg2(e){
+    const employees = document.getElementById("x")
+    const value = target3.value
+    
+    fetch(BASE_URL + "karyawan/data/all?divId=" + "Any" + "&key=" + value).then(response => response.json()).then(
+      data => parse(data)
+    )
+  }
+
   function onKeyChg(e){
     const value = target2.value;
-    fetch(BASE_URL + "karyawan/data/all?divId=Any&key=" + encodeURIComponent(value))
-      .then(response => response.json())
-      .then(data => parse(data));
+    fetch(BASE_URL + "karyawan/data/all?divId=Any&key=" + encodeURIComponent(value)).then(response => response.json()).then(
+      data => parse(data)
+    );
   }
+
+
 </script>

@@ -25,7 +25,6 @@ class Admin_model extends CI_Model {
             'email_address'  	=> $this->input->post('email'),
             'password'  		=> password_hash($this->input->post('password'), PASSWORD_DEFAULT),
             'is_status'  		=> $this->input->post('status'),
-            'position_id'       => $this->input->post('position'),
             'created_at'  		=> date('Y-m-d H:i:s'),
             'permission_id'     => 1,
 
