@@ -67,7 +67,7 @@
               <?= $row['tipe_request'] ?>
             </td>
             <td class="text-capitalize">
-              <a target="_blank" href="<?= $row['image'] == "-" ? "" : base_url('image/index').'/'.basename($row['image']) ?>"><i class="ti ti-photo"></i></a>
+              <a target="_blank" href="<?= $row['image']  ?>"><i class="ti ti-photo"></i></a>
             </td>
             <td>
               <?= array_key_exists('catatan_awal', $row) ? $row['catatan_awal'] : $row['reason'] ?>

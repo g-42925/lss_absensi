@@ -64,7 +64,7 @@ foreach ($datas as $row):
               <?= $row['tipe_request']?>
             </td>
             <td class="w-s-n">
-              <a target="_blank" href="<?= $row['image'] == " -" ? "" : base_url('image/index') . '/' .basename($row['image'])?>"><i class="ti ti-photo"></i></a>
+              <a target="_blank" href="<?= $row['image'] ?>"><i class="ti ti-photo"></i></a>
             </td>
             <td class="w-s-n">
               <?= $row['catatan_awal']?>

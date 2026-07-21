@@ -78,6 +78,8 @@ class Locations extends CI_Controller {
                 $res = $this->lokasi->add_proses(
                   $this->session->userdata('company_id')
                 );
+
+                
                 if ($res==true) {
                     $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-success p-cg" role="alert">Data berhasil disimpan.</div></div>');
                     redirect('locations');
@@ -254,6 +256,46 @@ class Locations extends CI_Controller {
             $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-danger p-cg" role="alert">Proses gagal, silahkan coba lagi.</div></div>');
             redirect('locations/assign/'.$id);
         }
+    }
+
+    public function download_qr($id = null) {
+        if ($id == null) { redirect('locations'); }
+        $check = $this->db->get_where('m_lokasi', ['lokasi_id' => $id]);
+        if ($check->num_rows() == 0) { 
+            $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-danger p-cg" role="alert">Data tidak ditemukan.</div></div>');
+            redirect('locations'); 
+        }
+        $lokasi = $check->row_array();
+
+        // Data that will be stored inside the QR code
+        // $data_qr = "Lokasi: " . $lokasi['nama_lokasi'] . "\n" .
+        //            "Alamat: " . $lokasi['alamat_lokasi'] . "\n" .
+        //            "Garis Lintang: " . $lokasi['garis_lintang'] . "\n" .
+        //            "Garis Bujur: " . $lokasi['garis_bujur'];
+
+        $data_qr = [
+            'lat' => $lokasi['garis_lintang'],
+            'lng' => $lokasi['garis_bujur'],
+            'radius' => $lokasi['jangkauan_radius'],
+            'nama_lokasi' => $lokasi['nama_lokasi'],
+            'alamat_lokasi' => $lokasi['alamat_lokasi'],
+        ];
+
+        // Endroid QR Code Builder
+        $builder = new \Endroid\QrCode\Builder\Builder();
+        $result = $builder->build(
+            data: json_encode($data_qr),
+            size: 300,
+            margin: 10,
+            labelText: $lokasi['nama_lokasi']
+        );
+
+        $file_name = 'QR_' . preg_replace('/[^A-Za-z0-9\-]/', '_', $lokasi['nama_lokasi']) . '.png';
+
+        header('Content-Type: '.$result->getMimeType());
+        header('Content-Disposition: attachment; filename="'.$file_name.'"');
+        echo $result->getString();
+        exit;
     }
 
 }

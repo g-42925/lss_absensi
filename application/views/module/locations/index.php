@@ -23,6 +23,9 @@
             <td><?= $row['nama_lokasi'];?></td>
             <td><?= $row['alamat_lokasi'];?></td>
             <td align="right">
+              <a href="<?=base_url('locations/download_qr/'.$row['lokasi_id']);?>" class="btn p-1" title="Download QR" target="_blank">
+                <i class="ti ti-qrcode"></i>
+              </a>
               <a href="<?=base_url('locations/edit/'.$row['lokasi_id']).'?failed=false';?>" class="btn p-1">
                 <i class="ti ti-edit"></i>
               </a>

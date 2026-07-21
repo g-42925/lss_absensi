@@ -1,4 +1,8 @@
 <?php
+
+use Endroid\QrCode\Builder\Builder;
+use Endroid\QrCode\Writer\PngWriter;
+
 defined('BASEPATH') or exit('No direct script access allowed');
 
 class Locations_model extends CI_Model {
@@ -76,6 +80,7 @@ class Locations_model extends CI_Model {
             'created_at'  		    => date('Y-m-d H:i:s')
         ];
         $res = $this->db->insert('m_lokasi', $data);
+
         return $res;
     }
 

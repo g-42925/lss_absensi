@@ -11,6 +11,7 @@ typedef Status = ({bool signedIn, bool signedOut});
 typedef OverWork = ({bool onOverWork});
 typedef Exception = ({List<String> list});
 typedef Csh = ({bool allowed});
+typedef ServerTimeInfo = ({String? serverTime, int? upTime});
 
 
 typedef Config = ({
@@ -54,6 +55,7 @@ typedef Other = ({
   String fotoPegawai,
   String position,
   String status,
+  String nik,
 });
 
 typedef GlobalState = ({
@@ -75,7 +77,9 @@ typedef GlobalState = ({
   Exception exception,
   Csh csh,
   Reminder reminder,
-  XPresence presence
+  XPresence presence,
+  List<Map<String, dynamic>> offlineEntries,
+  ServerTimeInfo serverTimeInfo,
 });
 
 final globalStateProvider =
@@ -106,6 +110,7 @@ final globalStateProvider =
           fotoPegawai: '',
           position: '',
           status: '',
+          nik: '',
         ),
         holiday: (holiday: false, workDay: true),
         breakInfo: (onBreak: false, startFrom: ''),
@@ -121,7 +126,9 @@ final globalStateProvider =
         exception: (list: []),
         csh: (allowed: false),
         reminder:(lastLat:0,lastLon:0),
-        presence:(ci:"00:00",co:"00:00")
+        presence:(ci:"00:00",co:"00:00"),
+        offlineEntries: [],
+        serverTimeInfo: (serverTime: null, upTime: null)
       ));
     });
 
@@ -155,7 +162,9 @@ class GlobalStateProvider extends HydratedStateNotifier<GlobalState> {
       exception: state.exception,
       csh: (allowed: state.csh.allowed),
       reminder: (lastLat:lat,lastLon:lon),
-      presence: state.presence
+      presence: state.presence,
+      offlineEntries: state.offlineEntries,
+      serverTimeInfo: state.serverTimeInfo
     );
   }
 
@@ -182,7 +191,9 @@ class GlobalStateProvider extends HydratedStateNotifier<GlobalState> {
       exception: state.exception,
       csh: (allowed: state.csh.allowed),
       reminder:(lastLat:0,lastLon:0),
-      presence: state.presence
+      presence: state.presence,
+      offlineEntries: state.offlineEntries,
+      serverTimeInfo: state.serverTimeInfo
     );
   }
 
@@ -208,7 +219,9 @@ class GlobalStateProvider extends HydratedStateNotifier<GlobalState> {
       exception: state.exception,
       csh: (allowed: state.csh.allowed),
       reminder:state.reminder,
-      presence:state.presence
+      presence:state.presence,
+      offlineEntries: state.offlineEntries,
+      serverTimeInfo: state.serverTimeInfo
     );
   }
 
@@ -239,6 +252,7 @@ class GlobalStateProvider extends HydratedStateNotifier<GlobalState> {
         fotoPegawai: '',
         position: '',
         status: '',
+        nik: '',
       ),
       holiday: (holiday: false, workDay: true),
       breakInfo: (onBreak: false, startFrom: ''),
@@ -255,6 +269,8 @@ class GlobalStateProvider extends HydratedStateNotifier<GlobalState> {
       csh: (allowed: state.csh.allowed),
       reminder:state.reminder,
       presence:state.presence,
+      offlineEntries: state.offlineEntries,
+      serverTimeInfo: state.serverTimeInfo
     );
   }
 
@@ -278,7 +294,9 @@ class GlobalStateProvider extends HydratedStateNotifier<GlobalState> {
       exception: state.exception,
       csh: (allowed: state.csh.allowed),
       reminder:state.reminder,
-      presence:state.presence
+      presence:state.presence,
+      offlineEntries: state.offlineEntries,
+      serverTimeInfo: state.serverTimeInfo
     );
   }
 
@@ -302,7 +320,9 @@ class GlobalStateProvider extends HydratedStateNotifier<GlobalState> {
       exception: state.exception,
       csh: (allowed: state.csh.allowed),
       reminder:state.reminder,
-      presence:state.presence
+      presence:state.presence,
+      offlineEntries: state.offlineEntries,
+      serverTimeInfo: state.serverTimeInfo
     );
   }
 
@@ -326,7 +346,9 @@ class GlobalStateProvider extends HydratedStateNotifier<GlobalState> {
       exception: state.exception,
       csh: (allowed: state.csh.allowed),
       reminder:state.reminder,
-      presence:(ci:formattedTime,co:state.presence.co)
+      presence:(ci:formattedTime,co:state.presence.co),
+      offlineEntries: state.offlineEntries,
+      serverTimeInfo: state.serverTimeInfo
     );
   }
 
@@ -350,8 +372,9 @@ class GlobalStateProvider extends HydratedStateNotifier<GlobalState> {
       exception: state.exception,
       csh: (allowed: false),
       reminder:state.reminder,
-      presence:(ci:state.presence.ci,co:formattedTime)
-
+      presence:(ci:state.presence.ci,co:formattedTime),
+      offlineEntries: state.offlineEntries,
+      serverTimeInfo: state.serverTimeInfo
     );
   }
 
@@ -385,7 +408,9 @@ class GlobalStateProvider extends HydratedStateNotifier<GlobalState> {
       exception: state.exception,
       csh: (allowed: state.csh.allowed),
       reminder:state.reminder,
-      presence:state.presence
+      presence:state.presence,
+      offlineEntries: state.offlineEntries,
+      serverTimeInfo: state.serverTimeInfo
     );
   }
 
@@ -422,7 +447,9 @@ class GlobalStateProvider extends HydratedStateNotifier<GlobalState> {
       exception: state.exception,
       csh: (allowed: state.csh.allowed),
       reminder:state.reminder,
-      presence:state.presence
+      presence:state.presence,
+      offlineEntries: state.offlineEntries,
+      serverTimeInfo: state.serverTimeInfo
     );
   }
 
@@ -451,7 +478,9 @@ class GlobalStateProvider extends HydratedStateNotifier<GlobalState> {
       exception: state.exception,
       csh: (allowed: state.csh.allowed),
       reminder:state.reminder,
-      presence:state.presence
+      presence:state.presence,
+      offlineEntries: state.offlineEntries,
+      serverTimeInfo: state.serverTimeInfo
     );
   }
 
@@ -477,7 +506,9 @@ class GlobalStateProvider extends HydratedStateNotifier<GlobalState> {
       exception: state.exception,
       csh: (allowed: state.csh.allowed),
       reminder:state.reminder,
-      presence:state.presence
+      presence:state.presence,
+      offlineEntries: state.offlineEntries,
+      serverTimeInfo: state.serverTimeInfo
     );
   }
 
@@ -503,7 +534,9 @@ class GlobalStateProvider extends HydratedStateNotifier<GlobalState> {
       exception: state.exception,
       csh: (allowed: state.csh.allowed),
       reminder:state.reminder,
-      presence:state.presence
+      presence:state.presence,
+      offlineEntries: state.offlineEntries,
+      serverTimeInfo: state.serverTimeInfo
     );
   }
 
@@ -529,7 +562,9 @@ class GlobalStateProvider extends HydratedStateNotifier<GlobalState> {
       exception: state.exception,
       csh: (allowed: state.csh.allowed),
       reminder:state.reminder,
-      presence:state.presence
+      presence:state.presence,
+      offlineEntries: state.offlineEntries,
+      serverTimeInfo: state.serverTimeInfo
     );
   }
 
@@ -555,7 +590,105 @@ class GlobalStateProvider extends HydratedStateNotifier<GlobalState> {
       exception: (list: newExceptionList),
       csh: (allowed: state.csh.allowed),
       reminder:state.reminder,
-      presence:state.presence
+      presence:state.presence,
+      offlineEntries: state.offlineEntries,
+      serverTimeInfo: state.serverTimeInfo
+    );
+  }
+
+
+  addOfflineEntry(String type, String date) {
+    final newEntry = {
+      'id': DateTime.now().millisecondsSinceEpoch.toString(),
+      'type': type,
+      'date': date,
+    };
+    final newEntries = [...state.offlineEntries, newEntry];
+
+    state = (
+      auth: state.auth,
+      status: state.status,
+      company: state.company,
+      schedule: state.schedule,
+      location: state.location,
+      position: state.position,
+      other: state.other,
+      history: state.history,
+      permission: state.permission,
+      coordinate: state.coordinate,
+      holiday: state.holiday,
+      breakInfo: state.breakInfo,
+      overWork: state.overWork,
+      config: state.config,
+      task: state.task,
+      exception: state.exception,
+      csh: state.csh,
+      reminder: state.reminder,
+      presence: state.presence,
+      offlineEntries: newEntries,
+      serverTimeInfo: state.serverTimeInfo
+    );
+  }
+
+  updateOfflineEntryPhoto(String id, String captureTime) {
+    final updatedEntries = state.offlineEntries.map((e) {
+      if (e['id'] == id) {
+        return {
+          ...e,
+          'captureTime': captureTime,
+        };
+      }
+      return e;
+    }).toList();
+
+    state = (
+      auth: state.auth,
+      status: state.status,
+      company: state.company,
+      schedule: state.schedule,
+      location: state.location,
+      position: state.position,
+      other: state.other,
+      history: state.history,
+      permission: state.permission,
+      coordinate: state.coordinate,
+      holiday: state.holiday,
+      breakInfo: state.breakInfo,
+      overWork: state.overWork,
+      config: state.config,
+      task: state.task,
+      exception: state.exception,
+      csh: state.csh,
+      reminder: state.reminder,
+      presence: state.presence,
+      offlineEntries: updatedEntries,
+      serverTimeInfo: state.serverTimeInfo
+    );
+  }
+
+  setServerTime(String? serverTime, int? upTime) {
+    state = (
+      auth: state.auth,
+      status: state.status,
+      company: state.company,
+      schedule: state.schedule,
+      location: state.location,
+      position: state.position,
+      other: state.other,
+      history: state.history,
+      permission: state.permission,
+      coordinate: state.coordinate,
+      holiday: state.holiday,
+      breakInfo: state.breakInfo,
+      overWork: state.overWork,
+      config: state.config,
+      task: state.task,
+      exception: state.exception,
+      csh: state.csh,
+      reminder: state.reminder,
+      presence: state.presence,
+      offlineEntries: state.offlineEntries,
+      serverTimeInfo: (serverTime: serverTime, upTime: upTime),
     );
   }
 
@@ -580,6 +713,8 @@ class GlobalStateProvider extends HydratedStateNotifier<GlobalState> {
     final cshJson = json['csh'] ?? {};
     final reminderJson = json['reminder'] ?? {};
     final presenceJson = json['presence'] ?? {};
+    final offlineEntriesJson = json['offlineEntries'] as List? ?? [];
+    final serverTimeInfoJson = json['serverTimeInfo'] ?? {};
 
     return (
       auth: (
@@ -625,6 +760,7 @@ class GlobalStateProvider extends HydratedStateNotifier<GlobalState> {
         fotoPegawai: otherJson['fotoPegawai'] as String,
         position: otherJson['position'] as String,
         status: otherJson['status'] as String,
+        nik: otherJson['nik'] as String,
       ),
       permission: (id: permissionJson['id'] as int),
       history: [
@@ -659,7 +795,12 @@ class GlobalStateProvider extends HydratedStateNotifier<GlobalState> {
       presence:(
         ci:presenceJson['ci'] as String,
         co:presenceJson['co'] as String,
-      )
+      ),
+      offlineEntries: offlineEntriesJson.map((e) => Map<String, dynamic>.from(e)).toList(),
+      serverTimeInfo: (
+        serverTime: serverTimeInfoJson['serverTime'] as String?,
+        upTime: serverTimeInfoJson['upTime'] as int?,
+      ),
     );
   }
 
@@ -698,6 +839,7 @@ class GlobalStateProvider extends HydratedStateNotifier<GlobalState> {
         'fotoPegawai': state.other.fotoPegawai,
         'position': state.other.position,
         'status': state.other.status,
+        'nik': state.other.nik,
       },
       'permission': {'id': state.permission.id},
       'holiday': {
@@ -720,7 +862,8 @@ class GlobalStateProvider extends HydratedStateNotifier<GlobalState> {
       'exception': {'list': state.exception.list},
       'csh': {'allowed': state.csh.allowed},
       'reminder':{'lastLat':state.reminder.lastLat,'lastLon':state.reminder.lastLon},
-      'presence':{'ci':state.presence.ci,'co':state.presence.co}
+      'presence':{'ci':state.presence.ci,'co':state.presence.co},
+      'offlineEntries': state.offlineEntries,
     };
   }
 }

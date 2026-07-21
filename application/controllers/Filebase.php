@@ -1,5 +1,8 @@
 <?php
 
+
+defined('BASEPATH') or exit('No direct script access allowed');
+
 use Aws\S3\S3Client;
 use Aws\Credentials\Credentials;
 use Aws\Exception\AwsException;
@@ -16,11 +19,20 @@ class Filebase extends CI_Controller {
     
     
     public function unknown($fileName,$id){
+        function makePathAndResult($rootDir,$fileName,$year,$month){
+            return [
+              "path" => "https://storage.bunnycdn.com/leryn-ljm-2/absensi_{$rootDir}_unknown_{$year}_{$month}/{$fileName}.jpg",
+              "result" => "https://leryn-ljm-2.b-cdn.net/absensi_{$rootDir}_unknown_{$year}_{$month}/{$fileName}.jpg"
+            ];
+        }           
+        
+        
         $company = $this->db->query("select * from companies where id = ?",[$id])->row_array();
         $rootDir = explode('@', $company['email'])[0];
-        $path = "https://sg.storage.bunnycdn.com/leryn/absensi_{$rootDir}_unknown/{$fileName}.jpg";
+        $path = makePathAndResult($rootDir,$fileName,date('Y'),date('m'))['path'];
         
         $fp = fopen($_FILES['file']['tmp_name'], 'r');
+        
         $ch = curl_init($path);
             curl_setopt_array($ch, [
                 CURLOPT_UPLOAD => true,
@@ -28,7 +40,7 @@ class Filebase extends CI_Controller {
                 CURLOPT_INFILE => $fp,
                 CURLOPT_INFILESIZE => filesize($_FILES['file']['tmp_name']),
                 CURLOPT_HTTPHEADER => [
-                'AccessKey: 87444b62-a846-4c08-90ae4cd1779b-dc96-407a',
+                'AccessKey: 03121f61-fc15-4d6e-843e028c87b5-061e-42a9',
                 'Content-Type: ' . $_FILES['file']['type']
             ],
             CURLOPT_RETURNTRANSFER => true,
@@ -43,7 +55,7 @@ class Filebase extends CI_Controller {
         fclose($fp);
         
         if ($httpCode >= 200 && $httpCode < 300) {
-            echo "https://leryn.b-cdn.net/absensi_{$rootDir}_unknown/{$fileName}.jpg";
+            echo makePathAndResult($rootDir,$fileName,date('Y'),date('m'))['path'];
         } 
         else {
             show_error($response, $httpCode);
@@ -51,9 +63,16 @@ class Filebase extends CI_Controller {
     }
     
     public function exception($fileName,$id){
+        function makePathAndResult($rootDir,$fileName,$year,$month){
+            return [
+              "path" => "https://storage.bunnycdn.com/leryn-ljm-2/absensi_{$rootDir}_exception_{$year}_{$month}/{$fileName}.jpg",
+              "result" => "https://leryn-ljm-2.b-cdn.net/absensi_{$rootDir}_exception_{$year}_{$month}/{$fileName}.jpg"
+            ];
+        }             
+        
         $company = $this->db->query("select * from companies where id = ?",[$id])->row_array();
         $rootDir = explode('@', $company['email'])[0];
-        $path = "https://sg.storage.bunnycdn.com/leryn/absensi_{$rootDir}_exception/{$fileName}.jpg";
+        $path = makePathAndResult($rootDir,$fileName,date('Y'),date('m'))['path'];
         
         $fp = fopen($_FILES['file']['tmp_name'], 'r');
         $ch = curl_init($path);
@@ -63,7 +82,7 @@ class Filebase extends CI_Controller {
                 CURLOPT_INFILE => $fp,
                 CURLOPT_INFILESIZE => filesize($_FILES['file']['tmp_name']),
                 CURLOPT_HTTPHEADER => [
-                'AccessKey: 87444b62-a846-4c08-90ae4cd1779b-dc96-407a',
+                'AccessKey: 03121f61-fc15-4d6e-843e028c87b5-061e-42a9',
                 'Content-Type: ' . $_FILES['file']['type']
             ],
             CURLOPT_RETURNTRANSFER => true,
@@ -78,17 +97,27 @@ class Filebase extends CI_Controller {
         fclose($fp);
         
         if ($httpCode >= 200 && $httpCode < 300) {
-            echo "https://leryn.b-cdn.net/absensi_{$rootDir}_exception/{$fileName}.jpg";
+            echo makePathAndResult($rootDir,$fileName,date('Y'),date('m'))['result'];
         } 
         else {
             show_error($response, $httpCode);
         }
-    }    
-    
+    }
+
     public function task($fileName,$id){
+        function makePathAndResult($rootDir,$fileName,$year,$month){
+            return [
+              "path" => "https://storage.bunnycdn.com/leryn-ljm-2/absensi_{$rootDir}_task_{$year}_{$month}/{$fileName}.jpg",
+              "result" => "https://leryn-ljm-2.b-cdn.net/absensi_{$rootDir}_task_{$year}_{$month}/{$fileName}.jpg"
+            ];
+        }        
+        
         $company = $this->db->query("select * from companies where id = ?",[$id])->row_array();
         $rootDir = explode('@', $company['email'])[0];
-        $path = "https://sg.storage.bunnycdn.com/leryn/absensi_{$rootDir}_task/{$fileName}.jpg";
+        $path    = makePathAndResult($rootDir,$fileName,date('Y'),date('m'))['path'];
+        
+        
+        //$path = "https://storage.bunnycdn.com/leryn-ljm/absensi_{$rootDir}_task/{$fileName}.jpg";
         
         $fp = fopen($_FILES['file']['tmp_name'], 'r');
         $ch = curl_init($path);
@@ -98,7 +127,7 @@ class Filebase extends CI_Controller {
                 CURLOPT_INFILE => $fp,
                 CURLOPT_INFILESIZE => filesize($_FILES['file']['tmp_name']),
                 CURLOPT_HTTPHEADER => [
-                'AccessKey: 87444b62-a846-4c08-90ae4cd1779b-dc96-407a',
+                'AccessKey: 03121f61-fc15-4d6e-843e028c87b5-061e-42a9',
                 'Content-Type: ' . $_FILES['file']['type']
             ],
             CURLOPT_RETURNTRANSFER => true,
@@ -113,7 +142,9 @@ class Filebase extends CI_Controller {
         fclose($fp);
         
         if ($httpCode >= 200 && $httpCode < 300) {
-            echo "https://leryn.b-cdn.net/absensi_{$rootDir}_task/{$fileName}.jpg";
+            echo makePathAndResult($rootDir,$fileName,date('Y'),date('m'))['result'];
+            
+            //echo "https://leryn-ljm.b-cdn.net/absensi_{$rootDir}_task/{$fileName}.jpg";
         } 
         else {
             show_error($response, $httpCode);
@@ -121,9 +152,19 @@ class Filebase extends CI_Controller {
     }
     
     public function attendance($fileName,$id){
+        function makePathAndResult($rootDir,$fileName,$year,$month){
+            return [
+              "path" => "https://storage.bunnycdn.com/leryn-ljm-2/absensi_{$rootDir}_attendance_{$year}_{$month}/{$fileName}.jpg",
+              "result" => "https://leryn-ljm-2.b-cdn.net/absensi_{$rootDir}_attendance_{$year}_{$month}/{$fileName}.jpg"
+            ];
+        }
+        
+
         $company = $this->db->query("select * from companies where id = ?",[$id])->row_array();
         $rootDir = explode('@', $company['email'])[0];
-        $path = "https://sg.storage.bunnycdn.com/leryn/absensi_{$rootDir}_attendance/{$fileName}.jpg";
+        $path    = makePathAndResult($rootDir,$fileName,date('Y'),date('m'))['path'];
+
+        //$path = "https://storage.bunnycdn.com/leryn-ljm/absensi_{$rootDir}_attendance/{$fileName}.jpg";
         
         $fp = fopen($_FILES['file']['tmp_name'], 'r');
         $ch = curl_init($path);
@@ -133,7 +174,7 @@ class Filebase extends CI_Controller {
                 CURLOPT_INFILE => $fp,
                 CURLOPT_INFILESIZE => filesize($_FILES['file']['tmp_name']),
                 CURLOPT_HTTPHEADER => [
-                'AccessKey: 87444b62-a846-4c08-90ae4cd1779b-dc96-407a',
+                'AccessKey: 03121f61-fc15-4d6e-843e028c87b5-061e-42a9',
                 'Content-Type: ' . $_FILES['file']['type']
             ],
             CURLOPT_RETURNTRANSFER => true,
@@ -148,7 +189,9 @@ class Filebase extends CI_Controller {
         fclose($fp);
         
         if ($httpCode >= 200 && $httpCode < 300) {
-            echo "https://leryn.b-cdn.net/absensi_{$rootDir}_attendance/{$fileName}.jpg";
+            //echo "https://leryn-ljm.b-cdn.net/absensi_{$rootDir}_attendance/{$fileName}.jpg";
+            
+            echo makePathAndResult($rootDir,$fileName,date('Y'),date('m'))['result'];
         } 
         else {
             show_error($response, $httpCode);
@@ -158,7 +201,7 @@ class Filebase extends CI_Controller {
     public function upload($fileName,$id){
         $company = $this->db->query("select * from companies where id = ?",[$id])->row_array();
         $rootDir = explode('@', $company['email'])[0];
-        $path = "https://sg.storage.bunnycdn.com/leryn/absensi_{$rootDir}_unknown/{$fileName}.jpg";
+        $path = "https://storage.bunnycdn.com/leryn-ljm/absensi_{$rootDir}_unknown/{$fileName}.jpg";
         
         $fp = fopen($_FILES['file']['tmp_name'], 'r');
         $ch = curl_init($path);
@@ -183,7 +226,7 @@ class Filebase extends CI_Controller {
         fclose($fp);
         
         if ($httpCode >= 200 && $httpCode < 300) {
-            echo "https://leryn.b-cdn.net/absensi_{$rootDir}_unknown/{$fileName}.jpg";
+            echo "https://leryn-ljm.b-cdn.net/absensi_{$rootDir}_unknown/{$fileName}.jpg";
         } 
         else {
             show_error($response, $httpCode);

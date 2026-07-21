@@ -442,6 +442,7 @@ function loginv2(){
         if ($rFile) $r1['foto_pegawai'] = $rFile['source'];
         
         if($workSystem[0] == "s"){
+          $rW = $this->db->query("select * from warning where employeeId = ?",[$r1['pegawai_id']])->result_array();
           $r2 = $this->db->query("select * from shift_detail x join employee_shift y on x.shift_detail_id = y.shift_detail_id  where y.employee_id = ?",[$r1['pegawai_id']])->row_array();
           $r3 = $this->db->query("select * from shift_off where employee_id = ? and day = ?",[$r1['pegawai_id'],$today])->row_array();
         
@@ -457,6 +458,7 @@ function loginv2(){
             "co_limit" => $r1['clockout_restriction'],
             "tolerance" => $r2['tardiness_tolerance'],
             "locations" => $r5,
+            "warningList" => $rW,
             ...$r1,
             ...$r2
           ];
@@ -471,6 +473,7 @@ function loginv2(){
           );
       }
       if($workSystem[0] == "wd"){
+          $rW = $this->db->query("select * from warning where employeeId = ?",[$r1['pegawai_id']])->result_array();
           $r2 = $this->db->query("select * from m_pola_kerja mpk join m_pola_kerja_det mpkd on mpk.pola_kerja_id = mpkd.pola_kerja_id where mpk.pola_kerja_id = ? and is_day = ?",[$workSystem[1],$today])->row_array();
           $rNext = $this->db->query("select * from m_pola_kerja mpk join m_pola_kerja_det mpkd on mpk.pola_kerja_id = mpkd.pola_kerja_id where mpk.pola_kerja_id = ? and is_day = ?",[$workSystem[1],$nextDay])->row_array();
           
@@ -487,6 +490,7 @@ function loginv2(){
             "ci_limit" => $r1['restriction'],
             "co_limit" => $r1['clockout_restriction'],
             "tolerance" => $r2['toleransi_terlambat'],
+            "warningList" => $rW,
             ...$r1,
             ...$r2
           ];
