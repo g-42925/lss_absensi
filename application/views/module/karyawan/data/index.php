@@ -74,6 +74,9 @@
               <a href="<?= base_url('payroll/filter/').$row['pegawai_id'] ?>" class="btn p-1" title="payroll">
                 <i class="ti ti-calendar"></i>
               </a>
+              <a href="<?= base_url('kpi_evaluation/index/').$row['pegawai_id'] ?>" class="btn p-1 text-warning" title="Evaluasi KPI">
+                <i class="ti ti-star"></i>
+              </a>
               <a href="<?= base_url('karyawan/data/kick/').$row['pegawai_id'] ?>" class="btn p-1" title="kick">
                 <i class="ti ti-user-x"></i>
               </a>

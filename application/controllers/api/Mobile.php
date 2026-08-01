@@ -3333,4 +3333,12 @@ function login(){
       }
     }
   }
+  
+  function exceptiontoday($employeeId,$type){
+    $f = $type == "in" ? "Absen Masuk":"Absen Pulang";
+    $parameter = [date('Y-m-d'),$f,$employeeId,1];
+    $q = "select * from exception where date = ? and type = ? and employee_id = ? and status = ?";
+    $r = $this->db->query($q,$parameter)->num_rows();
+    echo $r > 0 ? json_encode(['exist' => 'yes']) : json_encode(['exist' => 'no']);
+  }
 }

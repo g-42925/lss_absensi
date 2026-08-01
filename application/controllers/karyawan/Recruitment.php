@@ -38,12 +38,12 @@ class Recruitment extends CI_Controller {
 
         $data['page'] = filter_var($this->input->get('page'));
 
-        $data['job'] = $this->db->query("select * from job j join position p on p.id = j.position_id where p.company_id = ?",[$companyId])->result_array();
+        $data['job'] = $this->db->query("select * from job j join position p on p.id = j.position_id where p.company_id = ? order by job_id desc",[$companyId])->result_array();
 
-        $data['candidate'] = $this->db->query("select * from candidate where company_id = ?",[$companyId])->result_array();
+        $data['candidate'] = $this->db->query("select * from candidate c join position p on c.position_id = p.id where c.company_id = ? and c.status = ? order by c.candidate_id desc",[$companyId,'waiting'])->result_array();
 
-        $data['interview'] = $this->db->query("select * from interview i join candidate c on i.candidate_id = c.candidate_id join position p on c.position_id = p.id where c.company_id = ?",[$companyId])->result_array();
-        
+        $data['interview'] = $this->db->query("select * from interview i join candidate c on i.candidate_id = c.candidate_id join position p on c.position_id = p.id where c.company_id = ? order by i.interview_id desc",[$companyId])->result_array();
+
         $this->load->view('templates/header', $data);
         $this->load->view('templates/sidemenu', $data);
         $this->load->view('templates/sidenav', $data);

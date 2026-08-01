@@ -22,15 +22,15 @@
             <div class="row g-3">
               <div class="col-xl-12 col-md-12">
                 <label class="form-label">Alamat<i class="text-danger">*</i></label>
-                <textarea type="text" class="form-control btn-light" name="alamat" id="alamat_locglgb" placeholder="..." required="" rows="4" readonly=""><?=$edit['alamat_lokasi'];?></textarea>
+                <textarea type="text" class="form-control btn-light" name="alamat" id="alamat_locglgb" placeholder="..." required="" rows="4"><?=$edit['alamat_lokasi'];?></textarea>
               </div>
               <div class="col-xl-12 col-md-12">
                 <label class="form-label">Garis Lintang<i class="text-danger">*</i></label>
-                <input type="text" class="form-control btn-light" name="gl" placeholder="..." required="" readonly="" value="<?=$edit['garis_lintang'];?>" id="latitude_gl" />
+                <input type="text" class="form-control btn-light" name="gl" placeholder="..." required="" value="<?=$edit['garis_lintang'];?>" id="latitude_gl" />
               </div>
               <div class="col-xl-12 col-md-12">
                 <label class="form-label">Garis Bujur<i class="text-danger">*</i></label>
-                <input type="text" class="form-control btn-light" name="gb" placeholder="..." required="" readonly="" value="<?=$edit['garis_bujur'];?>" id="longitude_gb" />
+                <input type="text" class="form-control btn-light" name="gb" placeholder="..." required="" value="<?=$edit['garis_bujur'];?>" id="longitude_gb" />
               </div>
               <div class="col-xl-12 col-md-12">
                 <label class="form-label">Nama Lokasi<i class="text-danger">*</i></label>
@@ -51,6 +51,13 @@
                   <option value="45" <?php if ($edit['jangkauan_radius']=='45') echo 'selected'; ?>>45 meter</option>
                   <option value="50" <?php if ($edit['jangkauan_radius']=='50') echo 'selected'; ?>>50 meter</option>
                   <option value="100" <?php if ($edit['jangkauan_radius']=='100') echo 'selected'; ?>>100 meter</option>
+                </select>
+              </div>
+              <div class="col-xl-12 col-md-12">
+                <label class="form-label">Lokasi Utama</label>
+                <select class="form-select" name="lokasi_utama" id="lokasi_utama" required>
+                  <option value="1" <?php if ($edit['main_location']=='1') echo 'selected'; ?>>Ya</option>
+                  <option value="0" <?php if ($edit['main_location']=='0') echo 'selected'; ?>>Tidak</option>
                 </select>
               </div>
             </div>

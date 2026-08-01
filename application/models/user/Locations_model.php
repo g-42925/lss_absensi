@@ -77,7 +77,8 @@ class Locations_model extends CI_Model {
             'garis_lintang'  	    => $this->input->post('gl'),
             'garis_bujur'           => $this->input->post('gb'),
             'jangkauan_radius'      => $this->input->post('radius'),
-            'created_at'  		    => date('Y-m-d H:i:s')
+            'created_at'  		    => date('Y-m-d H:i:s'),
+            'main_location'         => $this->input->post('lokasi_utama')
         ];
         $res = $this->db->insert('m_lokasi', $data);
 
@@ -90,7 +91,8 @@ class Locations_model extends CI_Model {
             'alamat_lokasi'         => $this->input->post('alamat'),
             'garis_lintang'         => $this->input->post('gl'),
             'garis_bujur'           => $this->input->post('gb'),
-            'jangkauan_radius'      => $this->input->post('radius')
+            'jangkauan_radius'      => $this->input->post('radius'),
+            'main_location'         => $this->input->post('lokasi_utama')
         ]);
         $this->db->where('lokasi_id', $id);
         $res = $this->db->update('m_lokasi');

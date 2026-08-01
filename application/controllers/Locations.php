@@ -67,7 +67,8 @@ class Locations extends CI_Controller {
         $this->form_validation->set_rules('gb', 'Garis Bujur', 'trim|required|xss_clean|htmlspecialchars');
         $this->form_validation->set_rules('nama', 'Nama', 'trim|required|xss_clean|htmlspecialchars');
         $this->form_validation->set_rules('radius', 'Radius', 'trim|required|xss_clean|htmlspecialchars');
-
+        $this->form_validation->set_rules('lokasi_utama', 'Lokasi Utama', 'trim|required|xss_clean|htmlspecialchars');
+        
         if ($this->form_validation->run() == false) {
             $this->session->set_flashdata('message', '<div class="alert alert-danger p-cg" role="alert">'.validation_errors().'</div>');
             redirect('locations/add?failed=true');
@@ -138,6 +139,7 @@ class Locations extends CI_Controller {
         $this->form_validation->set_rules('gb', 'Garis Bujur', 'trim|required|xss_clean|htmlspecialchars');
         $this->form_validation->set_rules('nama', 'Nama', 'trim|required|xss_clean|htmlspecialchars');
         $this->form_validation->set_rules('radius', 'Radius', 'trim|required|xss_clean|htmlspecialchars');
+        $this->form_validation->set_rules('lokasi_utama', 'Lokasi Utama', 'trim|required|xss_clean|htmlspecialchars');
 
         if ($this->form_validation->run() == false) {
             $this->session->set_flashdata('message', '<div class="alert alert-danger p-cg" role="alert">'.validation_errors().'</div>');

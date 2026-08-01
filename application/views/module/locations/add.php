@@ -28,15 +28,15 @@
             <div class="row g-3">
               <div class="col-xl-12 col-md-12">
                 <label class="form-label">Alamat<i class="text-danger">*</i></label>
-                <textarea type="text" class="form-control btn-light" name="alamat" id="alamat_locglgb" placeholder="..." required="" rows="4" readonly=""></textarea>
+                <textarea type="text" class="form-control btn-light" name="alamat" id="alamat_locglgb" placeholder="..." required="" rows="4"></textarea>
               </div>
               <div class="col-xl-12 col-md-12">
                 <label class="form-label">Garis Lintang<i class="text-danger">*</i></label>
-                <input type="text" class="form-control btn-light" name="gl" placeholder="..." required="" readonly="" id="latitude_gl" />
+                <input type="text" class="form-control btn-light" name="gl" placeholder="..." required="" id="latitude_gl" />
               </div>
               <div class="col-xl-12 col-md-12">
                 <label class="form-label">Garis Bujur<i class="text-danger">*</i></label>
-                <input type="text" class="form-control btn-light" name="gb" placeholder="..." required="" readonly="" id="longitude_gb" />
+                <input type="text" class="form-control btn-light" name="gb" placeholder="..." required="" id="longitude_gb" />
               </div>
               <div class="col-xl-12 col-md-12">
                 <label class="form-label">Nama Lokasi<i class="text-danger">*</i></label>
@@ -65,6 +65,13 @@
                   <option value="90">90 Meter</option>
                   <option value="95">95 Meter</option>
                   <option value="100">100 Meter</option>
+                </select>
+              </div>
+              <div class="col-xl-12 col-md-12">
+                <label class="form-label">Lokasi Utama</label>
+                <select class="form-select" name="lokasi_utama" id="lokasi_utama" required>
+                  <option value="1">Ya</option>
+                  <option value="0" selected>Tidak</option>
                 </select>
               </div>
             </div>
@@ -105,25 +112,32 @@
       resultBox.innerHTML = "";
       return;
     }
-
+    
+    const vb = '98.5926323,3.4799395,98.7472107,3.8013181'
+    const key = '3f10210400774c8da4e2f36c855b2b7a'
+    
     const res = await fetch(
-      `https://us1.locationiq.com/v1/search?key=pk.d06328c7edafb1675ef1d1914ec2acd4&q=${encodeURIComponent(keyword)}&format=json&countrycodes=id`
+      `https://api.geoapify.com/v1/geocode/autocomplete?text=${encodeURIComponent(keyword)}&filter=rect:${vb}&limit=10&apiKey=${key}`
     );
+
+    // const res = await fetch(
+    //   `https://us1.locationiq.com/v1/search?key=pk.d06328c7edafb1675ef1d1914ec2acd4&q=${encodeURIComponent(keyword)}&format=json&countrycodes=id&viewbox=${vb}&bounded=1`
+    // );
 
     const data = await res.json();
 
     resultBox.innerHTML = "";
 
-    data.forEach(item=>{
+    data.features.forEach(item=>{
 
         resultBox.innerHTML += `
             <a
                 class="list-group-item list-group-item-action"
-                data-lat="${item.lat}"
-                data-lon="${item.lon}"
-                data-address="${item.display_name}"
+                data-lat="${item.properties.lat}"
+                data-lon="${item.properties.lon}"
+                data-address="${item.properties.formatted}"
             >
-                ${item.display_name}
+                ${item.properties.formatted}
             </a>
         `;
 
