@@ -11,8 +11,7 @@ class Activity extends CI_Controller{
     public $menu;
     public $rp;
 
-    public function __construct()
-    {
+    public function __construct(){
         parent::__construct();
         is_logged_in();
         $this->load->library('form_validation');

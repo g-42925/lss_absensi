@@ -21,8 +21,8 @@ class Filebase extends CI_Controller {
     public function unknown($fileName,$id){
         function makePathAndResult($rootDir,$fileName,$year,$month){
             return [
-              "path" => "https://storage.bunnycdn.com/leryn-ljm-2/absensi_{$rootDir}_unknown_{$year}_{$month}/{$fileName}.jpg",
-              "result" => "https://leryn-ljm-2.b-cdn.net/absensi_{$rootDir}_unknown_{$year}_{$month}/{$fileName}.jpg"
+              "path" => "https://storage.bunnycdn.com/leryn-ljm-3/absensi_{$rootDir}_unknown_{$year}_{$month}/{$fileName}.jpg",
+              "result" => "https://leryn-ljm-3.b-cdn.net/absensi_{$rootDir}_unknown_{$year}_{$month}/{$fileName}.jpg"
             ];
         }           
         
@@ -40,7 +40,7 @@ class Filebase extends CI_Controller {
                 CURLOPT_INFILE => $fp,
                 CURLOPT_INFILESIZE => filesize($_FILES['file']['tmp_name']),
                 CURLOPT_HTTPHEADER => [
-                'AccessKey: 03121f61-fc15-4d6e-843e028c87b5-061e-42a9',
+                'AccessKey: 625c8418-f512-4642-98885cb3a927-3b8b-442a',
                 'Content-Type: ' . $_FILES['file']['type']
             ],
             CURLOPT_RETURNTRANSFER => true,
@@ -55,7 +55,7 @@ class Filebase extends CI_Controller {
         fclose($fp);
         
         if ($httpCode >= 200 && $httpCode < 300) {
-            echo makePathAndResult($rootDir,$fileName,date('Y'),date('m'))['path'];
+            echo makePathAndResult($rootDir,$fileName,date('Y'),date('m'))['result'];
         } 
         else {
             show_error($response, $httpCode);
@@ -65,8 +65,8 @@ class Filebase extends CI_Controller {
     public function exception($fileName,$id){
         function makePathAndResult($rootDir,$fileName,$year,$month){
             return [
-              "path" => "https://storage.bunnycdn.com/leryn-ljm-2/absensi_{$rootDir}_exception_{$year}_{$month}/{$fileName}.jpg",
-              "result" => "https://leryn-ljm-2.b-cdn.net/absensi_{$rootDir}_exception_{$year}_{$month}/{$fileName}.jpg"
+              "path" => "https://storage.bunnycdn.com/leryn-ljm-3/absensi_{$rootDir}_exception_{$year}_{$month}/{$fileName}.jpg",
+              "result" => "https://leryn-ljm-3.b-cdn.net/absensi_{$rootDir}_exception_{$year}_{$month}/{$fileName}.jpg"
             ];
         }             
         
@@ -82,7 +82,7 @@ class Filebase extends CI_Controller {
                 CURLOPT_INFILE => $fp,
                 CURLOPT_INFILESIZE => filesize($_FILES['file']['tmp_name']),
                 CURLOPT_HTTPHEADER => [
-                'AccessKey: 03121f61-fc15-4d6e-843e028c87b5-061e-42a9',
+                'AccessKey: 625c8418-f512-4642-98885cb3a927-3b8b-442a',
                 'Content-Type: ' . $_FILES['file']['type']
             ],
             CURLOPT_RETURNTRANSFER => true,
@@ -107,8 +107,8 @@ class Filebase extends CI_Controller {
     public function task($fileName,$id){
         function makePathAndResult($rootDir,$fileName,$year,$month){
             return [
-              "path" => "https://storage.bunnycdn.com/leryn-ljm-2/absensi_{$rootDir}_task_{$year}_{$month}/{$fileName}.jpg",
-              "result" => "https://leryn-ljm-2.b-cdn.net/absensi_{$rootDir}_task_{$year}_{$month}/{$fileName}.jpg"
+              "path" => "https://storage.bunnycdn.com/leryn-ljm-3/absensi_{$rootDir}_task_{$year}_{$month}/{$fileName}.jpg",
+              "result" => "https://leryn-ljm-3.b-cdn.net/absensi_{$rootDir}_task_{$year}_{$month}/{$fileName}.jpg"
             ];
         }        
         
@@ -127,7 +127,7 @@ class Filebase extends CI_Controller {
                 CURLOPT_INFILE => $fp,
                 CURLOPT_INFILESIZE => filesize($_FILES['file']['tmp_name']),
                 CURLOPT_HTTPHEADER => [
-                'AccessKey: 03121f61-fc15-4d6e-843e028c87b5-061e-42a9',
+                'AccessKey: 625c8418-f512-4642-98885cb3a927-3b8b-442a',
                 'Content-Type: ' . $_FILES['file']['type']
             ],
             CURLOPT_RETURNTRANSFER => true,
@@ -143,8 +143,6 @@ class Filebase extends CI_Controller {
         
         if ($httpCode >= 200 && $httpCode < 300) {
             echo makePathAndResult($rootDir,$fileName,date('Y'),date('m'))['result'];
-            
-            //echo "https://leryn-ljm.b-cdn.net/absensi_{$rootDir}_task/{$fileName}.jpg";
         } 
         else {
             show_error($response, $httpCode);
@@ -154,8 +152,8 @@ class Filebase extends CI_Controller {
     public function attendance($fileName,$id){
         function makePathAndResult($rootDir,$fileName,$year,$month){
             return [
-              "path" => "https://storage.bunnycdn.com/leryn-ljm-2/absensi_{$rootDir}_attendance_{$year}_{$month}/{$fileName}.jpg",
-              "result" => "https://leryn-ljm-2.b-cdn.net/absensi_{$rootDir}_attendance_{$year}_{$month}/{$fileName}.jpg"
+              "path" => "https://storage.bunnycdn.com/leryn-ljm-3/absensi_{$rootDir}_attendance_{$year}_{$month}/{$fileName}.jpg",
+              "result" => "https://leryn-ljm-3.b-cdn.net/absensi_{$rootDir}_attendance_{$year}_{$month}/{$fileName}.jpg"
             ];
         }
         
@@ -164,8 +162,6 @@ class Filebase extends CI_Controller {
         $rootDir = explode('@', $company['email'])[0];
         $path    = makePathAndResult($rootDir,$fileName,date('Y'),date('m'))['path'];
 
-        //$path = "https://storage.bunnycdn.com/leryn-ljm/absensi_{$rootDir}_attendance/{$fileName}.jpg";
-        
         $fp = fopen($_FILES['file']['tmp_name'], 'r');
         $ch = curl_init($path);
             curl_setopt_array($ch, [
@@ -174,7 +170,7 @@ class Filebase extends CI_Controller {
                 CURLOPT_INFILE => $fp,
                 CURLOPT_INFILESIZE => filesize($_FILES['file']['tmp_name']),
                 CURLOPT_HTTPHEADER => [
-                'AccessKey: 03121f61-fc15-4d6e-843e028c87b5-061e-42a9',
+                'AccessKey: 625c8418-f512-4642-98885cb3a927-3b8b-442a',
                 'Content-Type: ' . $_FILES['file']['type']
             ],
             CURLOPT_RETURNTRANSFER => true,
@@ -189,8 +185,6 @@ class Filebase extends CI_Controller {
         fclose($fp);
         
         if ($httpCode >= 200 && $httpCode < 300) {
-            //echo "https://leryn-ljm.b-cdn.net/absensi_{$rootDir}_attendance/{$fileName}.jpg";
-            
             echo makePathAndResult($rootDir,$fileName,date('Y'),date('m'))['result'];
         } 
         else {

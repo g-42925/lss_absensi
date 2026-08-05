@@ -88,6 +88,7 @@ class CI_Loader {
     public $attr;
     public $slid;
     public $news;
+		public $kpi_m;
 	// All these are set automatically. Don't mess with them.
 	/**
 	 * Nesting level of the output buffering mechanism
