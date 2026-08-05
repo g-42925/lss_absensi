@@ -309,6 +309,7 @@ class Kpi_absensi extends CI_Controller
             'Hari Cuti', 'Hari Alpha', '% Kehadiran',
             'Jml Terlambat', 'Total Menit Terlambat', 'Rata-rata Menit Terlambat',
             '% Tepat Waktu Masuk', '% Tepat Waktu Pulang', 'Total Jam Kerja',
+            'Jumlah SP', 'KPI Score',
         ]);
 
         $kpi_list = $this->kpi_m->get_all_kpi($companyId, $bulan, $tahun);
@@ -334,6 +335,8 @@ class Kpi_absensi extends CI_Controller
                 number_format($k['persen_tepat_waktu_masuk'], 2) . '%',
                 number_format($k['persen_tepat_waktu_pulang'], 2) . '%',
                 number_format($k['total_jam_kerja'], 2) . ' jam',
+                $k['jumlah_sp'],
+                number_format($k['kpi_score'], 2),
             ]);
         }
 

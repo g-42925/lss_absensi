@@ -171,6 +171,14 @@ class Kpi_absensi_model extends CI_Model
             ];
         }
 
+        // ── Surat Peringatan (SP) ─────────────────────────────
+        $sp_query = $this->db->query(
+            "SELECT COUNT(id) as jml_sp FROM warning 
+             WHERE employeeId = ? AND MONTH(date) = ? AND YEAR(date) = ?",
+            [$pegawai_id, $bulan, $tahun]
+        )->row_array();
+        $jumlah_sp = $sp_query ? (int) $sp_query['jml_sp'] : 0;
+
         // ── Kalkulasi persentase ──────────────────────────────
         $persen_kehadiran = $hari_kerja_efektif > 0
             ? round(($hari_hadir / $hari_kerja_efektif) * 100, 2)
@@ -190,6 +198,12 @@ class Kpi_absensi_model extends CI_Model
             : 0;
 
         $total_jam_kerja = round($total_menit_kerja / 60, 2);
+
+        // ── Kalkulasi Skor Akhir KPI ──────────────────────────
+        // Absensi (Kehadiran) bobot 70%, SP bobot 30%
+        // Nilai maksimal SP = 30. Setiap 1 SP mengurangi 10 poin.
+        $sp_points = max(0, 30 - ($jumlah_sp * 10));
+        $kpi_score = ($persen_kehadiran * 0.70) + $sp_points;
 
         return [
             // Meta
@@ -214,6 +228,9 @@ class Kpi_absensi_model extends CI_Model
             // Jam kerja
             'total_menit_kerja'       => $total_menit_kerja,
             'total_jam_kerja'         => $total_jam_kerja,
+            // SP & Final Score
+            'jumlah_sp'               => $jumlah_sp,
+            'kpi_score'               => $kpi_score,
             // Breakdown harian (tidak disimpan ke DB, hanya untuk tampilan)
             'breakdown'               => $breakdown,
         ];
@@ -261,6 +278,8 @@ class Kpi_absensi_model extends CI_Model
             'persen_tepat_waktu_pulang' => $kpi['persen_tepat_waktu_pulang'],
             'total_menit_kerja'         => $kpi['total_menit_kerja'],
             'total_jam_kerja'           => $kpi['total_jam_kerja'],
+            'jumlah_sp'                 => $kpi['jumlah_sp'],
+            'kpi_score'                 => $kpi['kpi_score'],
             'generated_at'              => date('Y-m-d H:i:s'),
         ];
 

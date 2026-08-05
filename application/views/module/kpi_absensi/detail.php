@@ -110,16 +110,20 @@ function persen_color($val) {
   <!-- KPI Summary Stat Cards -->
   <div class="row g-3 mb-4">
 
-    <!-- % Kehadiran -->
+    <!-- % Kehadiran & KPI Score -->
     <div class="col-md-4 col-xl-2">
       <div class="card text-center h-100 border-0 shadow-sm">
         <div class="card-body py-4">
-          <i class="ti ti-chart-donut ti-lg mb-2 text-success"></i>
-          <h3 class="fw-bold <?= persen_color($kpi['persen_kehadiran']); ?> mb-0">
-            <?= number_format($kpi['persen_kehadiran'], 1); ?>%
+          <i class="ti ti-award ti-lg mb-2 text-primary"></i>
+          <h3 class="fw-bold <?= persen_color($kpi['kpi_score']); ?> mb-0">
+            <?= number_format($kpi['kpi_score'], 1); ?>
           </h3>
-          <small class="text-muted d-block">% Kehadiran</small>
-          <small class="text-muted"><?= $kpi['hari_hadir']; ?> / <?= $kpi['hari_kerja_efektif']; ?> hari</small>
+          <small class="text-muted d-block">Nilai Akhir KPI</small>
+          <hr class="my-2">
+          <h5 class="fw-bold <?= persen_color($kpi['persen_kehadiran']); ?> mb-0">
+            <?= number_format($kpi['persen_kehadiran'], 1); ?>%
+          </h5>
+          <small class="text-muted d-block">Kehadiran (SP: <?= $kpi['jumlah_sp']; ?>)</small>
         </div>
       </div>
     </div>

@@ -166,21 +166,13 @@ function kpi_badge_persen($val) {
     <div class="card-datatable table-responsive">
       <table class="table table-hover border-top" id="kpiTable">
         <thead class="table-light">
-          <tr class="text-center">
+          <tr class="text-center text-nowrap">
             <th class="text-start">#</th>
             <th class="text-start">Karyawan</th>
-            <th>Hari Kerja</th>
-            <th>Hadir</th>
-            <th>Izin</th>
-            <th>Sakit</th>
-            <th>Cuti</th>
-            <th>Alpha</th>
-            <th>% Hadir</th>
-            <th>Terlambat</th>
-            <th>Rata Menit Terlambat</th>
-            <th>% Tepat Masuk</th>
-            <th>% Tepat Pulang</th>
+            <th class="text-start">Statistik Kehadiran</th>
+            <th class="text-start">Performa Waktu</th>
             <th>Total Jam</th>
+            <th>Final KPI</th>
             <th>Aksi</th>
           </tr>
         </thead>
@@ -206,51 +198,55 @@ function kpi_badge_persen($val) {
             </td>
 
             <?php if ($kpi): ?>
-            <td class="text-center"><?= $kpi['hari_kerja_efektif']; ?></td>
-            <td class="text-center"><span class="badge bg-label-success"><?= $kpi['hari_hadir']; ?></span></td>
-            <td class="text-center"><span class="badge bg-label-info"><?= $kpi['hari_izin']; ?></span></td>
-            <td class="text-center"><span class="badge bg-label-warning"><?= $kpi['hari_sakit']; ?></span></td>
-            <td class="text-center"><span class="badge bg-label-secondary"><?= $kpi['hari_cuti']; ?></span></td>
-            <td class="text-center">
-              <?php if ($kpi['hari_alpha'] > 0): ?>
-                <span class="badge bg-label-danger"><?= $kpi['hari_alpha']; ?></span>
-              <?php else: ?>
-                <span class="badge bg-label-success">0</span>
-              <?php endif; ?>
+            <td>
+              <div class="d-flex flex-column gap-1 text-start">
+                <small class="text-muted mb-1">Hari Kerja Efektif: <strong><?= $kpi['hari_kerja_efektif']; ?></strong></small>
+                <div class="d-flex gap-1 flex-wrap">
+                  <span class="badge bg-label-success" title="Hadir">H: <?= $kpi['hari_hadir']; ?></span>
+                  <span class="badge bg-label-info" title="Izin">I: <?= $kpi['hari_izin']; ?></span>
+                  <span class="badge bg-label-warning" title="Sakit">S: <?= $kpi['hari_sakit']; ?></span>
+                  <span class="badge bg-label-secondary" title="Cuti">C: <?= $kpi['hari_cuti']; ?></span>
+                  <span class="badge <?= $kpi['hari_alpha'] > 0 ? 'bg-label-danger' : 'bg-label-success'; ?>" title="Alpha">
+                    A: <?= $kpi['hari_alpha']; ?>
+                  </span>
+                </div>
+              </div>
             </td>
-            <td class="text-center">
-              <?php [$badge, $label] = kpi_badge_persen($kpi['persen_kehadiran']); ?>
-              <span class="badge <?= $badge; ?> fw-bold" title="<?= $label; ?>">
-                <?= number_format($kpi['persen_kehadiran'], 1); ?>%
-              </span>
+            <td>
+              <div class="d-flex flex-column gap-1 text-start" style="min-width: 160px;">
+                <div class="d-flex justify-content-between">
+                  <small class="text-muted">Tepat Masuk:</small>
+                  <?php [$badge2] = kpi_badge_persen($kpi['persen_tepat_waktu_masuk']); ?>
+                  <small class="fw-bold text-<?= str_replace('bg-label-', '', $badge2); ?>"><?= number_format($kpi['persen_tepat_waktu_masuk'], 1); ?>%</small>
+                </div>
+                <div class="d-flex justify-content-between">
+                  <small class="text-muted">Tepat Pulang:</small>
+                  <?php [$badge3] = kpi_badge_persen($kpi['persen_tepat_waktu_pulang']); ?>
+                  <small class="fw-bold text-<?= str_replace('bg-label-', '', $badge3); ?>"><?= number_format($kpi['persen_tepat_waktu_pulang'], 1); ?>%</small>
+                </div>
+                <div class="d-flex justify-content-between mt-1 pt-1 border-top">
+                  <small class="text-muted">Keterlambatan:</small>
+                  <small class="fw-bold <?= $kpi['jumlah_terlambat'] > 0 ? 'text-danger' : 'text-success'; ?>">
+                    <?= $kpi['jumlah_terlambat']; ?>x (<?= $kpi['rata_menit_terlambat'] > 0 ? number_format($kpi['rata_menit_terlambat'], 0) . 'm' : '-'; ?> avg)
+                  </small>
+                </div>
+              </div>
             </td>
-            <td class="text-center">
-              <?php if ($kpi['jumlah_terlambat'] > 0): ?>
-                <span class="badge bg-label-warning"><?= $kpi['jumlah_terlambat']; ?> kali</span>
-              <?php else: ?>
-                <span class="badge bg-label-success">0</span>
-              <?php endif; ?>
+            <td class="text-center fw-semibold"><?= number_format($kpi['total_jam_kerja'], 1); ?> j</td>
+            <td>
+              <div class="d-flex flex-column align-items-center gap-1">
+                <?php [$badge_kpi, $label_kpi] = kpi_badge_persen($kpi['kpi_score']); ?>
+                <span class="badge <?= $badge_kpi; ?> fs-6 mb-1" title="Nilai Akhir: <?= $label_kpi; ?>">
+                  <?= number_format($kpi['kpi_score'], 1); ?>
+                </span>
+                <div class="d-flex gap-2">
+                  <small class="text-muted" title="% Kehadiran"><i class="ti ti-chart-pie me-1"></i><?= number_format($kpi['persen_kehadiran'], 1); ?>%</small>
+                  <small class="<?= $kpi['jumlah_sp'] > 0 ? 'text-danger fw-bold' : 'text-muted'; ?>" title="Surat Peringatan"><i class="ti ti-alert-triangle me-1"></i><?= $kpi['jumlah_sp']; ?></small>
+                </div>
+              </div>
             </td>
-            <td class="text-center">
-              <?= $kpi['rata_menit_terlambat'] > 0
-                  ? number_format($kpi['rata_menit_terlambat'], 0) . ' mnt'
-                  : '-'; ?>
-            </td>
-            <td class="text-center">
-              <?php [$badge2] = kpi_badge_persen($kpi['persen_tepat_waktu_masuk']); ?>
-              <span class="badge <?= $badge2; ?>">
-                <?= number_format($kpi['persen_tepat_waktu_masuk'], 1); ?>%
-              </span>
-            </td>
-            <td class="text-center">
-              <?php [$badge3] = kpi_badge_persen($kpi['persen_tepat_waktu_pulang']); ?>
-              <span class="badge <?= $badge3; ?>">
-                <?= number_format($kpi['persen_tepat_waktu_pulang'], 1); ?>%
-              </span>
-            </td>
-            <td class="text-center fw-semibold"><?= number_format($kpi['total_jam_kerja'], 1); ?> jam</td>
             <?php else: ?>
-            <td colspan="12" class="text-center text-muted">
+            <td colspan="4" class="text-center text-muted">
               <small><i class="ti ti-alert-circle me-1 text-warning"></i>Belum di-generate</small>
             </td>
             <?php endif; ?>
@@ -273,7 +269,7 @@ function kpi_badge_persen($val) {
           <?php endforeach; ?>
           <?php if (empty($datas)): ?>
           <tr>
-            <td colspan="15" class="text-center text-muted py-5">
+            <td colspan="7" class="text-center text-muted py-5">
               <i class="ti ti-user-off ti-xl d-block mb-2 opacity-50"></i>
               Tidak ada data karyawan.
             </td>
@@ -298,9 +294,9 @@ function kpi_badge_persen($val) {
 
   $(document).ready(function () {
     $('#kpiTable').DataTable({
-      order: [[8, 'desc']], // Sort by % kehadiran desc
+      order: [[5, 'desc']], // Sort by KPI Score desc
       columnDefs: [
-        { orderable: false, targets: [14] } // kolom aksi
+        { orderable: false, targets: [6] } // kolom aksi
       ],
       language: {
         search: 'Cari:',
