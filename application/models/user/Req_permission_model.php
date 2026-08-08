@@ -353,20 +353,41 @@ class Req_permission_model extends CI_Model {
 
         $difference = $tanggalAwal->diff($tanggalAkhir)->days+1;
 
-        $this->db->set([
-                'tipe_request'          => $this->input->post('kat'),
-                'tanggal_request'       => $this->input->post('tgl1'),
-                'tanggal_request_end'   => $tglakh,
-                'r_jam_masuk'           => $this->input->post('jmasuk'),
-                'r_jam_keluar'          => $this->input->post('jkeluar'),
-                'catatan_awal'          => $this->input->post('catatanl'),
-                'is_status'             => $this->input->post('status'),
-                'approvedBy'            => $approvedBy,
-                'jumlah_cuti'           => $jumlahhari+1,
-                'file_dokumen'          => $filex,
-                'remain'                => $employee['jumlah_cuti'] - $difference,
-                'image'                 => $photo,
-        ]);         
+        $remain = $employee['jumlah_cuti'] - $difference;
+
+        $remain = $remain > 0 ? $remain :0;
+
+        if($cekimgpdf){
+          $this->db->set([
+            'tipe_request'          => $this->input->post('kat'),
+            'tanggal_request'       => $this->input->post('tgl1'),
+            'tanggal_request_end'   => $tglakh,
+            'r_jam_masuk'           => $this->input->post('jmasuk'),
+            'r_jam_keluar'          => $this->input->post('jkeluar'),
+            'catatan_awal'          => $this->input->post('catatanl'),
+            'is_status'             => $this->input->post('status'),
+            'approvedBy'            => $approvedBy,
+            'jumlah_cuti'           => $jumlahhari+1,
+            'file_dokumen'          => $filex,
+            'remain'                => $remain ,
+            'image'                 => $photo,
+          ]); 
+        }
+        else{
+          $this->db->set([
+            'tipe_request'          => $this->input->post('kat'),
+            'tanggal_request'       => $this->input->post('tgl1'),
+            'tanggal_request_end'   => $tglakh,
+            'r_jam_masuk'           => $this->input->post('jmasuk'),
+            'r_jam_keluar'          => $this->input->post('jkeluar'),
+            'catatan_awal'          => $this->input->post('catatanl'),
+            'is_status'             => $this->input->post('status'),
+            'approvedBy'            => $approvedBy,
+            'jumlah_cuti'           => $jumlahhari+1,
+            'file_dokumen'          => $filex,
+            'remain'                => $remain,
+          ]);           
+        }        
 
         $this->db->where('request_izin_id', $id);
         $res = $this->db->update('tx_request_izin');
@@ -378,6 +399,7 @@ class Req_permission_model extends CI_Model {
             $difference = $tanggalAwal->diff($tanggalAkhir)->days+1;
             if($employee['jumlah_cuti'] >= $difference){
               $sisaJumlahCuti = $employee['jumlah_cuti'] - $difference;
+              $sisaJumlahCuti = $sisaJumlahCuti > 0 ? $sisaJumlahCuti :0;
 
               $this->db->set([
                 'jumlah_cuti' => $sisaJumlahCuti,
@@ -442,10 +464,8 @@ class Req_permission_model extends CI_Model {
         $buff = $this->db->query("SELECT * FROM tx_request_izin_pegawai WHERE request_izin_id='$id'")->result_array();
         $idp = $this->input->post('idp');
 
-        $existing_ids = $this->db->select('pegawai_id')
-            ->from('tx_request_izin_pegawai')
-            ->where('request_izin_id', $id)
-            ->get()->result_array();
+        $existing_ids = $this->db->select('pegawai_id')->from('tx_request_izin_pegawai')->where('request_izin_id', $id)->get()->result_array();
+        
         $existing_ids = array_column($existing_ids, 'pegawai_id');
 
         if (!empty($idp)) {

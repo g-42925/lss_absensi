@@ -1,7 +1,7 @@
 <?php
-use Aws\S3\S3Client;
-use Aws\Credentials\Credentials;
-use Aws\Exception\AwsException;
+
+use Bunny\Storage\Client;
+use Bunny\Storage\Region;
 
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -138,7 +138,8 @@ class Req_permission extends CI_Controller {
         if ($this->form_validation->run() == false) {
             $this->session->set_flashdata('message', '<div class="alert alert-danger p-cg" role="alert">'.validation_errors().'</div>');
             redirect('req_permission/add');
-        } else {
+        } 
+        else {
             $cekimgpdf = $_FILES['imgpdf']['name'];
             $upload = $this->other->upload_digital('imgpdf','new','others','file_');
             if($upload['result'] == "success" || $cekimgpdf==''){
@@ -188,16 +189,22 @@ class Req_permission extends CI_Controller {
 
     public function edit_proses($id = null) {
 
-        if ($id==null) { redirect('req_permission'); }
-        $check = $this->db->get_where('tx_request_izin', ['request_izin_id' => $id]);
-        $rowcheck = $check->row_array();
-        if ($check->num_rows()==0) {
-            $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-danger p-cg" role="alert">Data tidak ditemukan.</div></div>');
-            redirect('req_permission'); 
+        function makePath($rootDir,$fileName,$year,$month){
+            $key = "absensi_{$rootDir}_exception_{$year}_{$month}/{$fileName}";
+
+            return [
+                "key"    => $key,
+                "result" => "https://leryn-ljm-3.b-cdn.net/".$key
+            ];
         }
 
+        if ($id==null) redirect('req_permission');
+       
+        $check = $this->db->get_where('tx_request_izin', ['request_izin_id' => $id]);
+       
+        $rowcheck = $check->row_array();
+
         $ukat  = $this->input->post('kat');
-        $unama  = $this->input->post('tgl1');
 
         $this->form_validation->set_rules('idp[]', 'Karyawan', 'trim|required|xss_clean|htmlspecialchars');
         $this->form_validation->set_rules('kat', 'Kategori', 'trim|required|xss_clean|htmlspecialchars');
@@ -229,46 +236,28 @@ class Req_permission extends CI_Controller {
         else {
             if(isset($_FILES['attachment']) && $_FILES['attachment']['error'] !== UPLOAD_ERR_NO_FILE){
                 $cmpId = $this->session->userdata('company_id');
-                $company = $this->db->query("select * from companies where id = ?",[$cmpId])->row_array();
-                $rootDir = explode('@', $company['email'])[0];
-                $path = 'absensi/'.$rootDir .'/attendance/';
-                $cFile = $_FILES['attachment']['tmp_name'];
+                $c = $this->db->query("select * from companies where id = ?",[$cmpId])->row_array();
+                $secretAccessKey = "625c8418-f512-4642-98885cb3a927-3b8b-442a";
+                $rootDir = explode('@', $c['email'])[0];
                 $name = $_FILES['attachment']['name'];    
-                $tmpName = $_FILES['attachment']['tmp_name'];
                 $fileName = time() . '_' . basename($name);
+                $key = makePath($rootDir,$fileName,date('Y'),date('m'))['key'];
+                $cdn = makePath($rootDir,$fileName,date('Y'),date('m'))['result'];
 
-                $s3 = new S3Client([
-                    'version'     => 'latest',
-                    'region'      => 'us-east-1',
-                    'endpoint'    => 'https://s3.filebase.com',
-                    'use_path_style_endpoint' => false,
-                    'credentials' => [
-                      'key'    => 'B8F0135956143AE0685E',
-                      'secret' => 'gKrbIZJnzLWBXZ0VGQvnlAumvngpBH35PsXN5zUp'
-                    ],
-                    'Metadata' => [
-                      'cid' => 'true'
-                    ],
-                ]);
+                $client = new Client(
+                    '625c8418-f512-4642-98885cb3a927-3b8b-442a',
+                    'leryn-ljm-3',
+                    Region::FALKENSTEIN // Optional: storage zone region
+                );
 
-                $result = $s3->putObject([
-                    'Bucket' => 'leryn-storage',
-                    'Key'    => $path.$fileName,
-                    'SourceFile' => $cFile,
-                    'ContentType' => 'image/png',
-                ]);   
-
-
-                $cid = $result['@metadata']['headers']['x-amz-meta-cid']; 
-
-                $fUrl =  "https://wooden-plum-woodpecker.myfilebase.com/ipfs/".$cid;    
+                $client->upload($_FILES['attachment']['tmp_name'], $key);
+   
                 
                 $cekimgpdf = $_FILES['attachment']['name'];
                 $imgold = $rowcheck['file_dokumen'];
                 $upload = $this->other->upload_digital('attachment',$imgold,'others','file_');
 
-
-                $res = $this->rp->edit_proses($id,$cekimgpdf,$upload,$imgold,$fUrl);
+                $res = $this->rp->edit_proses($id,$cekimgpdf,$upload,$imgold,$cdn);
                 
                 if ($res==true) {
                     $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-success p-cg" role="alert">Data berhasil disimpan.</div></div>');
@@ -279,18 +268,21 @@ class Req_permission extends CI_Controller {
                     redirect('req_permission/edit/'.$id);
                 }
 
-                if($upload['result'] == "success" || $cekimgpdf==''){}
-            else{
-                $this->session->set_flashdata('message', '<div class="alert alert-danger p-cg" role="alert">'.$upload['error'].'</div>');
-                redirect('req_permission/add');
-            }   
+                if($upload['result'] == "success" || $cekimgpdf==''){
+                    // do something
+                }
+                else{
+                    $this->session->set_flashdata('message', '<div class="alert alert-danger p-cg" role="alert">'.$upload['error'].'</div>');
+                    redirect('req_permission/add');
+                }   
             }
             else{
-                $cekimgpdf = $_FILES['attachment']['name'];
-                $imgold = $rowcheck['file_dokumen'];
-                $upload = $this->other->upload_digital('attachment',$imgold,'others','file_');
+                // $cekimgpdf = $_FILES['attachment']['name'];
+                // $imgold = $rowcheck['file_dokumen'];
+                // $upload = $this->other->upload_digital('attachment',$imgold,'others','file_');
 
                 $res = $this->rp->edit_proses($id,null,null,null,null);
+                
                 if ($res==true) {
                     $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-success p-cg" role="alert">Data berhasil disimpan.</div></div>');
                     redirect('req_permission');

@@ -2054,13 +2054,13 @@ function login(){
     //   $emp['salary'] = $recap * $emp['salary'] / 26;
     // }
 
-    
+    $illPenalty = $this->db->query("select sum(amount) as amt from salary_deduction where employee_id = ? and date between ? and ? and deduction_type = ?",[$empId,$dateX,$dateY,'denda sakit'])->row_array();
     $alphaPenalty = $this->db->query("select sum(amount) as amt from salary_deduction where employee_id = ? and date between ? and ? and deduction_type = 'alpha-2'",[$empId,$dateX,$dateY])->row_array();
    
     $deductions = $this->db->query("select * from salary_deduction where employee_id = ? and date between ? and ?",[$empId,$dateX,$dateY])->result_array();
 
     foreach($deductions as $d){
-      if($d['deduction_type'] == "late penalty" || $d['deduction_type'] == "after break late" || $d['deduction_type'] == "clockout late penalty" || $d['deduction_type'] == "clockout forget"){
+      if($d['deduction_type'] == "late penalty" || $d['deduction_type'] == "after break late" || $d['deduction_type'] == "clockout late penalty" || $d['deduction_type'] == "clockout forget" || $d['deduction_type'] == "denda sakit"){
         $deductionValue += $d['amount'];
       }
     }
@@ -2141,6 +2141,12 @@ function login(){
       $penalty[] = [
         'name' => 'alpha',
         'value' => (int) $alphaPenalty['amt']
+      ];
+    }
+    if((int) $illPenalty['amt'] > 0){
+      $penalty[] = [
+        'name' => 'sakit',
+        'value' => (int) $illPenalty['amt']
       ];
     }
     if((int) $deductionValue > 0){

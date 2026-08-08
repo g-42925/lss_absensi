@@ -111,7 +111,7 @@ function persen_color($val) {
   <div class="row g-3 mb-4">
 
     <!-- % Kehadiran & KPI Score -->
-    <div class="col-md-4 col-xl-2">
+    <div class="col-md-4 col-xl-4">
       <div class="card text-center h-100 border-0 shadow-sm">
         <div class="card-body py-4">
           <i class="ti ti-award ti-lg mb-2 text-primary"></i>
@@ -176,7 +176,7 @@ function persen_color($val) {
     </div>
 
     <!-- Keterlambatan -->
-    <div class="col-md-6 col-xl-3">
+    <div class="col-md-6 col-xl-4">
       <div class="card h-100 border-0 shadow-sm">
         <div class="card-body">
           <h6 class="text-muted mb-3 fw-semibold"><i class="ti ti-clock-exclamation me-1"></i>Keterlambatan</h6>
@@ -206,31 +206,60 @@ function persen_color($val) {
       </div>
     </div>
 
-    <!-- Jam Kerja -->
-    <div class="col-md-6 col-xl-3">
-      <div class="card h-100 border-0 shadow-sm">
-        <div class="card-body">
-          <h6 class="text-muted mb-3 fw-semibold"><i class="ti ti-clock me-1"></i>Jam Kerja & Pulang</h6>
-          <div class="d-flex flex-column gap-3">
-            <div class="d-flex justify-content-between align-items-center border-bottom pb-2">
-              <span class="text-muted small">Total Jam Kerja</span>
-              <strong class="text-primary fs-5"><?= number_format($kpi['total_jam_kerja'], 1); ?> jam</strong>
-            </div>
-            <div class="d-flex justify-content-between align-items-center border-bottom pb-2">
-              <span class="text-muted small">Total Menit Kerja</span>
-              <span><?= number_format($kpi['total_menit_kerja']); ?> mnt</span>
-            </div>
-            <div class="d-flex justify-content-between align-items-center">
-              <span class="text-muted small">% Tepat Waktu Pulang</span>
-              <strong class="<?= persen_color($kpi['persen_tepat_waktu_pulang']); ?>">
-                <?= number_format($kpi['persen_tepat_waktu_pulang'], 1); ?>%
-              </strong>
-            </div>
-          </div>
+  </div>
+
+  <!-- KPI Formula Breakdown -->
+  <div class="card mb-4 border-0 shadow-sm">
+    <div class="card-header border-bottom py-3">
+      <h5 class="mb-0"><i class="ti ti-calculator me-1 text-primary"></i>Rincian Perhitungan KPI</h5>
+    </div>
+    <div class="card-body py-4">
+      <div class="row align-items-center text-center justify-content-center">
+        <div class="col-md-2 mb-3 mb-md-0">
+          <h6 class="text-muted mb-1">Kehadiran (47.06%)</h6>
+          <div class="fs-5 fw-bold text-primary"><?= number_format($kpi['persen_kehadiran'] * (40/85), 2); ?></div>
+          <small class="text-muted">(<?= number_format($kpi['persen_kehadiran'], 1); ?>%)</small>
+        </div>
+        <div class="col-md-auto d-none d-md-block"><i class="ti ti-plus text-muted"></i></div>
+        <div class="col-md-2 mb-3 mb-md-0">
+          <h6 class="text-muted mb-1">Tepat Masuk (29.41%)</h6>
+          <div class="fs-5 fw-bold text-success"><?= number_format($kpi['persen_tepat_waktu_masuk'] * (25/85), 2); ?></div>
+          <small class="text-muted">(<?= number_format($kpi['persen_tepat_waktu_masuk'], 1); ?>%)</small>
+        </div>
+        <div class="col-md-auto d-none d-md-block"><i class="ti ti-plus text-muted"></i></div>
+        <div class="col-md-2 mb-3 mb-md-0">
+          <h6 class="text-muted mb-1">Skor Lateness (11.76%)</h6>
+          <div class="fs-5 fw-bold text-warning"><?= number_format($kpi['skor_terlambat'] * (10/85), 2); ?></div>
+          <small class="text-muted">(Skor: <?= $kpi['skor_terlambat']; ?>%)</small>
+        </div>
+        <div class="col-md-auto d-none d-md-block"><i class="ti ti-plus text-muted"></i></div>
+        <div class="col-md-2 mb-3 mb-md-0">
+          <h6 class="text-muted mb-1">Skor Alpha (11.77%)</h6>
+          <div class="fs-5 fw-bold text-danger"><?= number_format($kpi['skor_alpha'] * (10/85), 2); ?></div>
+          <small class="text-muted">(Skor: <?= $kpi['skor_alpha']; ?>%)</small>
+        </div>
+      </div>
+      
+      <hr class="my-4">
+      
+      <div class="row align-items-center text-center justify-content-center">
+        <div class="col-md-3">
+          <h6 class="text-muted mb-1">KPI Dasar</h6>
+          <div class="fs-4 fw-bold"><?= number_format($kpi['kpi_dasar'], 2); ?></div>
+        </div>
+        <div class="col-md-auto d-none d-md-block"><i class="ti ti-minus text-muted fs-4"></i></div>
+        <div class="col-md-3">
+          <h6 class="text-muted mb-1">Penalti SP (-30/SP)</h6>
+          <div class="fs-4 fw-bold text-danger"><?= $kpi['jumlah_sp'] * 30; ?></div>
+          <small class="text-muted">(<?= $kpi['jumlah_sp']; ?> Surat Peringatan)</small>
+        </div>
+        <div class="col-md-auto d-none d-md-block"><i class="ti ti-equal text-muted fs-4"></i></div>
+        <div class="col-md-3">
+          <h6 class="text-muted mb-1">Nilai Akhir KPI</h6>
+          <div class="fs-3 fw-bold <?= persen_color($kpi['kpi_score']); ?>"><?= number_format($kpi['kpi_score'], 2); ?></div>
         </div>
       </div>
     </div>
-
   </div>
 
   <!-- Breakdown Harian Table -->
@@ -245,13 +274,9 @@ function persen_color($val) {
           <tr class="text-center">
             <th class="text-start">Tanggal</th>
             <th>Status</th>
-            <th>Jadwal Masuk</th>
             <th>Jam Masuk</th>
             <th>Terlambat</th>
-            <th>Jadwal Pulang</th>
             <th>Jam Pulang</th>
-            <th>Tepat Pulang</th>
-            <th>Jam Kerja</th>
           </tr>
         </thead>
         <tbody>
@@ -268,13 +293,11 @@ function persen_color($val) {
             <td class="text-center">
               <span class="badge <?= $sbadge; ?>"><?= $slabel; ?></span>
             </td>
-            <td class="text-center text-muted small">
-              <?= $row['j_masuk']
-                  ? $row['j_masuk'] . ($row['j_toleransi'] > 0 ? ' (+' . $row['j_toleransi'] . 'mnt)' : '')
-                  : '-'; ?>
-            </td>
             <td class="text-center">
-              <?php if ($row['jam_masuk']): ?>
+              <?php
+                $valid_aktual_m = !empty($row['jam_masuk']) && $row['jam_masuk'] !== '00:00' && $row['jam_masuk'] !== '00:00:00';
+              ?>
+              <?php if ($valid_aktual_m): ?>
                 <span class="<?= $row['menit_terlambat'] > 0 ? 'text-danger fw-semibold' : 'text-success'; ?>">
                   <?= $row['jam_masuk']; ?>
                 </span>
@@ -293,29 +316,17 @@ function persen_color($val) {
                 <span class="text-muted">-</span>
               <?php endif; ?>
             </td>
-            <td class="text-center text-muted small"><?= $row['j_pulang'] ?: '-'; ?></td>
             <td class="text-center">
-              <?php if ($row['jam_keluar']): ?>
+              <?php
+                $valid_aktual_p = !empty($row['jam_keluar']) && $row['jam_keluar'] !== '00:00' && $row['jam_keluar'] !== '00:00:00';
+              ?>
+              <?php if ($valid_aktual_p): ?>
                 <span class="<?= $row['tepat_pulang'] ? 'text-success' : 'text-warning'; ?>">
                   <?= $row['jam_keluar']; ?>
                 </span>
               <?php else: ?>
                 <span class="text-muted">-</span>
               <?php endif; ?>
-            </td>
-            <td class="text-center">
-              <?php if ($row['jam_keluar'] && $is_hadir): ?>
-                <?php if ($row['tepat_pulang']): ?>
-                  <span class="badge bg-label-success"><i class="ti ti-check"></i></span>
-                <?php else: ?>
-                  <span class="badge bg-label-warning" title="Pulang lebih awal"><i class="ti ti-x"></i></span>
-                <?php endif; ?>
-              <?php else: ?>
-                <span class="text-muted">-</span>
-              <?php endif; ?>
-            </td>
-            <td class="text-center">
-              <?= $row['menit_kerja'] > 0 ? formatJam($row['menit_kerja']) : '-'; ?>
             </td>
           </tr>
           <?php endforeach; ?>

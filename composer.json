@@ -15,7 +15,8 @@
 		"dompdf/dompdf": "^0.8.3",
 		"xendit/xendit-php": "^2.19",
 		"aws/aws-sdk-php": "^3.263",
-		"endroid/qr-code": "^6.0"
+		"endroid/qr-code": "^6.0",
+		"bunnycdn/storage": "^3.4"
 	},
 	"suggest": {
 		"paragonie/random_compat": "Provides better randomness in PHP 5.x"
