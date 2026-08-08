@@ -454,14 +454,13 @@ class Kpi_absensi_model extends CI_Model
     private function _hitung_hari_kerja_efektif($pegawai_id, $date_start, $date_end)
     {
         // Hari kerja efektif tidak termasuk hari libur (l, cb, free, off)
-        // dan tidak termasuk absen khusus (c, i, s)
         $result = $this->db->query(
             "SELECT COUNT(*) as total
              FROM tx_absensi
              WHERE pegawai_id = ?
                AND tanggal_absen BETWEEN ? AND ?
                AND is_pending = 'n'
-               AND LOWER(is_status) NOT IN ('l', 'cb', 'free', 'off', 'c', 'i', 's')",
+               AND LOWER(is_status) NOT IN ('l', 'cb', 'free', 'off')",
             [$pegawai_id, $date_start, $date_end]
         )->row_array();
 
