@@ -1113,7 +1113,7 @@ function login(){
                         if($e1->row_array() < 1 && $e2){
                             $deduction = [
                                 'deduction_id' => uniqid(),
-                                'employee_id' => $employeeId,
+                                'employee_id' => $empId,
                                 'deduction_type' => 'late penalty',
                                 'date' => date('Y-m-d'),
                                 'amount' => $division['penalty_nominal'],
