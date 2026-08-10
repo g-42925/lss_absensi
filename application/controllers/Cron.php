@@ -27,7 +27,12 @@ class Cron extends CI_Controller {
         foreach($employees as $e){
           $division = $this->db->query("select * from divisions where id = ?",[$e['division_id']])->row_array();
           $permission = $this->db->query("select * from tx_request_izin x join tx_request_izin_pegawai y on x.request_izin_id = y.request_izin_id where x.is_status = ? and y.pegawai_id = ? and curdate() between x.tanggal_request and x.tanggal_request_end",[1,$e['pegawai_id']])->result_array();
-        
+          $pDetail = $this->db->query("select * from m_pola_kerja_det where pola_kerja_id = ? and is_day = ?",[explode("-", $division['work_system'])[1],date('N')])->row_array();
+          $pPattern = $this->db->query("select * from m_pola_kerja where pola_kerja_id = ?",[explode("-", $division['work_system'])[1]])->row_array();
+          $pTolerance = new DateTime($pDetail['jam_masuk']);
+          $pTolerance->modify("+{$pPattern['toleransi_terlambat']} minutes");
+          $pTolerance = $pTolerance->format("H:i");
+
           $data1 = [
             'absen_id' => uniqid(),
             'company_id' => $company['id'],
@@ -40,9 +45,9 @@ class Cron extends CI_Controller {
             'jam_keluar' => '00:00',
             'catatan_masuk' => '...',
             'catatan_keluar' => '...',
-            'j_masuk' => '00:00',
-            'j_pulang' => '00:00',
-            'j_toleransi' => '00:00',
+            'j_masuk' => $pDetail['jam_masuk'],
+            'j_pulang' => $pDetail['jam_pulang'],
+            'j_toleransi' => $pTolerance,
             's_istirahat_photo' => 'no',
             's_istirahat_latitude' => 0,
             's_istirahat_longitude' => 0,

@@ -274,8 +274,10 @@ function persen_color($val) {
           <tr class="text-center">
             <th class="text-start">Tanggal</th>
             <th>Status</th>
+            <th>Jadwal Masuk</th>
             <th>Jam Masuk</th>
             <th>Terlambat</th>
+            <th>Jadwal Pulang</th>
             <th>Jam Pulang</th>
           </tr>
         </thead>
@@ -294,6 +296,9 @@ function persen_color($val) {
               <span class="badge <?= $sbadge; ?>"><?= $slabel; ?></span>
             </td>
             <td class="text-center">
+              <span class="badge <?= $sbadge; ?>"><?= $row['jmasuk'] ?> </span>
+            </td>
+            <td class="text-center">
               <?php
                 $valid_aktual_m = !empty($row['jam_masuk']) && $row['jam_masuk'] !== '00:00' && $row['jam_masuk'] !== '00:00:00';
               ?>
@@ -306,16 +311,11 @@ function persen_color($val) {
               <?php endif; ?>
             </td>
             <td class="text-center">
-              <?php if ($row['menit_terlambat'] > 0): ?>
-                <span class="badge bg-label-danger">
-                  <i class="ti ti-alarm me-1"></i><?= $row['menit_terlambat']; ?> mnt
-                </span>
-              <?php elseif ($is_hadir && $row['jam_masuk']): ?>
-                <span class="badge bg-label-success">Tepat</span>
-              <?php else: ?>
-                <span class="text-muted">-</span>
-              <?php endif; ?>
+              <?= $row['isLate'] ? (new DateTime($row['jtoleransi']))->diff(new DateTime($row['jam_masuk']))->format('%H:%I:%S') : '-'; ?>
             </td>
+            <td class="text-center">
+              <span class="badge <?= $sbadge; ?>"><?= $row['jpulang'] ?> </span>
+            </td>            
             <td class="text-center">
               <?php
                 $valid_aktual_p = !empty($row['jam_keluar']) && $row['jam_keluar'] !== '00:00' && $row['jam_keluar'] !== '00:00:00';

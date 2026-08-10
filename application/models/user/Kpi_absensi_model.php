@@ -201,6 +201,10 @@ class Kpi_absensi_model extends CI_Model
                 'menit_terlambat' => $menit_terlambat,
                 'tepat_pulang'    => $tepat_pulang,
                 'menit_kerja'     => $menit_kerja,
+                'jmasuk'         => $row['j_masuk'],
+                'jpulang'        => $row['j_pulang'],
+                'jtoleransi'     => $row['j_toleransi']     ,
+                'isLate'         => $row['isLate']
             ];
         }
 
