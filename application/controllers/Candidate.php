@@ -202,7 +202,7 @@ class Candidate extends CI_Controller {
 
         $companyId = $this->session->userdata('company_id');
 
-        $data['data'] = $this->db->query("select * from candidate where company_id = ?",[$companyId])->result_array();
+        $data['data'] = $this->db->query("select * from candidate where company_id = ? and status = 'waiting' order by candidate_id desc",[$companyId])->result_array();
 
         $this->load->view('templates/header', $data);
         $this->load->view('templates/sidemenu', $data);
@@ -416,7 +416,8 @@ class Candidate extends CI_Controller {
                 'sex' => $this->input->post('sex'),
                 'candidate_picture' => $r,
                 'candidate_name' => $this->input->post('name'),
-                'position_id' => $this->input->post('position_id')
+                'position_id' => $this->input->post('position_id'),
+                'status' => 'waiting'
             ];
 
             $q = $this->db->insert(

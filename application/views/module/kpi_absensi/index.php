@@ -171,7 +171,6 @@ function kpi_badge_persen($val) {
             <th class="text-start">Karyawan</th>
             <th class="text-start">Statistik Kehadiran</th>
             <th class="text-start">Performa Waktu</th>
-            <th>Total Jam</th>
             <th>Final KPI</th>
             <th>Aksi</th>
           </tr>
@@ -219,11 +218,6 @@ function kpi_badge_persen($val) {
                   <?php [$badge2] = kpi_badge_persen($kpi['persen_tepat_waktu_masuk']); ?>
                   <small class="fw-bold text-<?= str_replace('bg-label-', '', $badge2); ?>"><?= number_format($kpi['persen_tepat_waktu_masuk'], 1); ?>%</small>
                 </div>
-                <div class="d-flex justify-content-between">
-                  <small class="text-muted">Tepat Pulang:</small>
-                  <?php [$badge3] = kpi_badge_persen($kpi['persen_tepat_waktu_pulang']); ?>
-                  <small class="fw-bold text-<?= str_replace('bg-label-', '', $badge3); ?>"><?= number_format($kpi['persen_tepat_waktu_pulang'], 1); ?>%</small>
-                </div>
                 <div class="d-flex justify-content-between mt-1 pt-1 border-top">
                   <small class="text-muted">Keterlambatan:</small>
                   <small class="fw-bold <?= $kpi['jumlah_terlambat'] > 0 ? 'text-danger' : 'text-success'; ?>">
@@ -232,7 +226,6 @@ function kpi_badge_persen($val) {
                 </div>
               </div>
             </td>
-            <td class="text-center fw-semibold"><?= number_format($kpi['total_jam_kerja'], 1); ?> j</td>
             <td>
               <div class="d-flex flex-column align-items-center gap-1">
                 <?php [$badge_kpi, $label_kpi] = kpi_badge_persen($kpi['kpi_score']); ?>
