@@ -275,6 +275,8 @@ function persen_color($val) {
             <th class="text-start">Tanggal</th>
             <th>Status</th>
             <th>Jadwal Masuk</th>
+            <th>Jam Toleransi</th>
+
             <th>Jam Masuk</th>
             <th>Terlambat</th>
             <th>Jadwal Pulang</th>
@@ -294,10 +296,14 @@ function persen_color($val) {
             </td>
             <td class="text-center">
               <span class="badge <?= $sbadge; ?>"><?= $slabel; ?></span>
-            </td>
+            </td>   
+               
             <td class="text-center">
               <span class="badge <?= $sbadge; ?>"><?= $row['jmasuk'] ?> </span>
-            </td>
+            </td> 
+            <td class="text-center">
+              <span class="badge <?= $sbadge; ?>"><?= $row['jtoleransi'] ?> </span>
+            </td>                              
             <td class="text-center">
               <?php
                 $valid_aktual_m = !empty($row['jam_masuk']) && $row['jam_masuk'] !== '00:00' && $row['jam_masuk'] !== '00:00:00';
