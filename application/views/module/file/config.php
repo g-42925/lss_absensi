@@ -21,7 +21,7 @@
               <label class="form-label">Source<i class="text-danger">*</i></label>
               <div class="flex flex-row gap-3 items-start">
                 <input data-current="<?= $a['file_id'] ?>" name="photo[]" type="file" onchange="onFileChange(event)" class="form-control" />
-                <a target="_blank" href="<?= $a['source'] == '-' ? $placeholder:$a['source'] ?>">
+                <a href="javascript:void(0);" onclick="showPhotoPopup('<?= $a['source'] == '-' ? $placeholder:$a['source'] ?>', 'Preview')">
                   <img id="<?= 'preview-'.$a['file_id'] ?>" src="<?= $a['source'] == '-' ? $placeholder : $a['source'] ?>" class="w-16 h-16"/>
                 </a>
               </div>
@@ -78,7 +78,7 @@
       alert('preview tidak tersedia')
     }
     else{
-      window.open(src, '_blank');
+      showPhotoPopup(src, 'Preview');
     }
   }
 </script>

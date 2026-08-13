@@ -51,7 +51,7 @@
             <td><?= $r['reason'];?></td>
             <td><?= $r['type'];?></td>
             <td class="text-capitalize">
-              <a target="_blank" href="<?= $r['image'] ?>"><i class="ti ti-photo"></i></a>
+              <a href="javascript:void(0);" onclick="showPhotoPopup('<?= $r['image'] ?>', 'Foto Pengecualian')"><i class="ti ti-photo"></i></a>
             </td> 
             <td><?= $r['htu'] ? 'yes':'no' ?></td>
 

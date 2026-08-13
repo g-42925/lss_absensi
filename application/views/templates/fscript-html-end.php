@@ -5,6 +5,22 @@
       </div>
     </div>
 
+    <!-- Global Photo Popup Modal -->
+    <div class="modal fade" id="photoViewerModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" style="max-width:90vw;width:fit-content;min-width:320px;">
+        <div class="modal-content" style="background:transparent;border:none;box-shadow:none;">
+          <div class="modal-header border-0 pb-0" style="background:rgba(0,0,0,0.7);border-radius:12px 12px 0 0;">
+            <h6 class="modal-title text-white mb-0" id="photoViewerModalLabel">Foto</h6>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Tutup"></button>
+          </div>
+          <div class="modal-body p-0 text-center" style="background:rgba(0,0,0,0.85);border-radius:0 0 12px 12px;">
+            <img id="photoViewerImg" src="" alt="Foto" style="max-width:85vw;max-height:80vh;object-fit:contain;border-radius:0 0 12px 12px;display:block;margin:0 auto;" />
+          </div>
+
+        </div>
+      </div>
+    </div>
+
     <div class="modal fade" id="addNewLogin" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered1 modal-simple">
         <div class="modal-content p-3 p-md-5">
@@ -226,6 +242,31 @@
           $.get('<?=base_url('attendance/action/');?>'+a+'/'+b+'/'+c, function(data) {
             $('#content_option_modal_att').html(data);
           });
+        }
+
+        function showPhotoPopup(url, title) {
+          if (!url || url === '#' || url === '') {
+            return;
+          }
+          title = title || 'Foto';
+          $('#photoViewerModalLabel').text(title);
+          
+          $('#photoViewerImg').off('error').on('error', function() {
+            $(this).hide();
+            if ($('#photoViewerError').length === 0) {
+              $(this).after('<div id="photoViewerError" style="color:white; padding:20px; font-style:italic;">Gambar tidak tersedia atau URL tidak valid</div>');
+            } else {
+              $('#photoViewerError').show();
+            }
+          }).off('load').on('load', function() {
+            $(this).show();
+            if ($('#photoViewerError').length > 0) {
+              $('#photoViewerError').hide();
+            }
+          });
+          
+          $('#photoViewerImg').attr('src', '').attr('src', url);
+          $('#photoViewerModal').modal('show');
         }
     </script>
   

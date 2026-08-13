@@ -23,7 +23,7 @@
             <td class="text-capitalize"><?= $r['date'];?></td>
             <td class="text-capitalize"><?= number_format($r['value'],2);?></td>
             <td class="text-capitalize">
-              <a target="_blank" href="<?= $r['photo'] ?>"><i class="ti ti-photo"></i></a>
+              <a href="javascript:void(0);" onclick="showPhotoPopup('<?= $r['photo'] ?>', 'Foto Bukti')"><i class="ti ti-photo"></i></a>
             </td>            
             <td class="text-capitalize"><?= $r['status'] ?></td>
             <td>

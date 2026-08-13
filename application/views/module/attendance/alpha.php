@@ -99,7 +99,7 @@
                 <a target="_blank" href="https://www.google.com/maps?q=<?= $row['point_latitude'] ?>,<?= $row['point_longitude'] ?>" class="btn p-1" data-toggle="tooltip" title="Lihat Map">
                   <i class="ti ti-map-pin ft-13"></i>
                 </a>
-                <a target="_blank" href="<?= $row['foto_absen_masuk'] ?>" class="btn p-1" data-toggle="tooltip" title="Lihat Foto Absen">
+                <a href="javascript:void(0);" onclick="showPhotoPopup('<?= $row['foto_absen_masuk'] ?>', 'Foto Absen Masuk')" class="btn p-1" data-toggle="tooltip" title="Lihat Foto Absen">
                   <i class="ti ti-photo ft-13"></i>
                 </a>
               </div>
@@ -114,7 +114,7 @@
                 <a target="_blank" href="https://www.google.com/maps?q=<?= $row['s_istirahat_latitude'] ?>,<?= $row['s_istirahat_longitude'] ?>" class="btn p-1" data-toggle="tooltip" title="Lihat Map">
                   <i class="ti ti-map-pin ft-13"></i>
                 </a>
-                <a target="_blank" href="<?= $row['s_istirahat_photo'] ?>" class="btn p-1" data-toggle="tooltip" title="Lihat Foto Absen">
+                <a href="javascript:void(0);" onclick="showPhotoPopup('<?= $row['s_istirahat_photo'] ?>', 'Foto Selesai Istirahat')" class="btn p-1" data-toggle="tooltip" title="Lihat Foto Absen">
                   <i class="ti ti-photo ft-13"></i>
                 </a>
               </div>
@@ -140,7 +140,7 @@
                 <a target="_blank" href="https://www.google.com/maps?q=<?= $row['latitude_keluar'] ?>,<?= $row['longitude_keluar'] ?>" class="btn p-1" data-toggle="tooltip" title="Lihat Map">
                   <i class="ti ti-map-pin ft-13"></i>
                 </a>
-                <a target="_blank" href="<?= $row['foto_absen_keluar'] ?>" class="btn p-1" data-toggle="tooltip" title="Lihat Foto Absen">
+                <a href="javascript:void(0);" onclick="showPhotoPopup('<?= $row['foto_absen_keluar'] ?>', 'Foto Absen Keluar')" class="btn p-1" data-toggle="tooltip" title="Lihat Foto Absen">
                   <i class="ti ti-photo ft-13"></i>
                 </a>
               </div>

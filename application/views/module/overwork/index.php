@@ -26,7 +26,7 @@
             <td><?= $r['start_from'];?></td>
             <td><?= $r['until'];?></td>
             <td class="text-capitalize">
-              <a target="_blank" href="<?= base_url('image/index').'/'.basename($r['start_photo']) ?>"><i class="ti ti-photo"></i></a>
+              <a href="javascript:void(0);" onclick="showPhotoPopup('<?= base_url('image/index').'/'.basename($r['start_photo']) ?>', 'Foto Mulai Lembur')"><i class="ti ti-photo"></i></a>
             </td>  
             <td>
                 <?php if (!empty($r['start_location'])): ?>
@@ -41,7 +41,7 @@
                 <?php endif; ?>
             </td>
             <td class="text-capitalize">
-              <a target="_blank" href="<?= base_url('image/index').'/'.basename($r['finish_photo']) ?>"><i class="ti ti-photo"></i></a>
+              <a href="javascript:void(0);" onclick="showPhotoPopup('<?= base_url('image/index').'/'.basename($r['finish_photo']) ?>', 'Foto Selesai Lembur')"><i class="ti ti-photo"></i></a>
             </td>  
             <td>
                 <?php if (!empty($r['finish_location'])): ?>
