@@ -31,7 +31,7 @@
             <td class="text-capitalize"><?= $r['date'];?></td>
             <td class="text-capitalize"><?= $r['description'];?></td>
             <td class="text-capitalize">
-              <a href="javascript:void(0);" onclick="showPhotoPopup('<?= $r['start_photo'] ?>', 'Foto Mulai Tugas')"><i class="ti ti-photo"></i></a>
+              <a href="javascript:void(0);" onclick="showPhotoPopup('<?= htmlspecialchars(trim($r['start_photo'] ?? '')) ?>', 'Foto Mulai Tugas')"><i class="ti ti-photo"></i></a>
             </td>  
             <td class="text-capitalize"><?= $r['start_time'];?></td>
             <td class="text-capitalize">
@@ -39,7 +39,7 @@
               <a href="https://www.google.com/maps?q=<?= explode("/",$r['start_location'])[0] ?>,<?= explode("/",$r['start_location'])[1] ?>" target="_blank"><i class="ti ti-map-pin"></i></a>
             </td>
             <td class="text-capitalize">
-              <a href="javascript:void(0);" onclick="showPhotoPopup('<?= $r['finish_photo'] ?>', 'Foto Selesai Tugas')"><i class="ti ti-photo"></i></a>
+              <a href="javascript:void(0);" onclick="showPhotoPopup('<?= htmlspecialchars(trim($r['finish_photo'] ?? '')) ?>', 'Foto Selesai Tugas')"><i class="ti ti-photo"></i></a>
             </td>  
             <td class="text-capitalize"><?= $r['finish_time'];?></td>
             <td class="text-capitalize">

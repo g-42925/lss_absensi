@@ -9,14 +9,10 @@
     <div class="modal fade" id="photoViewerModal" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered" style="max-width:90vw;width:fit-content;min-width:320px;">
         <div class="modal-content" style="background:transparent;border:none;box-shadow:none;">
-          <div class="modal-header border-0 pb-0" style="background:rgba(0,0,0,0.7);border-radius:12px 12px 0 0;">
-            <h6 class="modal-title text-white mb-0" id="photoViewerModalLabel">Foto</h6>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Tutup"></button>
+          <div class="modal-body p-0 text-center" style="background:rgba(0,0,0,0.85);border-radius:12px 12px 12px 12px;">
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Tutup" style="position:absolute;top:12px;right:12px;z-index:2;background:rgba(255,255,255,0.2);border-radius:50%;padding:6px;"></button>
+            <img id="photoViewerImg" src="" alt="Foto" style="max-width:85vw;max-height:80vh;object-fit:contain;border-radius:12px 12px 12px 12px;display:block;margin:0 auto;" />
           </div>
-          <div class="modal-body p-0 text-center" style="background:rgba(0,0,0,0.85);border-radius:0 0 12px 12px;">
-            <img id="photoViewerImg" src="" alt="Foto" style="max-width:85vw;max-height:80vh;object-fit:contain;border-radius:0 0 12px 12px;display:block;margin:0 auto;" />
-          </div>
-
         </div>
       </div>
     </div>
@@ -245,9 +241,6 @@
         }
 
         function showPhotoPopup(url, title) {
-          if (!url || url === '#' || url === '') {
-            return;
-          }
           title = title || 'Foto';
           $('#photoViewerModalLabel').text(title);
           
@@ -265,7 +258,12 @@
             }
           });
           
-          $('#photoViewerImg').attr('src', '').attr('src', url);
+          if (!url || url === '#' || url === '') {
+            $('#photoViewerImg').trigger('error');
+          } else {
+            $('#photoViewerImg').attr('src', '').attr('src', url);
+          }
+          
           $('#photoViewerModal').modal('show');
         }
     </script>
