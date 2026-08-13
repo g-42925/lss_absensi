@@ -89,6 +89,8 @@ class CI_Loader {
     public $slid;
     public $news;
 		public $kpi_m;
+		public $karyawan_data;
+		public $s3;
 	// All these are set automatically. Don't mess with them.
 	/**
 	 * Nesting level of the output buffering mechanism

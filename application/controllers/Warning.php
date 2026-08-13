@@ -97,6 +97,7 @@ class Warning extends CI_Controller{
             'penalty'    => $this->input->post('penalty'),
             'issuedBy'   => $issuedBy,
             'createdAt'  => date('Y-m-d'),
+            'expired'    => $this->input->post('expired'),
         ];
 
         $q = $this->db->insert('warning', $data);
@@ -165,6 +166,7 @@ class Warning extends CI_Controller{
             'date'       => $this->input->post('date'),
             'penalty'    => $this->input->post('penalty'),
             'issuedBy'   => $issuedBy,
+            'expired'    => $this->input->post('expired')
         ];
 
         $this->db->where('id', $id);

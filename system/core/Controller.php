@@ -64,6 +64,8 @@ class CI_Controller {
     public $db;
     public $uri;
     public $input;
+
+		public $karyawan_data;
 	/**
 	 * Reference to the CI singleton
 	 *

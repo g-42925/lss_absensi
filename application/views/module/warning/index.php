@@ -22,7 +22,7 @@
             <th>Deskripsi Pelanggaran</th>
             <th>Tgl. Kejadian</th>
             <th>Sanksi</th>
-            <th>Dibuat</th>
+            <th>Berlaku sampai</th>
             <th>...</th>
           </tr>
         </thead>
@@ -30,7 +30,7 @@
           <?php $no = 1; foreach ($data as $r): ?>
           <tr class="text-center align-middle">
             <td><?= $no++; ?></td>
-            <td class="text-start">
+            <td class="text-center">
               <strong><?= htmlspecialchars($r['nama_pegawai']); ?></strong><br>
               <small class="text-muted"><?= htmlspecialchars($r['id_pegawai']); ?></small>
             </td>
@@ -46,14 +46,14 @@
               <span class="badge <?= $lvlClass; ?>"><?= $lvlLabel; ?></span>
             </td>
             <td class="text-start"><?= htmlspecialchars($r['title']); ?></td>
-            <td class="text-start" style="max-width:200px;">
+            <td class="text-center" style="max-width:200px;">
               <span class="text-truncate d-block" style="max-width:180px;" title="<?= htmlspecialchars($r['violation']); ?>">
                 <?= htmlspecialchars($r['violation']); ?>
               </span>
             </td>
             <td><?= date('d M Y', strtotime($r['date'])); ?></td>
             <td>Rp. <?= number_format($r['penalty'], 0, ',', '.'); ?></td>
-            <td><small><?= date('d M Y', strtotime($r['createdAt'])); ?></small></td>
+            <td><small><?= date('d M Y', strtotime($r['expired'])); ?></small></td>
             <td>
                 <div class="d-flex gap-1 justify-content-center">
                     <a href="<?= base_url('warning/edit/' . $r['id']); ?>" class="btn btn-sm btn-icon btn-outline-primary" title="Edit">

@@ -92,7 +92,7 @@
           </div>
 
           <!-- Tanggal Kejadian -->
-          <div class="col-xl-6 col-md-6 col-sm-12">
+          <div class="col-4">
             <label class="form-label" for="date">
               Tanggal Kejadian <i class="text-danger">*</i>
             </label>
@@ -108,8 +108,25 @@
             <small class="text-muted">Tanggal terjadinya pelanggaran.</small>
           </div>
 
+          <!-- masa berlaku -->
+          <div class="col-4">
+            <label class="form-label" for="expired">
+              Masa Berlaku <i class="text-danger">*</i>
+            </label>
+            <input
+              type="text"
+              class="form-control"
+              id="expired"
+              name="expired"
+              value="<?= htmlspecialchars($warning['expired']); ?>"
+              placeholder="YYYY-MM-DD"
+              required
+            />
+            <small class="text-muted">Tanggal berakhirnya masa berlaku.</small>
+          </div>
+
           <!--  penalty nominal -->
-          <div class="col-6">
+          <div class="col-4">
             <label class="form-label" for="penalty_nominal">
               Penalty Nominal
             </label>
@@ -164,6 +181,11 @@
     $('#date').flatpickr({
       dateFormat: 'Y-m-d',
       defaultDate: '<?= $warning['date']; ?>'
+    });
+
+    $('#expired').flatpickr({
+      dateFormat: 'Y-m-d',
+      defaultDate: '<?= $warning['expired']; ?>'
     });
   });
 </script>

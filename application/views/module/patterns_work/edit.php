@@ -97,6 +97,12 @@
             <td class="">
               <input id="<?= 'breakEnd-'.$no ?>" value="<?= DateTime::createFromFormat("H:i:s",$row['selesai_istirahat'])->format("H:i") ?>" type="text" class="form-control flatpickr-input text-center active" name="breakEnd[]">
             </td>
+            <td class="">
+              <input type="text" class="outline-none outline-none w-14" value="C1">
+            </td>
+            <td class="">
+              <input id="<?= 'c1-'.$no ?>" value="<?= DateTime::createFromFormat("H:i:s",$row['c1'])->format("H:i") ?>" type="text" class="form-control flatpickr-input text-center active" name="c1[]">
+            </td>
           </tr>
         `;
       }
@@ -108,11 +114,12 @@
         const twPp = document.querySelector('#flatpickr-time-work-p'+i)
         const start = document.querySelector('#breakStart-'+i)
         const end = document.querySelector('#breakEnd-'+i)
+        const c1 = document.querySelector('#c1-'+i)
         twMm.flatpickr({ enableTime: true, noCalendar: true, time_24hr: true });
         twPp.flatpickr({ enableTime: true, noCalendar: true, time_24hr: true });
         start.flatpickr({ enableTime: true, noCalendar: true, time_24hr: true });
         end.flatpickr({ enableTime: true, noCalendar: true, time_24hr: true });
-        
+        c1.flatpickr({ enableTime: true, noCalendar: true, time_24hr: true });
       }
 
       

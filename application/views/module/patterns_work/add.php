@@ -81,13 +81,19 @@
               <input type="text" class="outline-none [width:calc(1ch*7)]" value="Istirahat">
             </td>
             <td class="">
-              <input id="breakStart-`+i+`" type="text" value="12:00" class="form-control flatpickr-input text-center active" name="break[]">
+              <input id="breakStart-`+i+`" type="text" value="00:00" class="form-control flatpickr-input text-center active" name="break[]">
             </td>
             <td class="">
               <input type="text" class="outline-none w-14" value="Sampai">
             </td>
             <td class="">
               <input value="13:00" type="text" id="breakEnd-`+i+`" class="form-control flatpickr-input text-center active" name="breakEnd[]">
+            </td>
+            <td class="">
+              <input type="text" class="outline-none w-14" value="C1">
+            </td>
+            <td class="">
+              <input value="00:00" type="text" id="c1-`+i+`" class="form-control flatpickr-input text-center active" name="c1[]">
             </td>
           </tr>
         `;
@@ -99,10 +105,12 @@
         const twMm = document.querySelector('#flatpickr-time-work-m'+i)
         const start = document.querySelector('#breakStart-'+i)
         const end = document.querySelector('#breakEnd-'+i)
+        const c1 = document.querySelector("#c1-"+i);
         twMm.flatpickr({ enableTime: true, noCalendar: true, time_24hr: true });
         twPp.flatpickr({ enableTime: true, noCalendar: true, time_24hr: true });
         start.flatpickr({ enableTime: true, noCalendar: true, time_24hr: true });
         end.flatpickr({ enableTime: true, noCalendar: true, time_24hr: true });
+        c1.flatpickr({ enableTime: true, noCalendar: true, time_24hr: true });
       }
     }
   }

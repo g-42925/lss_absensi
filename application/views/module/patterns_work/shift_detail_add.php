@@ -25,23 +25,27 @@
           </div>
           <div class="col-xl-6 col-md-6 col-sm-6">
             <label class="form-label">Clock In<i class="text-danger">*</i></label>
-            <input id="clockin" type="text" class="form-control" name="clockin" required />
+            <input value="00:00" id="clockin" type="text" class="form-control" name="clockin" required />
           </div>
           <div class="col-xl-6 col-md-6 col-sm-6">
             <label class="form-label">Clock out<i class="text-danger">*</i></label>
-            <input id="clockout" type="text" class="form-control" name="clockout" required />
+            <input value="00:00" id="clockout" type="text" class="form-control" name="clockout" required />
           </div>
           <div class="col-xl-6 col-md-6 col-sm-6">
             <label class="form-label">Break<i class="text-danger">*</i></label>
-            <input id="break" type="text" class="form-control" name="break" required />
+            <input value="00:00" id="break" type="text" class="form-control" name="break" required />
           </div>
-          <div class="col-xl-6 col-md-6 col-sm-6">
+          <div class="col-4">
             <label class="form-label">After break<i class="text-danger">*</i></label>
-            <input id="afterbreak" type="text" class="form-control" name="afterbreak" required />
+            <input value="00:00" id="afterbreak" type="text" class="form-control" name="afterbreak" required />
           </div>
-          <div class="col-xl-6 col-md-6 col-sm-6">
+          <div class="col-4">
+            <label class="form-label">C1<i class="text-danger">*</i></label>
+            <input value="00:00" id="c1" type="text" class="form-control" name="c1" required />
+          </div>
+          <div class="col-4">
             <label class="form-label">Tardiness Tolerance<i class="text-danger">*</i></label>
-            <input id="tt" type="text" class="form-control" name="tt" required />
+            <input type="text" class="form-control" name="tt" required />
           </div>
         </div>
         <div class="pt-5 text-end">
@@ -77,6 +81,12 @@
       time_24hr: true
     });
     flatpickr("#afterbreak", {
+      enableTime: true,
+      noCalendar: true,
+      dateFormat: "H:i",
+      time_24hr: true
+    });
+    flatpickr('#c1', {
       enableTime: true,
       noCalendar: true,
       dateFormat: "H:i",

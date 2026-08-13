@@ -32,6 +32,13 @@
             <label class="form-label">Tanggal gajian<i class="text-danger">*</i></label>
             <input type="text" class="form-control" name="salary_date" value="<?=$profile['salary_date'];?>"  required />
           </div>
+          <div class="col-xl-6 col-md-6 col-sm-6 col-xs-6">
+            <label class="form-label">Kebijakan Potongan SP<i class="text-danger">*</i></label>
+            <select class="form-select" name="sp_deduction_policy" required>
+              <option value="tiap_bulan" <?= ($profile['sp_deduction_policy'] == 'tiap_bulan') ? 'selected' : '' ?>>Dipotong Tiap Bulan</option>
+              <option value="bulan_terbit" <?= ($profile['sp_deduction_policy'] == 'bulan_terbit') ? 'selected' : '' ?>>Dipotong Hanya Bulan Terbit</option>
+            </select>
+          </div>
           <div class="col-xl-12 col-md-12 col-sm-12 mb-2">
             <label class="form-label">Logo Perusahaan</label>
             <input type="file" class="form-control" name="logo" onChange="showImgfile(this);" />

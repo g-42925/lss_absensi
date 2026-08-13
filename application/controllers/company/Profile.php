@@ -127,7 +127,8 @@ class Profile extends CI_Controller {
             'phone' => $this->input->post('phone'),
             'email' => $this->input->post('email'),
             'logo' => $logo,
-            'salary_date' => $this->input->post('salary_date')
+            'salary_date' => $this->input->post('salary_date'),
+            'sp_deduction_policy' => $this->input->post('sp_deduction_policy')
           ]);
 
           $this->db->where('id',$companyId);
@@ -147,7 +148,8 @@ class Profile extends CI_Controller {
             'phone' => $this->input->post('phone'),
             'email' => $this->input->post('email'),
             'logo' => $profile['logo'],
-            'salary_date' => $this->input->post('salary_date')
+            'salary_date' => $this->input->post('salary_date'),
+            'sp_deduction_policy' => $this->input->post('sp_deduction_policy')
           ]);
 
 					$this->db->where('id',$companyId);

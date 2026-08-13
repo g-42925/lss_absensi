@@ -35,14 +35,19 @@
             <label class="form-label">Break<i class="text-danger">*</i></label>
             <input id="break" value="<?= $info['break'] ?>" type="text" class="form-control" name="break" required />
           </div>
-          <div class="col-xl-6 col-md-6 col-sm-6">
+          <div class="col-4">
             <label class="form-label">After break<i class="text-danger">*</i></label>
             <input id="afterbreak" value="<?= $info['after_break'] ?>" type="text" class="form-control" name="afterbreak" required />
           </div>
-          <div class="col-xl-6 col-md-6 col-sm-6">
+          <div class="col-4">
+            <label class="form-label">C1<i class="text-danger">*</i></label>
+            <input id="c1" value="<?= $info['c1'] ?>" type="text" class="form-control" name="c1" required />
+          </div>
+          <div class="col-4">
             <label class="form-label">Tardiness Tolerance<i class="text-danger">*</i></label>
             <input id="tt" value="<?= $info['tardiness_tolerance'] ?>" type="text" class="form-control" name="tt" required />
           </div>
+
         </div>
         <div class="pt-5 text-end">
           <a href="javascript:window.history.back();" class="btn btn-label-secondary me-sm-3 me-1">Batal</a>
@@ -75,6 +80,12 @@
       time_24hr: true
     });
     flatpickr("#afterbreak", {
+      enableTime: true,
+      noCalendar: true,
+      dateFormat: "H:i",
+      time_24hr: true
+    });
+    flatpickr("#c1", {
       enableTime: true,
       noCalendar: true,
       dateFormat: "H:i",

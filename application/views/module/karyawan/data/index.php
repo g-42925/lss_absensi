@@ -53,9 +53,6 @@
             <td><?= $row['status_pegawai'] == 'contract' ? date('d M Y',strtotime($row['contract_start_date']))."-".date('d M Y',strtotime($row['contract_end_date'])):"-" ?></td>
             <td><?= number_format($row['salary'],2); ?></td>
             <td>
-              <a href="<?=base_url('attendance_record/detail/'.$row['pegawai_id']);?>" class="btn p-1" title="Rekap Kehadiran">
-                <i class="ti ti-checklist"></i>
-              </a>
               <a href="<?= base_url('karyawan/data/edit/'.$row['pegawai_id']).'?failed=false' ;?>" class="btn p-1" title="edit">
                 <i class="ti ti-edit"></i>
               </a>
@@ -70,12 +67,6 @@
               </a>
               <a href="<?= base_url('file/config/').$row['pegawai_id'] ?>" class="btn p-1" title="file">
                 <i class="ti ti-file"></i>
-              </a>
-              <a href="<?= base_url('payroll/filter/').$row['pegawai_id'] ?>" class="btn p-1" title="payroll">
-                <i class="ti ti-calendar"></i>
-              </a>
-              <a href="<?= base_url('kpi_evaluation/index/').$row['pegawai_id'] ?>" class="btn p-1 text-warning" title="Evaluasi KPI">
-                <i class="ti ti-star"></i>
               </a>
               <a href="<?= base_url('karyawan/data/kick/').$row['pegawai_id'] ?>" class="btn p-1" title="kick">
                 <i class="ti ti-user-x"></i>

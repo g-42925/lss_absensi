@@ -209,12 +209,7 @@ class Kpi_absensi_model extends CI_Model
         }
 
         // ── Surat Peringatan (SP) ─────────────────────────────
-        $sp_query = $this->db->query(
-            "SELECT COUNT(id) as jml_sp FROM warning 
-             WHERE employeeId = ?",
-            [$pegawai_id]
-        )->row_array();
-        $jumlah_sp = $sp_query ? (int) $sp_query['jml_sp'] : 0;
+        $jumlah_sp = $this->db->query("select * from warning where employeeId = ? and MONTH(expired) >= {$bulan}", [$pegawai_id])->num_rows();
 
         // ── Kalkulasi persentase ──────────────────────────────
         $persen_kehadiran = $hari_kerja_efektif > 0
@@ -320,8 +315,7 @@ class Kpi_absensi_model extends CI_Model
      * @param  array $kpi  Hasil dari calculate_kpi()
      * @return bool
      */
-    public function save_kpi($company_id, $pegawai_id, $bulan, $tahun, $kpi)
-    {
+    public function save_kpi($company_id, $pegawai_id, $bulan, $tahun, $kpi){
         $existing = $this->db->query(
             "SELECT id FROM tx_kpi_absensi
              WHERE company_id = ? AND pegawai_id = ? AND periode_bulan = ? AND periode_tahun = ?
@@ -374,9 +368,55 @@ class Kpi_absensi_model extends CI_Model
      * @param  int $tahun
      * @return array
      */
-    public function get_all_kpi($company_id, $bulan, $tahun)
-    {
-        return $this->db->query(
+    public function get_all_kpi($company_id, $bulan, $tahun,$division,$keyword){
+
+        if($division != 'all'){
+          if($keyword != 'all'){
+            return $this->db->query(
+            "SELECT k.*, p.nama_pegawai, p.nik, p.foto_pegawai,
+                    d.division_name, pos.name AS position_name
+             FROM tx_kpi_absensi k
+             JOIN m_pegawai p ON k.pegawai_id = p.pegawai_id
+             LEFT JOIN divisions d ON p.division_id = d.id
+             LEFT JOIN position pos ON p.position_id = pos.id
+             WHERE k.company_id = ? AND k.periode_bulan = ? AND k.periode_tahun = ?
+               AND p.is_del = 'n' AND p.division_id = ? and (p.nik LIKE ? OR p.nama_pegawai LIKE ?)
+             ORDER BY k.persen_kehadiran DESC, p.nama_pegawai ASC",
+            [$company_id, $bulan, $tahun,$division,"%{$keyword}%","%{$keyword}%"]
+            )->result_array();
+          }
+          else{
+            return $this->db->query(
+            "SELECT k.*, p.nama_pegawai, p.nik, p.foto_pegawai,
+                    d.division_name, pos.name AS position_name
+             FROM tx_kpi_absensi k
+             JOIN m_pegawai p ON k.pegawai_id = p.pegawai_id
+             LEFT JOIN divisions d ON p.division_id = d.id
+             LEFT JOIN position pos ON p.position_id = pos.id
+             WHERE k.company_id = ? AND k.periode_bulan = ? AND k.periode_tahun = ?
+               AND p.is_del = 'n' AND p.division_id = ?
+             ORDER BY k.persen_kehadiran DESC, p.nama_pegawai ASC",
+            [$company_id, $bulan, $tahun,$division]
+            )->result_array();
+          }
+        }
+        else{
+          if($keyword != 'all'){
+            return $this->db->query(
+            "SELECT k.*, p.nama_pegawai, p.nik, p.foto_pegawai,
+                    d.division_name, pos.name AS position_name
+             FROM tx_kpi_absensi k
+             JOIN m_pegawai p ON k.pegawai_id = p.pegawai_id
+             LEFT JOIN divisions d ON p.division_id = d.id
+             LEFT JOIN position pos ON p.position_id = pos.id
+             WHERE k.company_id = ? AND k.periode_bulan = ? AND k.periode_tahun = ?
+               AND p.is_del = 'n' AND ( p.nik LIKE ? OR p.nama_pegawai LIKE ?)
+             ORDER BY k.persen_kehadiran DESC, p.nama_pegawai ASC",
+            [$company_id, $bulan, $tahun,"%{$keyword}%","%{$keyword}%"]
+            )->result_array();
+          }
+          else{
+            return $this->db->query(
             "SELECT k.*, p.nama_pegawai, p.nik, p.foto_pegawai,
                     d.division_name, pos.name AS position_name
              FROM tx_kpi_absensi k
@@ -387,7 +427,12 @@ class Kpi_absensi_model extends CI_Model
                AND p.is_del = 'n'
              ORDER BY k.persen_kehadiran DESC, p.nama_pegawai ASC",
             [$company_id, $bulan, $tahun]
-        )->result_array();
+            )->result_array();
+          }
+        }
+
+
+
     }
 
     /**
@@ -399,18 +444,17 @@ class Kpi_absensi_model extends CI_Model
      * @param  int $tahun
      * @return array|null
      */
-    public function get_kpi_one($company_id, $pegawai_id, $bulan, $tahun)
-    {
+    public function get_kpi_one($company_id, $pegawai_id, $bulan, $tahun){
         return $this->db->query(
             "SELECT k.*, p.nama_pegawai, p.nik, p.foto_pegawai,
-                    d.division_name, pos.name AS position_name
-             FROM tx_kpi_absensi k
-             JOIN m_pegawai p ON k.pegawai_id = p.pegawai_id
-             LEFT JOIN divisions d ON p.division_id = d.id
-             LEFT JOIN position pos ON p.position_id = pos.id
-             WHERE k.company_id = ? AND k.pegawai_id = ?
-               AND k.periode_bulan = ? AND k.periode_tahun = ?
-             LIMIT 1",
+            d.division_name, pos.name AS position_name
+            FROM tx_kpi_absensi k
+            JOIN m_pegawai p ON k.pegawai_id = p.pegawai_id
+            LEFT JOIN divisions d ON p.division_id = d.id
+            LEFT JOIN position pos ON p.position_id = pos.id
+            WHERE k.company_id = ? AND k.pegawai_id = ?
+            AND k.periode_bulan = ? AND k.periode_tahun = ?
+            LIMIT 1",
             [$company_id, $pegawai_id, $bulan, $tahun]
         )->row_array();
     }
@@ -421,19 +465,63 @@ class Kpi_absensi_model extends CI_Model
      * @param  int $company_id
      * @return array
      */
-    public function get_all_pegawai($company_id)
-    {
-        return $this->db->query(
-            "SELECT p.pegawai_id, p.nama_pegawai, p.nik, p.foto_pegawai,
+    public function get_all_pegawai($company_id,$division,$keyword){
+        if($division != 'all'){
+            if($keyword != 'all'){
+                return $this->db->query(
+                    "SELECT p.pegawai_id, p.nama_pegawai, p.nik, p.foto_pegawai,
                     p.tanggal_mulai_kerja,
                     d.division_name, pos.name AS position_name
-             FROM m_pegawai p
-             LEFT JOIN divisions d ON p.division_id = d.id
-             LEFT JOIN position pos ON p.position_id = pos.id
-             WHERE p.company_id = ? AND p.is_del = 'n'
-             ORDER BY p.nama_pegawai ASC",
-            [$company_id]
-        )->result_array();
+                    FROM m_pegawai p
+                    LEFT JOIN divisions d ON p.division_id = d.id
+                    LEFT JOIN position pos ON p.position_id = pos.id
+                    WHERE p.company_id = ? AND p.is_del = 'n' and p.division_id = ? and (p.nik LIKE ? OR p.nama_pegawai LIKE ?)
+                    ORDER BY p.nama_pegawai ASC",
+                    [$company_id, $division, "%{$keyword}%", "%{$keyword}%"]
+                )->result_array();
+            }
+            else{
+                return $this->db->query(
+                    "SELECT p.pegawai_id, p.nama_pegawai, p.nik, p.foto_pegawai,
+                    p.tanggal_mulai_kerja,
+                    d.division_name, pos.name AS position_name
+                    FROM m_pegawai p
+                    LEFT JOIN divisions d ON p.division_id = d.id
+                    LEFT JOIN position pos ON p.position_id = pos.id
+                    WHERE p.company_id = ? AND p.is_del = 'n' and p.division_id = ?
+                    ORDER BY p.nama_pegawai ASC",
+                    [$company_id, $division]
+                )->result_array();
+            }
+        }
+        else{
+            if($keyword != 'all'){
+                return $this->db->query(
+                    "SELECT   p.pegawai_id, p.nama_pegawai, p.nik, p.foto_pegawai,
+                    p.tanggal_mulai_kerja,
+                    d.division_name, pos.name AS position_name
+                    FROM m_pegawai p
+                    LEFT JOIN divisions d ON p.division_id = d.id
+                    LEFT JOIN position pos ON p.position_id = pos.id
+                    WHERE p.company_id = ? AND p.is_del = 'n' and (p.nik LIKE ? OR p.nama_pegawai LIKE ?)
+                    ORDER BY p.nama_pegawai ASC",
+                    [$company_id, "%{$keyword}%", "%{$keyword}%"]
+                )->result_array();
+            }
+            else{
+                return $this->db->query(
+                    "SELECT p.pegawai_id, p.nama_pegawai, p.nik, p.foto_pegawai,
+                    p.tanggal_mulai_kerja,
+                    d.division_name, pos.name AS position_name
+                    FROM m_pegawai p
+                    LEFT JOIN divisions d ON p.division_id = d.id
+                    LEFT JOIN position pos ON p.position_id = pos.id
+                    WHERE p.company_id = ? AND p.is_del = 'n' 
+                    ORDER BY p.nama_pegawai ASC",
+                    [$company_id]
+                )->result_array();
+            }
+        }
     }
 
     // =========================================================

@@ -12,6 +12,8 @@ class Kpi_evaluation extends CI_Controller {
     public $upload;
     public $pagination;
 
+    public $karyawan_data;
+
     public function __construct() {
         parent::__construct();
         is_logged_in();
@@ -42,13 +44,55 @@ class Kpi_evaluation extends CI_Controller {
      * Menampilkan riwayat/histori evaluasi KPI untuk karyawan tertentu
      */
     public function index($pegawai_id = null) {
-        if (!$pegawai_id) { redirect('karyawan/data'); }
+        if (!$pegawai_id) {
+            $this->load->model('user/karyawan/data_model', 'karyawan_data');
+            $companyId = $this->session->userdata('company_id');
+            
+            $data['htmlpagejs'] = 'none';
+            $data['nmenu']      = 'KPI';
+            $data['title']      = 'Evaluasi KPI';
+            $data['namalabel']  = 'Evaluasi KPI';
+            $data['auth']       = authUser();
+            
+            $divisionId = $this->input->get('divisionId');
+            $nik = $this->input->get('nik');
+            
+            if ($divisionId && $divisionId != 'all') {
+                $filter = ['div' => $divisionId, 'nik' => $nik];
+                $datas = $this->karyawan_data->getWithFilter($companyId, $filter);
+            } else if ($nik) {
+                // If only NIK/name is provided but division is all
+                $filter = ['div' => 'all', 'nik' => $nik];
+                $datas = $this->karyawan_data->getWithFilter($companyId, $filter);
+            } else {
+                $datas = $this->karyawan_data->get_data($companyId);
+            }
+            
+            // Get divisions for dropdown
+            $data['divisions'] = $this->db->query("SELECT * FROM divisions WHERE company_id = ?", [$companyId])->result_array();
+            $data['div'] = $divisionId;
+            $data['nik'] = $nik;
+
+            foreach($datas as $index => $d){
+                $division = $this->db->query("SELECT division_name FROM divisions WHERE id = ?", [$d['division_id']])->row_array();
+                $datas[$index]['divisi'] = $division ? $division['division_name'] : '-';
+            }
+            $data['datas'] = $datas;
+
+            $this->load->view('templates/header', $data);
+            $this->load->view('templates/sidemenu', $data);
+            $this->load->view('templates/sidenav', $data);
+            $this->load->view('module/kpi_evaluation/list_employee', $data);
+            $this->load->view('templates/footer', $data);
+            $this->load->view('templates/fscript-html-end', $data);
+            return;
+        }
 
         $pegawai = $this->_check_pegawai($pegawai_id);
         $companyId = $this->session->userdata('company_id');
 
         $data['htmlpagejs'] = 'none';
-        $data['nmenu']      = 'Karyawan'; // Keep sidebar active on Karyawan
+        $data['nmenu']      = 'KPI'; // Keep sidebar active on KPI
         $data['title']      = 'Evaluasi KPI';
         $data['namalabel']  = 'Histori Evaluasi KPI';
         $data['auth']       = authUser();
@@ -91,7 +135,7 @@ class Kpi_evaluation extends CI_Controller {
         $companyId = $this->session->userdata('company_id');
 
         $data['htmlpagejs'] = 'none';
-        $data['nmenu']      = 'Karyawan';
+        $data['nmenu']      = 'KPI';
         $data['title']      = 'Evaluasi KPI';
         $data['namalabel']  = 'Form Penilaian KPI';
         $data['auth']       = authUser();

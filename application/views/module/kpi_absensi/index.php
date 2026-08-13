@@ -46,12 +46,11 @@ function kpi_badge_persen($val) {
 
   <!-- Filter Periode + Generate Bulk -->
   <div class="card mb-4 shadow-sm border-0">
-    <div class="card-body py-3">
+    <div class="card-body py-3 border-2 box-shadow">
       <div class="row align-items-center g-3">
         <!-- Filter Form -->
         <div class="col-md-7">
           <form method="POST" action="<?= base_url('kpi_absensi'); ?>" class="d-flex align-items-center gap-2 flex-wrap">
-            <label class="fw-semibold text-muted mb-0 me-1">Filter Periode:</label>
             <select name="bulan" class="form-select form-select-sm w-auto">
               <?php foreach ($months as $n => $nm): ?>
                 <option value="<?= $n; ?>" <?= $n == $bulan ? 'selected' : ''; ?>><?= $nm; ?></option>
@@ -65,6 +64,13 @@ function kpi_badge_persen($val) {
                 <option value="<?= $y; ?>" <?= $y == $tahun ? 'selected' : ''; ?>><?= $y; ?></option>
               <?php endfor; ?>
             </select>
+            <select name="division" class="form-select form-select-sm w-auto">
+              <option value="all">Semua Divisi</option>
+              <?php foreach ($divisions as $d): ?>
+                <option <?= $d->id == $division ? 'selected' : ''; ?> value="<?= $d->id; ?>"><?= $d->division_name; ?></option>
+              <?php endforeach; ?>
+            </select>
+            <input type="text" name="keyword" value="<?= $keyword ?>" class="form-control form-control-sm w-auto" placeholder="nik or name">
             <button type="submit" class="btn btn-sm btn-primary">
               <i class="ti ti-filter me-1"></i>Tampilkan
             </button>

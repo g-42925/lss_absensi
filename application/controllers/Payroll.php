@@ -175,7 +175,26 @@ class Payroll extends CI_Controller {
 
           }
 
-          $salary = ($emp['salary'] - ($alphaPenalty['amt'] + $deductionValue + $missingMedicalCertificate) + $totalAllowance + $totalOverwork + $qReimburse['val']) - $totalBenefit;
+          $companyId = $this->session->userdata('company_id');
+          $company = $this->db->query("select * from companies where id = ?",[$companyId])->row_array();
+          
+          $spPolicy = $company['sp_deduction_policy'] ?? 'tiap_bulan';
+          if ($spPolicy === 'bulan_terbit') {
+              $sp_query = $this->db->query(
+                  "SELECT SUM(penalty) as amt FROM warning 
+                   WHERE employeeId = ? AND date BETWEEN ? AND ?",
+                  [$empId, $dateX, $dateY]
+              )->row_array();
+          } else {
+              $sp_query = $this->db->query(
+                  "SELECT SUM(penalty) as amt FROM warning 
+                   WHERE employeeId = ?",
+                  [$empId]
+              )->row_array();
+          }
+          $spPenalty = $sp_query ? (int) $sp_query['amt'] : 0;
+
+          $salary = ($emp['salary'] - ($alphaPenalty['amt'] + $deductionValue + $missingMedicalCertificate + $spPenalty) + $totalAllowance + $totalOverwork + $qReimburse['val']) - $totalBenefit;
 
           if((int) $alphaPenalty['amt'] > 0){
             $penalty[] = [
@@ -191,8 +210,14 @@ class Payroll extends CI_Controller {
           }
           if((int) $missingMedicalCertificate > 0){
             $penalty[] = [
-              'name' => 'tanpa status',
+              'name' => 'denda sakit',
               'value' => (int) $missingMedicalCertificate
+            ];
+          }
+          if($spPenalty > 0){
+            $penalty[] = [
+              'name' => 'Surat Peringatan',
+              'value' => $spPenalty
             ];
           }
           if((int) $totalOverwork > 0){
@@ -212,10 +237,6 @@ class Payroll extends CI_Controller {
 
           $emp['position'] = $qPosition['name'];
 
-          $companyId = $this->session->userdata('company_id');
-
-          $company = $this->db->query("select * from companies where id = ?",[$companyId])->row_array();
-
           $data['final'] =  [
             'emp' => $emp,
             'company' => $company,
@@ -224,7 +245,7 @@ class Payroll extends CI_Controller {
             'benefit' => $benefit,
             'penalty' => $penalty,
             'totalIncome' => $emp['salary'] + $totalAllowance + $totalOverwork + $qReimburse['val'],
-            'totalBenefit' => (int) $totalBenefit + $alphaPenalty['amt'] + $deductionValue + $missingMedicalCertificate,
+            'totalBenefit' => (int) $totalBenefit + $alphaPenalty['amt'] + $deductionValue + $missingMedicalCertificate + $spPenalty,
             'thp' => $salary > 0 ? $salary : 0
           ];
 
@@ -251,6 +272,8 @@ class Payroll extends CI_Controller {
 		  $data['dateY'] = $dateY;
 
     	$companyId = $this->session->userdata('company_id');
+        $company = $this->db->query("select * from companies where id = ?",[$companyId])->row_array();
+        $spPolicy = $company['sp_deduction_policy'] ?? 'tiap_bulan';
 
     	$divisions = $this->db->query("select * from divisions where company_id = ?",[$companyId])->result_array();
 
@@ -301,6 +324,20 @@ class Payroll extends CI_Controller {
           $employees[$empIndex]['salaryx'] = (int) ($e['salary'] / 26) * count($attendance) - ((int) ($e['salary'] / 26) * $offDays);
         }
 
+        if ($spPolicy === 'bulan_terbit') {
+            $sp_query = $this->db->query(
+                "SELECT SUM(penalty) as amt FROM warning 
+                 WHERE employeeId = ? AND date BETWEEN ? AND ?",
+                [$empId, $dateX, $dateY]
+            )->row_array();
+        } else {
+            $sp_query = $this->db->query(
+                "SELECT SUM(penalty) as amt FROM warning 
+                 WHERE employeeId = ?",
+                [$empId]
+            )->row_array();
+        }
+        $spPenalty = $sp_query ? (int) $sp_query['amt'] : 0;
     
         		$alphaPenalty = $this->db->query("select sum(amount) as amt from salary_deduction where employee_id = ? and date between ? and ? and deduction_type = 'alpha-2'",[$empId,$dateX,$dateY])->row_array();
   
@@ -383,7 +420,7 @@ class Payroll extends CI_Controller {
             		];
           	    }
 
-          		$salary = ($e['salary'] - ($alphaPenalty['amt'] + $deductionValue) + $totalAllowance + $totalOverwork + $qReimburse['val']) - $totalBenefit;
+          		$salary = ($e['salary'] - ($alphaPenalty['amt'] + $deductionValue + $spPenalty) + $totalAllowance + $totalOverwork + $qReimburse['val']) - $totalBenefit;
 
           		if((int) $alphaPenalty['amt'] > 0){
             		$penalty[] = [
@@ -392,9 +429,15 @@ class Payroll extends CI_Controller {
             		];
           		}
           		if((int) $deductionValue > 0){
-            		$income[] = [
+            		$penalty[] = [
               			'name' => 'terlambat',
               			'value' => (int) $deductionValue
+            		];
+          		}
+          		if((int) $spPenalty > 0){
+            		$penalty[] = [
+              			'name' => 'Surat Peringatan',
+              			'value' => $spPenalty
             		];
           		}
           		if((int) $totalOverwork > 0){
@@ -421,7 +464,7 @@ class Payroll extends CI_Controller {
 		  		$employees[$empIndex]['salary'] = $e['salary'];
 		  		$employees[$empIndex]['thp'] = $salary;
 			    $employees[$empIndex]['totalAllowance'] = $totalAllowance + $totalOverwork + $qReimburse['val'];
-				$employees[$empIndex]['totalBenefit'] = (int) $totalBenefit + $alphaPenalty['amt'] + $deductionValue;
+				$employees[$empIndex]['totalBenefit'] = (int) $totalBenefit + $alphaPenalty['amt'] + $deductionValue + $spPenalty;
 
       		}
 
@@ -590,7 +633,26 @@ class Payroll extends CI_Controller {
 
           }
 
-          $salary = ($emp['salary'] - ($alphaPenalty['amt'] + $deductionValue + $missingMedicalCertificate) + $totalAllowance + $totalOverwork + $qReimburse['val']) - $totalBenefit;
+          $companyId = $this->session->userdata('company_id');
+          $company = $this->db->query("select * from companies where id = ?",[$companyId])->row_array();
+          
+          $spPolicy = $company['sp_deduction_policy'] ?? 'tiap_bulan';
+          if ($spPolicy === 'bulan_terbit') {
+              $sp_query = $this->db->query(
+                  "SELECT SUM(penalty) as amt FROM warning 
+                   WHERE employeeId = ? AND date BETWEEN ? AND ?",
+                  [$empId, $dateX, $dateY]
+              )->row_array();
+          } else {
+              $sp_query = $this->db->query(
+                  "SELECT SUM(penalty) as amt FROM warning 
+                   WHERE employeeId = ?",
+                  [$empId]
+              )->row_array();
+          }
+          $spPenalty = $sp_query ? (int) $sp_query['amt'] : 0;
+
+          $salary = ($emp['salary'] - ($alphaPenalty['amt'] + $deductionValue + $missingMedicalCertificate + $spPenalty) + $totalAllowance + $totalOverwork + $qReimburse['val']) - $totalBenefit;
 
           if((int) $alphaPenalty['amt'] > 0){
             $penalty[] = [
@@ -608,6 +670,12 @@ class Payroll extends CI_Controller {
             $penalty[] = [
               'name' => 'tanpa status',
               'value' => (int) $missingMedicalCertificate
+            ];
+          }
+          if($spPenalty > 0){
+            $penalty[] = [
+              'name' => 'Surat Peringatan',
+              'value' => $spPenalty
             ];
           }
           if((int) $totalOverwork > 0){
@@ -639,7 +707,7 @@ class Payroll extends CI_Controller {
             'benefit' => $benefit,
             'penalty' => $penalty,
             'totalIncome' => $emp['salary'] + $totalAllowance + $totalOverwork + $qReimburse['val'],
-            'totalBenefit' => (int) $totalBenefit + $alphaPenalty['amt'] + $deductionValue + $missingMedicalCertificate,
+            'totalBenefit' => (int) $totalBenefit + $alphaPenalty['amt'] + $deductionValue + $missingMedicalCertificate + $spPenalty,
             
             'thp' => $salary,
           ];
@@ -797,7 +865,26 @@ class Payroll extends CI_Controller {
             		];
           	    }
 
-          		$salary = ($emp['salary'] - ($alphaPenalty['amt'] + $deductionValue) + $totalAllowance + $totalOverwork + $qReimburse['val']) - $totalBenefit;
+          		$companyId = $this->session->userdata('company_id');
+          		$company = $this->db->query("select * from companies where id = ?",[$companyId])->row_array();
+          		$spPolicy = $company['sp_deduction_policy'] ?? 'tiap_bulan';
+
+          		if ($spPolicy === 'bulan_terbit') {
+              		$sp_query = $this->db->query(
+                  		"SELECT SUM(penalty) as amt FROM warning 
+                   		WHERE employeeId = ? AND date BETWEEN ? AND ?",
+                  		[$empId, $dateX, $dateY]
+              		)->row_array();
+          		} else {
+              		$sp_query = $this->db->query(
+                  		"SELECT SUM(penalty) as amt FROM warning 
+                   		WHERE employeeId = ?",
+                  		[$empId]
+              		)->row_array();
+          		}
+          		$spPenalty = $sp_query ? (int) $sp_query['amt'] : 0;
+
+          		$salary = ($emp['salary'] - ($alphaPenalty['amt'] + $deductionValue + $spPenalty) + $totalAllowance + $totalOverwork + $qReimburse['val']) - $totalBenefit;
 
           		if((int) $alphaPenalty['amt'] > 0){
             		$penalty[] = [
@@ -835,7 +922,7 @@ class Payroll extends CI_Controller {
 		  		$employees[$empIndex]['salary'] = $emp['salary'];
 		  		$employees[$empIndex]['thp'] = $salary;
 			    $employees[$empIndex]['totalAllowance'] = $totalAllowance + $totalOverwork + $qReimburse['val'];
-				$employees[$empIndex]['totalBenefit'] = (int) $totalBenefit + $alphaPenalty['amt'] + $deductionValue;
+				$employees[$empIndex]['totalBenefit'] = (int) $totalBenefit + $alphaPenalty['amt'] + $deductionValue + $spPenalty;
 
       		}
 
@@ -997,7 +1084,26 @@ class Payroll extends CI_Controller {
 
           }
 
-          $salary = ($emp['salary'] - ($alphaPenalty['amt'] + $deductionValue) + $totalAllowance + $totalOverwork + $qReimburse['val']) - $totalBenefit;
+          $companyId = $this->session->userdata('company_id');
+          $company = $this->db->query("select * from companies where id = ?",[$companyId])->row_array();
+          $spPolicy = $company['sp_deduction_policy'] ?? 'tiap_bulan';
+
+          if ($spPolicy === 'bulan_terbit') {
+              $sp_query = $this->db->query(
+                  "SELECT SUM(penalty) as amt FROM warning 
+                   WHERE employeeId = ? AND date BETWEEN ? AND ?",
+                  [$empId, $dateX, $dateY]
+              )->row_array();
+          } else {
+              $sp_query = $this->db->query(
+                  "SELECT SUM(penalty) as amt FROM warning 
+                   WHERE employeeId = ?",
+                  [$empId]
+              )->row_array();
+          }
+          $spPenalty = $sp_query ? (int) $sp_query['amt'] : 0;
+
+          $salary = ($emp['salary'] - ($alphaPenalty['amt'] + $deductionValue + $spPenalty) + $totalAllowance + $totalOverwork + $qReimburse['val']) - $totalBenefit;
 
           if((int) $alphaPenalty['amt'] > 0){
             $penalty[] = [

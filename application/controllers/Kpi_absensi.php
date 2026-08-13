@@ -71,8 +71,7 @@ class Kpi_absensi extends CI_Controller
         return ['bulan' => $bulan, 'tahun' => $tahun];
     }
 
-    private function _nama_bulan($n)
-    {
+    private function _nama_bulan($n){
         $months = [
             1 => 'Januari',    2 => 'Februari', 3 => 'Maret',
             4 => 'April',      5 => 'Mei',       6 => 'Juni',
@@ -86,9 +85,17 @@ class Kpi_absensi extends CI_Controller
     // INDEX – Daftar semua karyawan + KPI bulan terpilih
     // =========================================================
 
-    public function index()
-    {
+    public function index(){
         $companyId = $this->session->userdata('company_id');
+        $divisions = $this->db->query("select * from divisions where company_id = ?",[$companyId])->result();
+        
+        $data = [
+            'htmlpagejs'  => 'none',
+            'nmenu'       => 'KPI Absensi',
+            'title'       => 'KPI Absensi Bulanan',
+            'namalabel'   => 'KPI Karyawan Berbasis Absensi',
+            'auth'        => authUser(),
+        ];
 
         // Periode dari POST filter atau default
         if ($this->input->post('bulan') && $this->input->post('tahun')) {
@@ -96,18 +103,23 @@ class Kpi_absensi extends CI_Controller
                 $this->input->post('bulan'),
                 $this->input->post('tahun')
             );
-        } else {
+        } 
+        else {
             $periode = $this->_periode_default();
         }
 
         $bulan = $periode['bulan'];
         $tahun = $periode['tahun'];
-
+        $division = $this->input->post('division');
+        $keyword = $this->input->post('keyword');
+        $division = $division == '' ? 'all' : $division;
+        $keyword = $keyword == '' ? 'all' : $keyword;
+       
         // Ambil KPI tersimpan
-        $kpi_list = $this->kpi_m->get_all_kpi($companyId, $bulan, $tahun);
+        $kpi_list = $this->kpi_m->get_all_kpi($companyId, $bulan, $tahun, $division, $keyword);
 
         // Ambil semua karyawan (untuk mengetahui siapa yang belum di-generate)
-        $semua_pegawai = $this->kpi_m->get_all_pegawai($companyId);
+        $semua_pegawai = $this->kpi_m->get_all_pegawai($companyId,$division,$keyword);
 
         // Map KPI tersimpan ke pegawai_id
         $kpi_map = [];
@@ -126,17 +138,20 @@ class Kpi_absensi extends CI_Controller
         }
 
         $data = [
-            'htmlpagejs'  => 'none',
-            'nmenu'       => 'KPI Absensi',
-            'title'       => 'KPI Absensi Bulanan',
-            'namalabel'   => 'KPI Karyawan Berbasis Absensi',
-            'auth'        => authUser(),
-            'datas'       => $datas,
-            'bulan'       => $bulan,
-            'tahun'       => $tahun,
-            'nama_bulan'  => $this->_nama_bulan($bulan),
+            'htmlpagejs'      => 'none',
+            'nmenu'           => 'KPI Absensi',
+            'title'           => 'KPI Absensi Bulanan',
+            'namalabel'       => 'KPI Karyawan Berbasis Absensi',
+            'auth'            => authUser(),
+            'datas'           => $datas,
+            'bulan'           => $bulan,
+            'tahun'           => $tahun,
+            'division'        => $division,
+            'keyword'         => $keyword,
+            'nama_bulan'      => $this->_nama_bulan($bulan),
             'total_generated' => count($kpi_list),
             'total_pegawai'   => count($semua_pegawai),
+            'divisions'       => $divisions
         ];
 
         $this->load->view('templates/header', $data);
@@ -151,8 +166,7 @@ class Kpi_absensi extends CI_Controller
     // DETAIL – KPI + breakdown harian satu karyawan
     // =========================================================
 
-    public function detail($pegawai_id = null, $bulan = null, $tahun = null)
-    {
+    public function detail($pegawai_id = null, $bulan = null, $tahun = null){
         if (!$pegawai_id) { redirect('kpi_absensi'); }
 
         $companyId = $this->session->userdata('company_id');

@@ -21,6 +21,7 @@ class Patterns_model extends CI_Model {
             'toleransi_terlambat'  	  => $this->input->post('tolet'),
             'created_at'  		      => date('Y-m-d H:i:s')
         ];
+
         $res = $this->db->insert('m_pola_kerja', $data);
         $idnya = $this->db->insert_id();
 
@@ -36,7 +37,8 @@ class Patterns_model extends CI_Model {
                     'jam_masuk'         => $this->input->post('masuk')[$i],
                     'jam_pulang'        => $this->input->post('pulang')[$i],
                     'jam_istirahat'     => $this->input->post('break')[$i],
-                    'selesai_istirahat' => $this->input->post('breakEnd')[$i]
+                    'selesai_istirahat' => $this->input->post('breakEnd')[$i],
+                    'c1'                => $this->input->post('c1')[$i]
                 ];
                 $res = $this->db->insert('m_pola_kerja_det', $pdet);
             }
@@ -73,7 +75,8 @@ class Patterns_model extends CI_Model {
                     'jam_masuk'         => $this->input->post('masuk')[$i],
                     'jam_pulang'        => $this->input->post('pulang')[$i],
                     'jam_istirahat'     => $this->input->post('break')[$i],
-                    'selesai_istirahat' => $this->input->post('breakEnd')[$i]
+                    'selesai_istirahat' => $this->input->post('breakEnd')[$i],
+                    'c1'                => $this->input->post('c1')[$i]
                 ];
                 $res = $this->db->insert('m_pola_kerja_det', $pdet);
             }

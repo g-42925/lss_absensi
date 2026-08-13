@@ -19,6 +19,8 @@ class Candidate extends CI_Controller {
     public $patterns;
     public $tw;
     public $form_validation;
+
+    public $s3;
     
 
 
@@ -31,6 +33,7 @@ class Candidate extends CI_Controller {
         $this->load->model('user/karyawan/data_model', 'data');
         $this->load->model('user/patterns_model', 'patterns');
         $this->load->model('user/karyawan/timework_model', 'tw');
+        $this->load->model('S3_model','s3');
     }
 
     public function accept_proccess($candidateId){
@@ -383,30 +386,20 @@ class Candidate extends CI_Controller {
             );
         }
         else{
-            $s3 = new S3Client([
-                'version'     => 'latest',
-                'region'      => 'us-east-1',
-                'endpoint'    => 'https://s3.filebase.com',
-                'use_path_style_endpoint' => false,
-                'credentials' => [
-                'key'    => 'B8F0135956143AE0685E',
-                'secret' => 'gKrbIZJnzLWBXZ0VGQvnlAumvngpBH35PsXN5zUp'
-                ],
-                'Metadata' => [
-                'cid' => 'true'
-                ],
-            ]);
+            $name = $_FILES['photo']['name'];
+            $tmpName = $_FILES['photo']['tmp_name'];
+            $type = $_FILES['photo']['type'];
+            $fileName = time() . '_' . basename($name);
 
-            $result = $s3->putObject([
-                'Bucket' => 'leryn-storage',
-                'Key'    => $fileName,
-                'SourceFile' => $cFile,
-                'ContentType' => 'image/png',
-            ]);
 
-            $cid = $result['@metadata']['headers']['x-amz-meta-cid'];
-            $r = "https://wooden-plum-woodpecker.myfilebase.com/ipfs/".$cid;
-
+            $r = $this->s3->upload(
+                $fileName,
+                $this->session->userdata('company_id'),
+                'document',
+                $tmpName,
+                $type
+            );
+           
             $data = [
                 'candidate_id' => uniqid(),
                 'company_id' => $companyId = $this->session->userdata('company_id'),

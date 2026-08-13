@@ -328,6 +328,9 @@ class Patterns_work extends CI_Controller {
           ),
           'after_break' => $this->input->post(
             'afterbreak'
+          ),
+          'c1' => $this->input->post(
+            'c1'
           )
         ];
         
@@ -404,6 +407,9 @@ class Patterns_work extends CI_Controller {
           ),
           'after_break' => $this->input->post(
             'afterbreak'
+          ),
+          'c1' => $this->input->post(
+            'c1'
           )
         ];
 
@@ -507,6 +513,7 @@ class Patterns_work extends CI_Controller {
         $this->form_validation->set_rules('pulang[]', '', 'trim|xss_clean|htmlspecialchars');
         $this->form_validation->set_rules('break[]','Break','required');
         $this->form_validation->set_rules('breakEnd[]','Break End','required');
+        $this->form_validation->set_rules('c1[]','Batas cuti setengah hari','required');
 
 
         if ($this->form_validation->run() == false) {

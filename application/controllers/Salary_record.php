@@ -90,6 +90,8 @@ class Salary_record extends CI_Controller
     ];
 
     $company = $this->session->userdata('company_id');
+    $companyData = $this->db->query("select * from companies where id = ?", [$company])->row_array();
+    $spPolicy = $companyData['sp_deduction_policy'] ?? 'tiap_bulan';
 
     $employees = $this->db->query("select * from m_pegawai where company_id = $company and is_del = 'n'")->result_array();
 
@@ -98,6 +100,8 @@ class Salary_record extends CI_Controller
       $akhirBulan = date('Y-m-t');
       $deduction = $this->db->query("select * from salary_deduction where employee_id = $emp[pegawai_id] and date between '$awalBulan' and '$akhirBulan'")->result_array();
       $employees[$index]['deduction'] = $deduction;
+      $penalties = $this->db->query("SELECT * FROM warning WHERE MONTH(expired) >= {$data['filter']} AND employeeId = $emp[pegawai_id]")->result_array();
+      $employees[$index]['penalties'] = $penalties;
     }
 
     foreach ($employees as $index => $emp) {
@@ -106,6 +110,7 @@ class Salary_record extends CI_Controller
       $alpha2 = 0;
       $latePenalty = 0;
       $sick = 0;
+      $penalty = 0;
 
       $deduction = [];
 
@@ -127,11 +132,16 @@ class Salary_record extends CI_Controller
         }
       }
 
+      foreach ($emp['penalties'] as $idx => $p) {
+        $penalty += $p['penalty'];
+      }
+
       $deduction['clockout_late'] = $clockoutLatePenalty;
       $deduction['clockout_forget'] = $clockoutForget;
       $deduction['alpha-2'] = $alpha2;
       $deduction['late_penalty'] = $latePenalty;
       $deduction['sick'] = $sick;
+      $deduction['penalty'] = $penalty;
 
       unset($employees[$index]['deduction']);
 
@@ -140,8 +150,9 @@ class Salary_record extends CI_Controller
       $employees[$index]['minus'][] = ['name' => 'Alpha-2', 'value' => $alpha2];
       $employees[$index]['minus'][] = ['name' => 'Late Penalty', 'value' => $latePenalty];
       $employees[$index]['minus'][] = ['name' => 'Denda sakit', 'value' => $sick];
-    }
+      $employees[$index]['minus'][] = ['name' => 'Pelanggaran', 'value' => $penalty];
 
+    }
 
     foreach ($employees as $index => $emp) {
       foreach ($this->db->query("select * from benefit b join employee_benefit eb on b.benefit_id = eb.benefit_id where b.company_id = ? and eb.employee_id = ?", [$company, $emp['pegawai_id']])->result_array() as $idx => $b) {
@@ -251,8 +262,7 @@ class Salary_record extends CI_Controller
     $this->load->view('templates/fscript-html-end', $data);
   }
 
-  public function filter($month)
-  {
+  public function filter($month){
 
     $data['htmlpagejs'] = 'none';
     $data['nmenu']      = 'Rekap Gaji';
@@ -316,6 +326,8 @@ class Salary_record extends CI_Controller
     ];
 
     $company = $this->session->userdata('company_id');
+    $companyData = $this->db->query("select * from companies where id = ?", [$company])->row_array();
+    $spPolicy = $companyData['sp_deduction_policy'] ?? 'tiap_bulan';
 
     $employees = $this->db->query("select * from m_pegawai where company_id = $company and is_del = 'n'")->result_array();
 
@@ -324,6 +336,8 @@ class Salary_record extends CI_Controller
       $akhirBulan = date('Y-' . $month . '-t');
       $deduction = $this->db->query("select * from salary_deduction where employee_id = $emp[pegawai_id] and date between '$awalBulan' and '$akhirBulan'")->result_array();
       $employees[$index]['deduction'] = $deduction;
+      $penalties = $this->db->query("SELECT * FROM warning WHERE MONTH(expired) >= {$data['filter']} AND employeeId = $emp[pegawai_id]")->result_array();
+      $employees[$index]['penalties'] = $penalties;
     }
 
     foreach ($employees as $index => $emp) {
@@ -332,6 +346,7 @@ class Salary_record extends CI_Controller
       $alpha2 = 0;
       $latePenalty = 0;
       $sick = 0;
+      $penalty = 0;
       $deduction = [];
 
       foreach ($emp['deduction'] as $idx => $d) {
@@ -352,18 +367,26 @@ class Salary_record extends CI_Controller
         }
       }
 
+      foreach ($emp['penalties'] as $idx => $p) {
+        $penalty += $p['penalty'];
+      }
+
+
       $deduction['clockout_late'] = $clockoutLatePenalty;
       $deduction['clockout_forget'] = $clockoutForget;
       $deduction['alpha-2'] = $alpha2;
       $deduction['late_penalty'] = $latePenalty;
       $deduction['sick'] = $sick;
+      $deduction['penalty'] = $penalty;
 
       unset($employees[$index]['deduction']);
+     
       $employees[$index]['minus'][] = ['name' => 'Clockout Late Penalty', 'value' => $clockoutLatePenalty];
       $employees[$index]['minus'][] = ['name' => 'Clockout Forget', 'value' => $clockoutForget];
       $employees[$index]['minus'][] = ['name' => 'Alpha-2', 'value' => $alpha2];
       $employees[$index]['minus'][] = ['name' => 'Late Penalty', 'value' => $latePenalty];
       $employees[$index]['minus'][] = ['name' => 'Denda sakit', 'value' => $sick];
+      $employees[$index]['minus'][] = ['name' => 'Penalty', 'value' => $penalty];
     }
 
     foreach ($employees as $index => $emp) {
@@ -431,8 +454,6 @@ class Salary_record extends CI_Controller
       }
     }
 
-
-
     foreach ($employees as $index => $emp) {
       if (!isset($employees[$index]['plus'])) {
         $employees[$index]['plus'] = [];
@@ -478,7 +499,6 @@ class Salary_record extends CI_Controller
   }
 
   public function slip($month, $empId){
-
     $data['htmlpagejs'] = 'none';
     $data['nmenu']      = 'Rekap Gaji';
     $data['title']      = 'Rekap Gaji';
@@ -486,7 +506,6 @@ class Salary_record extends CI_Controller
     $data['auth']       = authUser();
 
     $company = $this->session->userdata('company_id');
-
     $monthList = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
 
     $employee = $this->db->query("select * from m_pegawai where company_id = $company and is_del = 'n' and pegawai_id = $empId")->row_array();
@@ -494,16 +513,18 @@ class Salary_record extends CI_Controller
     $awalBulan = date('Y-' . $month . '-01');
     $akhirBulan = date('Y-' . $month . '-t');
 
-
     $deduction = $this->db->query("select * from salary_deduction where employee_id = $employee[pegawai_id] and date between '$awalBulan' and '$akhirBulan'")->result_array();
+    $penalties = $this->db->query("select * from warning where MONTH(expired) >= {$month} and employeeId = $employee[pegawai_id]")->result_array();
 
     $employee['deduction'] = $deduction;
+    $employee['penalties'] = $penalties;
 
     $clockoutLatePenalty = 0;
     $clockoutForget = 0;
     $alpha2 = 0;
     $latePenalty = 0;
     $sick = 0;
+    $penalty = 0;
 
     $deduction = [];
 
@@ -525,11 +546,18 @@ class Salary_record extends CI_Controller
       }
     }
 
+    foreach ($employee['penalties'] as $idx => $p) {
+      $penalty += $p['penalty'];
+    }
+
+
+
     $deduction['clockout_late'] = $clockoutLatePenalty;
     $deduction['clockout_forget'] = $clockoutForget;
     $deduction['alpha-2'] = $alpha2;
     $deduction['late_penalty'] = $latePenalty;
     $deduction['sick'] = $sick;
+    $deduction['penalty'] = $penalty;
 
     unset($employee['deduction']);
 
@@ -547,6 +575,10 @@ class Salary_record extends CI_Controller
     }
     if ($sick > 0) {
       $employee['minus'][] = ['name' => 'Denda sakit', 'value' => $sick];
+    }
+
+    if ($penalty > 0) {
+      $employee['minus'][] = ['name' => 'Penalty', 'value' => $penalty];
     }
 
     foreach ($this->db->query("select * from benefit b join employee_benefit eb on b.benefit_id = eb.benefit_id where b.company_id = ? and eb.employee_id = ?", [$company, $employee['pegawai_id']])->result_array() as $idx => $b) {
