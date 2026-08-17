@@ -64,7 +64,6 @@ class Division extends CI_Controller {
       $this->form_validation->set_rules('alphaPenalty', 'Alpha Penalty', 'required');
       $this->form_validation->set_rules('alphaPenaltyValue', 'Alpha Penalty', 'required');
       $this->form_validation->set_rules('overworkFee', 'OverWork', 'trim|required|xss_clean|htmlspecialchars');
-      $this->form_validation->set_rules('halfLeaveLimit','Half Day Limit','required');
 
       if($this->form_validation->run() == false){
         $this->session->set_flashdata('message', '<div class="alert alert-danger p-cg" role="alert">'.validation_errors().'</div>');
@@ -86,13 +85,11 @@ class Division extends CI_Controller {
           'clockout_restriction'  => $this->input->post('clockoutRestriction'),
           'alpha_consequence'     => $this->input->post('alphaConsequence'),
           'overwork_fee'          => $this->input->post('overworkFee'),
-          'alpha_penalty_on_holiday_date' => $this->input->post('alphaPenaltyOnHolidayDate'),
           'after_break_late_penalty' => $this->input->post('afterBreakLatePenalty'),
           'after_break_late_penalty_type' => $this->input->post('afterBreakLatePenaltyType'),
           'after_break_late_penalty_value' => $this->input->post('afterBreakLatePenaltyValue'),
           'ffo_check_in_allowed' => $this->input->post('ffocia'),
           'ffo_check_out_allowed' => $this->input->post('ffocoa'),
-          'halfLeaveLimit' => $this->input->post('halfLeaveLimit')
         ];
 
         $this->db->set(
@@ -176,7 +173,6 @@ class Division extends CI_Controller {
         $this->form_validation->set_rules('clockoutRestriction','Clockout Restriction','required');
         $this->form_validation->set_rules('pattern','Work System','required');
         $this->form_validation->set_rules('overworkFee', 'OverWork', 'trim|required|xss_clean|htmlspecialchars');
-        $this->form_validation->set_rules('halfLeaveLimit','Half Day Limit','required');
 
         if($this->form_validation->run() == false){
             $this->session->set_flashdata('message', '<div class="alert alert-danger p-cg" role="alert">'.validation_errors().'</div>');
@@ -198,13 +194,11 @@ class Division extends CI_Controller {
             'clockout_restriction'  => $this->input->post('clockoutRestriction'),
             'alpha_consequence'     => $this->input->post('alphaConsequence'),
             'overwork_fee'          => $this->input->post('overworkFee'),
-            'alpha_penalty_on_holiday_date' => $this->input->post('alphaPenaltyOnHolidayDate'),
             'after_break_late_penalty' => $this->input->post('afterBreakLatePenalty'),
             'after_break_late_penalty_type' => $this->input->post('afterBreakLatePenaltyType'),
             'after_break_late_penalty_value' => $this->input->post('afterBreakLatePenaltyValue'),
             'ffo_check_in_allowed' => $this->input->post('ffocia'),
             'ffo_check_out_allowed' => $this->input->post('ffocoa'),
-            'halfLeaveLimit' => $this->input->post('halfLeaveLimit')
           ];
         
           $q = $this->db->insert(

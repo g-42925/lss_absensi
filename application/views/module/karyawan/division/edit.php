@@ -17,7 +17,7 @@
           <?php endif; ?>
 
           <!-- Informasi Dasar -->
-          <div class="mb-4">
+          <div class="mb-4 card-body">
             <h6 class="text-uppercase text-muted fw-semibold small mb-3 border-bottom pb-2">
               <i class="ti ti-info-circle me-1"></i>Informasi Dasar
             </h6>
@@ -27,15 +27,11 @@
                 <input type="text" value="<?= htmlspecialchars($current['division_name']) ?>" name="divisionName"
                   id="division-name" class="form-control" placeholder="Masukkan nama divisi">
               </div>
-              <div class="col-md-6">
-                <label class="form-label fw-medium">Batas Cuti Setengah Hari</label>
-                <input type="time" value="<?= $current['halfLeaveLimit'] ?>" name="halfLeaveLimit" class="form-control">
-              </div>
             </div>
           </div>
 
           <!-- Pola Pekerjaan -->
-          <div class="mb-4">
+          <div class="mb-4 card-body">
             <h6 class="text-uppercase text-muted fw-semibold small mb-3 border-bottom pb-2">
               <i class="ti ti-calendar me-1"></i>Pola Pekerjaan
             </h6>
@@ -88,7 +84,7 @@
           </div>
 
           <!-- Pengaturan Absensi -->
-          <div class="mb-4">
+          <div class="mb-4 card-body">
             <h6 class="text-uppercase text-muted fw-semibold small mb-3 border-bottom pb-2">
               <i class="ti ti-clock me-1"></i>Pengaturan Absensi
             </h6>
@@ -141,7 +137,7 @@
           </div>
 
           <!-- Pengaturan Penalty -->
-          <div class="mb-4">
+          <div class="mb-4 card-body">
             <h6 class="text-uppercase text-muted fw-semibold small mb-3 border-bottom pb-2">
               <i class="ti ti-alert-triangle me-1"></i>Pengaturan Penalty
             </h6>
@@ -194,7 +190,7 @@
           </div>
 
           <!-- Pengaturan Penalty Alpha -->
-          <div class="mb-4">
+          <div class="mb-4 card-body">
             <h6 class="text-uppercase text-muted fw-semibold small mb-3 border-bottom pb-2">
               <i class="ti ti-user-x me-1"></i>Pengaturan Penalty Alpha
             </h6>
@@ -251,26 +247,11 @@
                   </div>
                 </div>
               </div>
-              <div class="col-md-6">
-                <label class="form-label fw-medium">Cuti Bersama Sebagai Alpha <span class="text-danger">*</span></label>
-                <div class="d-flex gap-4 mt-1">
-                  <div class="form-check">
-                    <input <?= $current['alpha_penalty_on_holiday_date'] == 1 ? 'checked':'' ?> type="radio"
-                      name="alphaPenaltyOnHolidayDate" value="1" id="apohd-yes" class="form-check-input">
-                    <label class="form-check-label" for="apohd-yes">Ya</label>
-                  </div>
-                  <div class="form-check">
-                    <input <?= $current['alpha_penalty_on_holiday_date'] == 0 ? 'checked':'' ?> type="radio"
-                      name="alphaPenaltyOnHolidayDate" value="0" id="apohd-no" class="form-check-input">
-                    <label class="form-check-label" for="apohd-no">Tidak</label>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
 
           <!-- Pengaturan Penalty Istirahat -->
-          <div class="mb-4">
+          <div class="mb-4 card-body">
             <h6 class="text-uppercase text-muted fw-semibold small mb-3 border-bottom pb-2">
               <i class="ti ti-coffee me-1"></i>Pengaturan Penalty Istirahat
             </h6>

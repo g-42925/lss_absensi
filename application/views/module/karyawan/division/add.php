@@ -17,7 +17,7 @@
           <?php endif; ?>
 
           <!-- Informasi Dasar -->
-          <div class="mb-4">
+          <div class="mb-4 card-body">
             <h6 class="text-uppercase text-muted fw-semibold small mb-3 border-bottom pb-2">
               <i class="ti ti-info-circle me-1"></i>Informasi Dasar
             </h6>
@@ -27,15 +27,11 @@
                 <input type="text" name="divisionName" id="division-name"
                   class="form-control" placeholder="Masukkan nama divisi">
               </div>
-              <div class="col-md-6">
-                <label class="form-label fw-medium">Batas Cuti Setengah Hari</label>
-                <input type="time" value="00:00:00" name="halfLeaveLimit" class="form-control">
-              </div>
             </div>
           </div>
 
           <!-- Pola Pekerjaan -->
-          <div class="mb-4">
+          <div class="mb-4 card-body">
             <h6 class="text-uppercase text-muted fw-semibold small mb-3 border-bottom pb-2">
               <i class="ti ti-calendar me-1"></i>Pola Pekerjaan
             </h6>
@@ -80,7 +76,7 @@
           </div>
 
           <!-- Pengaturan Absensi -->
-          <div class="mb-4">
+          <div class="mb-4 card-body">
             <h6 class="text-uppercase text-muted fw-semibold small mb-3 border-bottom pb-2">
               <i class="ti ti-clock me-1"></i>Pengaturan Absensi
             </h6>
@@ -129,7 +125,7 @@
           </div>
 
           <!-- Pengaturan Penalty -->
-          <div class="mb-4">
+          <div class="mb-4 card-body">
             <h6 class="text-uppercase text-muted fw-semibold small mb-3 border-bottom pb-2">
               <i class="ti ti-alert-triangle me-1"></i>Pengaturan Penalty
             </h6>
@@ -142,7 +138,7 @@
                 </div>
               </div>
               <div class="col-md-6">
-                <label class="form-label fw-medium">Menerapkan Penalty Absen Masuk <span class="text-danger">*</span></label>
+                <label class="form-label fw-medium">Menerapkan Penalty Terlambat <span class="text-danger">*</span></label>
                 <div class="d-flex gap-4 mt-1">
                   <div class="form-check">
                     <input type="radio" name="latePenalty" value="1" id="latePenalty-yes" class="form-check-input">
@@ -155,7 +151,7 @@
                 </div>
               </div>
               <div class="col-md-6">
-                <label class="form-label fw-medium">Menerapkan Penalty Absen Pulang <span class="text-danger">*</span></label>
+                <label class="form-label fw-medium">Menerapkan Penalty Lupa Absen Pulang <span class="text-danger">*</span></label>
                 <div class="d-flex gap-4 mt-1">
                   <div class="form-check">
                     <input type="radio" name="clockoutPenalty" value="1" id="clockoutPenalty-yes" class="form-check-input">
@@ -178,7 +174,7 @@
           </div>
 
           <!-- Pengaturan Penalty Alpha -->
-          <div class="mb-4">
+          <div class="mb-4 card-body">
             <h6 class="text-uppercase text-muted fw-semibold small mb-3 border-bottom pb-2">
               <i class="ti ti-user-x me-1"></i>Pengaturan Penalty Alpha
             </h6>
@@ -233,24 +229,11 @@
                   </div>
                 </div>
               </div>
-              <div class="col-md-6">
-                <label class="form-label fw-medium">Cuti Bersama Sebagai Alpha <span class="text-danger">*</span></label>
-                <div class="d-flex gap-4 mt-1">
-                  <div class="form-check">
-                    <input type="radio" name="alphaPenaltyOnHolidayDate" value="1" id="apohd-yes" class="form-check-input">
-                    <label class="form-check-label" for="apohd-yes">Ya</label>
-                  </div>
-                  <div class="form-check">
-                    <input checked type="radio" name="alphaPenaltyOnHolidayDate" value="0" id="apohd-no" class="form-check-input">
-                    <label class="form-check-label" for="apohd-no">Tidak</label>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
 
           <!-- Pengaturan Penalty Istirahat -->
-          <div class="mb-4">
+          <div class="mb-4 card-body">
             <h6 class="text-uppercase text-muted fw-semibold small mb-3 border-bottom pb-2">
               <i class="ti ti-coffee me-1"></i>Pengaturan Penalty Istirahat
             </h6>
