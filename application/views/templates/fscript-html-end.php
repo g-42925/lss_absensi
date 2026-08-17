@@ -7,11 +7,11 @@
 
     <!-- Global Photo Popup Modal -->
     <div class="modal fade" id="photoViewerModal" tabindex="-1" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered" style="max-width:90vw;width:fit-content;min-width:320px;">
+      <div class="modal-dialog modal-dialog-centered" style="max-width:90vw;width:fit-content;margin:auto;">
         <div class="modal-content" style="background:transparent;border:none;box-shadow:none;">
-          <div class="modal-body p-0 text-center" style="background:rgba(0,0,0,0.85);border-radius:12px 12px 12px 12px;">
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Tutup" style="position:absolute;top:12px;right:12px;z-index:2;background:rgba(255,255,255,0.2);border-radius:50%;padding:6px;"></button>
-            <img id="photoViewerImg" src="" alt="Foto" style="max-width:85vw;max-height:80vh;object-fit:contain;border-radius:12px 12px 12px 12px;display:block;margin:0 auto;" />
+          <div class="modal-body p-0 text-center" style="background:rgba(0,0,0,0.85);border-radius:12px;position:relative;">
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Tutup" style="position:absolute;top:12px;right:12px;z-index:2;background:rgba(0,0,0,0.5);border-radius:50%;padding:8px;opacity:1;"></button>
+            <img id="photoViewerImg" src="" alt="Foto" style="max-width:90vw;max-height:85vh;width:auto;height:auto;border-radius:12px;display:block;margin:0 auto;" />
           </div>
         </div>
       </div>

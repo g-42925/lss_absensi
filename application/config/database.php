@@ -97,7 +97,7 @@ if ($_SERVER['HTTP_HOST'] == 'localhost') {
 	);
 }
 
-if ($_SERVER['HTTP_HOST'] == '192.168.1.29') {
+if ($_SERVER['HTTP_HOST'] == '192.168.1.109') {
 	$db['default'] = array(
 		'dsn' => '',
 		'hostname' => 'localhost',

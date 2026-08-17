@@ -1,9 +1,5 @@
 <?php
 
-use Aws\S3\S3Client;
-use Aws\Credentials\Credentials;
-use Aws\Exception\AwsException;
-
 defined('BASEPATH') or exit('No direct script access allowed');
 
 class Profile extends CI_Controller {
@@ -16,6 +12,8 @@ class Profile extends CI_Controller {
     public $menu;
     public $profile;
 
+    public $s3;
+
     public function __construct() {
         parent::__construct();
         is_logged_in();
@@ -24,6 +22,7 @@ class Profile extends CI_Controller {
         $this->load->model('user/menu_model', 'menu');
         $this->load->model('user/perusahaan/profile_model', 'profile');
         $this->load->library('upload');
+        $this->load->model('S3_model','s3');
     }
 
     public function index() {
@@ -82,53 +81,30 @@ class Profile extends CI_Controller {
         $this->form_validation->set_rules('address', 'Address', 'trim|required|xss_clean|htmlspecialchars');
         $this->form_validation->set_rules('phone', 'Phone', 'trim|required|xss_clean|htmlspecialchars');
         $this->form_validation->set_rules('email', 'Email', 'trim|required|xss_clean|htmlspecialchars');
-        $this->form_validation->set_rules('salary_date','Date','trim|required|xss_clean|htmlspecialchars');
+        $this->form_validation->set_rules('active', 'Status', 'trim|required|xss_clean|htmlspecialchars');
         
-        if($_FILES['logo']['name'] != ''){
-          $name = pathinfo($_FILES['logo']['name'],PATHINFO_FILENAME);
-          $ext = pathinfo($_FILES['logo']['name'],PATHINFO_EXTENSION);
-          $fileName = preg_replace('/[^a-zA-Z0-9]/','',$name);
-          $config['file_name'] = 'cp-'.$companyId.'-'.$fileName.'.'.$ext;
-					$config['upload_path']  = './assets/uploaded/components/';
-          $config['allowed_types'] = 'gif|jpg|jpeg|png';
-          $config['max_size'] = 500;
+        if(isset($_FILES['logo']) && $_FILES['logo']['error'] === UPLOAD_ERR_OK){
+          $name = $_FILES['logo']['name'];
+          $tmpName = $_FILES['logo']['tmp_name'];
+          $type = $_FILES['logo']['type'];
+          $fileName = time() . '_' . basename($name);
 
-          $file = $_FILES['logo']['tmp_name'];
-
-          $s3 = new S3Client([
-            'version'     => 'latest',
-            'region'      => 'us-east-1',
-            'endpoint'    => 'https://s3.filebase.com',
-            'use_path_style_endpoint' => false,
-            'credentials' => [
-              'key'    => 'B8F0135956143AE0685E',
-              'secret' => 'gKrbIZJnzLWBXZ0VGQvnlAumvngpBH35PsXN5zUp'
-            ],
-            'Metadata' => [
-              'cid' => 'true'
-            ],
-          ]);
-
-          $result = $s3->putObject([
-            'Bucket' => 'leryn-storage',
-            'Key'    => $fileName,
-            'SourceFile' => $file,
-            'ContentType' => 'image/png',
-          ]);
-
-          $cid = $result['@metadata']['headers']['x-amz-meta-cid'];
-
-          $logo = "https://wooden-plum-woodpecker.myfilebase.com/ipfs/".$cid;
-
+          $result = $this->s3->upload(
+            $fileName,
+            $companyId,
+            'logo',
+            $tmpName,
+            $type
+          );
+          
           $this->db->set([
             'id' => $companyId,
             'company_name' => $this->input->post('name'),
             'address' => $this->input->post('address'),
             'phone' => $this->input->post('phone'),
             'email' => $this->input->post('email'),
-            'logo' => $logo,
-            'salary_date' => $this->input->post('salary_date'),
-            'sp_deduction_policy' => $this->input->post('sp_deduction_policy')
+            'active' => $this->input->post('active'),
+            'logo' => $result,
           ]);
 
           $this->db->where('id',$companyId);
@@ -147,9 +123,8 @@ class Profile extends CI_Controller {
             'address' => $this->input->post('address'),
             'phone' => $this->input->post('phone'),
             'email' => $this->input->post('email'),
+            'active' => $this->input->post('active'),
             'logo' => $profile['logo'],
-            'salary_date' => $this->input->post('salary_date'),
-            'sp_deduction_policy' => $this->input->post('sp_deduction_policy')
           ]);
 
 					$this->db->where('id',$companyId);

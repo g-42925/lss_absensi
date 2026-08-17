@@ -20,6 +20,21 @@ class Filebase extends CI_Controller{
         $this->load->model('s3_model','s3');
     }
 
+    public function upload($fileName,$id,$dir){
+        try {
+            echo $this->s3->upload(
+                $fileName,
+                $id,
+                $dir,
+                $_FILES['file']['tmp_name'],
+                $_FILES['file']['type']
+            );
+        } 
+        catch (Exception $e) {
+            show_error($e->getMessage(), 500);
+        }
+    }
+
     public function unknown($fileName, $id){
         try {
             echo $this->s3->upload(
