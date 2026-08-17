@@ -39,9 +39,14 @@ class Data_model extends CI_Model {
     }
 
     public function add_proses($companyId) {
+        $division = $this->db->query("select * from divisions where id = ?",[$this->input->post('division')])->row_array();
         $totalEmployee = $this->db->query("select * from m_pegawai where company_id = ?",[$companyId])->num_rows();
         $company = $this->db->query("select * from companies where id = ?",[$companyId])->row_array();
         $idPegawai = str_pad($totalEmployee,3,'0',STR_PAD_LEFT);
+        $workSystemType = explode('-',$division['workSystem'])[0];
+        $workSystemId = explode('-',$division['workSystem'])[1];
+        
+
 
         $nik = $this->input->post('nik');
 
@@ -86,10 +91,12 @@ class Data_model extends CI_Model {
             $data
         );
 
+        $newPegawaiId = $this->db->insert_id();
+
         $txAbsensi = [
           'absen_id' => uniqid(),
           'company_id' => $this->session->userdata('company_id'),
-          'pegawai_id' => $this->db->insert_id(),
+          'pegawai_id' => $newPegawaiId,
           'tanggal_absen' => date('Y-m-d'),
           'is_status' => 'alpha-2',
           'jam_masuk' => '00:00',
@@ -111,6 +118,16 @@ class Data_model extends CI_Model {
             $txAbsensi
         );
 
+        // Jika divisi menggunakan pola kerja shift (work_system = 's-xxx'), simpan jadwal shift
+        if ($workSystemType === 's' && $this->input->post('shift_detail_id')) {
+            $employeeShiftData = [
+                'employee_shift_id' => uniqid('es_'),
+                'employee_id'       => $newPegawaiId,
+                'shift_detail_id'   => $this->input->post('shift_detail_id'),
+            ];
+            $this->db->insert('employee_shift', $employeeShiftData);
+        }
+
         if($this->db->trans_status() === FALSE) {
           $this->db->trans_rollback();
           return false;
@@ -129,6 +146,9 @@ class Data_model extends CI_Model {
         }else{
             $passnya = password_hash($this->input->post('password'), PASSWORD_DEFAULT);
         }
+
+        $division = $this->db->query("select * from divisions where id = ?",[$this->input->post('division')])->row_array();
+        $workSystemType = $division ? explode('-', $division['work_system'])[0] : '';
 
         $this->db->set([
             'id_pegawai'          => $this->input->post('idkar'),
@@ -165,6 +185,27 @@ class Data_model extends CI_Model {
             ]);
             $this->db->where('id_sync', $pega['id_sync']);
             $this->db->update('employee_history');
+
+            // Update jadwal shift jika divisi menggunakan pola kerja shift
+            if ($workSystemType === 's' && $this->input->post('shift_detail_id')) {
+                $shiftDetailId = $this->input->post('shift_detail_id');
+                $existingShift = $this->db->query(
+                    "SELECT employee_shift_id FROM employee_shift WHERE employee_id = ?", [$id]
+                )->row_array();
+
+                if ($existingShift) {
+                    // Update record yang sudah ada
+                    $this->db->where('employee_id', $id);
+                    $this->db->update('employee_shift', ['shift_detail_id' => $shiftDetailId]);
+                } else {
+                    // Insert record baru
+                    $this->db->insert('employee_shift', [
+                        'employee_shift_id' => uniqid('es_'),
+                        'employee_id'       => $id,
+                        'shift_detail_id'   => $shiftDetailId,
+                    ]);
+                }
+            }
         }
 
         return $res;

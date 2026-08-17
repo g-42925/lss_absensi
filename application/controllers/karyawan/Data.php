@@ -134,6 +134,44 @@ class Data extends CI_Controller {
         echo json_encode($data);
     }
 
+    /**
+     * AJAX endpoint: Ambil shift_detail berdasarkan division_id
+     * GET /karyawan/data/get_shift_details?division_id=xxx
+     */
+    public function get_shift_details() {
+        $divisionId = $this->input->get('division_id');
+        if (!$divisionId) {
+            echo json_encode([]);
+            return;
+        }
+
+        $division = $this->db->query(
+            "SELECT work_system FROM divisions WHERE id = ?", [$divisionId]
+        )->row_array();
+
+        if (!$division) {
+            echo json_encode([]);
+            return;
+        }
+
+        $workSystem = $division['work_system'];
+        $parts = explode('-', $workSystem, 2);
+
+        // Hanya proses jika pola kerja shift (diawali 's-')
+        if (count($parts) !== 2 || $parts[0] !== 's') {
+            echo json_encode([]);
+            return;
+        }
+
+        $shiftId = $parts[1];
+        $shiftDetails = $this->db->query(
+            "SELECT shift_detail_id, name, clock_in, clock_out FROM shift_detail WHERE shift_id = ?",
+            [$shiftId]
+        )->result_array();
+
+        echo json_encode($shiftDetails);
+    }
+
     public function index() {
         
         $data['htmlpagejs'] = 'none';
@@ -186,7 +224,11 @@ class Data extends CI_Controller {
         $data['mindate'] = date("Y-m-d", strtotime(date('Y-m-d')." -7 day"));
         $data['maxdate'] = date("Y-m-d", strtotime(date('Y-m-d')." +7 day"));
 
-        $data['divisions'] = $this->db->query("select * from divisions where company_id = ?",[$companyId])->result_array();
+        // Sertakan work_system agar view bisa deteksi divisi shift
+        $data['divisions'] = $this->db->query(
+            "SELECT id, division_name, work_system FROM divisions WHERE company_id = ?",
+            [$companyId]
+        )->result_array();
 
         $data['position'] = $this->db->query("select * from position where company_id = ?",[$companyId])->result_array();
 
@@ -261,13 +303,22 @@ class Data extends CI_Controller {
 
         $companyId = $this->session->userdata('company_id');
 
-        $data['divisions'] = $this->db->query("select * from divisions where company_id = ?",[$companyId])->result_array();
+        // Sertakan work_system agar view bisa deteksi divisi shift
+        $data['divisions'] = $this->db->query(
+            "SELECT id, division_name, work_system FROM divisions WHERE company_id = ?",
+            [$companyId]
+        )->result_array();
 
         $data['position'] = $this->db->query("select * from position where company_id = ?",[$companyId])->result_array();
 
-        $data['edit']       = $check->row_array();
+        $data['edit'] = $check->row_array();
         $data['mindate'] = date("Y-m-d", strtotime(date('Y-m-d')." -7 day"));
         $data['maxdate'] = date("Y-m-d", strtotime(date('Y-m-d')." +7 day"));
+
+        // Ambil jadwal shift yang sudah dipilih untuk karyawan ini
+        $data['employee_shift'] = $this->db->query(
+            "SELECT es.shift_detail_id FROM employee_shift es WHERE es.employee_id = ?", [$id]
+        )->row_array();
 
         $this->load->view('templates/header', $data);
         $this->load->view('templates/sidemenu', $data);

@@ -48,11 +48,19 @@
           </div>
           <div class="col-xl-6 col-md-6 col-sm-6 col-xs-6">
             <label class="form-label" for="multicol-country">Divisi<i class="text-danger">*</i></label>
-            <select class="select2 form-select" name="division" required>
+            <select class="select2 form-select" name="division" id="divisionSelect" onchange="onDivisionChange(this)" required>
               <?php foreach($divisions as $d): ?>
-                <option value="<?= $d['id'] ?>"><?= $d['division_name'] ?></option>
+                <option value="<?= $d['id'] ?>" data-work-system="<?= htmlspecialchars($d['work_system']) ?>"><?= $d['division_name'] ?></option>
               <?php endforeach; ?>
             </select>
+          </div>
+          <!-- Section Jadwal Shift – muncul hanya jika divisi bertipe shift -->
+          <div class="col-xl-6 col-md-6 col-sm-6 col-xs-6 hidden" id="shiftSection">
+            <label class="form-label">Jadwal Shift Kerja<i class="text-danger">*</i></label>
+            <select class="select2 form-select" name="shift_detail_id" id="shiftDetailSelect">
+              <option value="">-- Pilih Jadwal Shift --</option>
+            </select>
+            <small class="text-muted">Pilih jadwal shift yang berlaku untuk karyawan ini.</small>
           </div>
           <div class="col-xl-6 col-md-6 col-sm-6 col-xs-6">
             <label class="form-label" for="multicol-country">Posisi<i class="text-danger">*</i></label>
@@ -133,9 +141,59 @@
     $('#flatpickr-date-2').flatpickr({});
 
     const idField = document.getElementById('idkar');
-    
-    idField.value = Date.now()
+    idField.value = Date.now();
+
+    // Trigger cek divisi pertama kali jika sudah ada value terseleksi
+    const divSelect = document.getElementById('divisionSelect');
+    if (divSelect) {
+      onDivisionChange(divSelect);
+    }
   });
+
+  function onDivisionChange(selectEl) {
+    const selectedOption = selectEl.options[selectEl.selectedIndex];
+    const workSystem = selectedOption ? selectedOption.getAttribute('data-work-system') : '';
+    const shiftSection = document.getElementById('shiftSection');
+    const shiftDetailSelect = document.getElementById('shiftDetailSelect');
+    const divisionId = selectedOption ? selectedOption.value : '';
+
+    if (workSystem && workSystem.startsWith('s-')) {
+      // Divisi shift: tampilkan section dan load shift details via AJAX
+      shiftSection.classList.remove('hidden');
+      shiftDetailSelect.innerHTML = '<option value="">Memuat jadwal...</option>';
+
+      $.ajax({
+        url: '<?= base_url('karyawan/data/get_shift_details') ?>',
+        type: 'GET',
+        data: { division_id: divisionId },
+        dataType: 'json',
+        success: function(data) {
+          shiftDetailSelect.innerHTML = '<option value="">-- Pilih Jadwal Shift --</option>';
+          if (data && data.length > 0) {
+            data.forEach(function(item) {
+              var clockIn  = item.clock_in  ? item.clock_in.substring(0,5)  : '--';
+              var clockOut = item.clock_out ? item.clock_out.substring(0,5) : '--';
+              var label = item.name + ' (' + clockIn + ' – ' + clockOut + ')';
+              shiftDetailSelect.innerHTML += '<option value="' + item.shift_detail_id + '">' + label + '</option>';
+            });
+          } else {
+            shiftDetailSelect.innerHTML = '<option value="">Tidak ada jadwal tersedia</option>';
+          }
+          // Re-init select2 jika digunakan
+          if ($(shiftDetailSelect).data('select2')) {
+            $(shiftDetailSelect).select2();
+          }
+        },
+        error: function() {
+          shiftDetailSelect.innerHTML = '<option value="">Gagal memuat jadwal</option>';
+        }
+      });
+    } else {
+      // Bukan divisi shift: sembunyikan section
+      shiftSection.classList.add('hidden');
+      shiftDetailSelect.innerHTML = '<option value="">-- Pilih Jadwal Shift --</option>';
+    }
+  }
 
   function onStatusChange(newStatus){
     if(newStatus == "contract"){
