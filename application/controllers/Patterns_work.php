@@ -504,6 +504,8 @@ class Patterns_work extends CI_Controller {
     public function add_proses() {
         $unama  = $this->input->post('nama');
 
+        $companyId = $this->session->userdata('company_id');
+
         $this->form_validation->set_rules('nama', 'Nama', 'trim|required|xss_clean|htmlspecialchars');
         $this->form_validation->set_rules('tolet', 'Toleransi Telat', 'trim|xss_clean|htmlspecialchars');
         $this->form_validation->set_rules('jumlahhari', 'Jumlah Hari', 'trim|required|xss_clean|htmlspecialchars');
@@ -521,7 +523,13 @@ class Patterns_work extends CI_Controller {
             redirect('patterns_work/add?failed=true');
         } 
         else {
-            $query = $this->db->get_where('m_pola_kerja', ['nama_pola' => $unama, 'is_del' => 'n'])->num_rows();
+            $params = [
+              'nama_pola' => $unama,
+              'is_del' => 'n',
+              'company_id' => $companyId
+            ];
+            $query = $this->db->get_where('m_pola_kerja', $params)->num_rows();
+            
             if($query < 1) {
                 $res = $this->patterns->add_proses(
                     $this->session->userdata('company_id')
