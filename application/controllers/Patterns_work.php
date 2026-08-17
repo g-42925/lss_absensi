@@ -596,6 +596,7 @@ class Patterns_work extends CI_Controller {
             $this->form_validation->set_rules('pulang[]', '', 'trim|xss_clean|htmlspecialchars');
             $this->form_validation->set_rules('break[]','','trim|required|htmlspecialchars');
             $this->form_validation->set_rules('breakEnd[]','','trim|required|htmlspecialchars');
+           $this->form_validation->set_rules('c1[]','Batas cuti setengah hari','required');
 
 
             if ($this->form_validation->run() == false) {
@@ -603,19 +604,12 @@ class Patterns_work extends CI_Controller {
                 redirect('patterns_work/edit/'.$id.'?failed=true');
             } 
             else {
-                $query = $this->db->get_where('m_pola_kerja', ['nama_pola' => $unama, 'is_del' => 'n', 'pola_kerja_id!=' => $id])->num_rows();
-                if ($query < 1) {
-                    $res = $this->patterns->edit_proses($id);
-                    if($res==true) {
-                        redirect('patterns_work');
-                    }
-                    else{
-                        $this->session->set_flashdata('message', '<div class="alert alert-danger p-cg" role="alert">Proses gagal, silahkan coba lagi.</div>');
-                        redirect('patterns_work/edit/'.$id.'?failed=false');
-                    }
-                } 
+                $res = $this->patterns->edit_proses($id);
+                if ($res==true) {
+                    redirect('patterns_work');
+                }
                 else {
-                    $this->session->set_flashdata('message', '<div class="alert alert-warning p-cg" role="alert">Proses gagal, pola kerja <b>"'.$unama.'"</b> ini sudah digunakan.</div>');
+                    $this->session->set_flashdata('message', '<div class="alert alert-danger p-cg" role="alert">Proses gagal, silahkan coba lagi.</div>');
                     redirect('patterns_work/edit/'.$id.'?failed=false');
                 }
             }
