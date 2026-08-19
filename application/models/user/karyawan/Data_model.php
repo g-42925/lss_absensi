@@ -43,11 +43,14 @@ class Data_model extends CI_Model {
         $totalEmployee = $this->db->query("select * from m_pegawai where company_id = ?",[$companyId])->num_rows();
         $company = $this->db->query("select * from companies where id = ?",[$companyId])->row_array();
         $idPegawai = str_pad($totalEmployee,3,'0',STR_PAD_LEFT);
-        $workSystemType = explode('-',$division['workSystem'])[0];
-        $workSystemId = explode('-',$division['workSystem'])[1];
+        $workSystemType = explode('-',$division['work_system'])[0];
+        $workSystemId = explode('-',$division['work_system'])[1];
+        
+        $q1 = "select * from m_pola_kerja_det where pola_kerja_id = ? and is_day = ?";
+        $pattern = $workSystemType === 'wd' ? $this->db->query($q1,[$workSystemId,date('N')])->row_array() : null;
         
 
-
+        
         $nik = $this->input->post('nik');
 
         $initials = "";
@@ -93,6 +96,7 @@ class Data_model extends CI_Model {
 
         $newPegawaiId = $this->db->insert_id();
 
+        
         $txAbsensi = [
           'absen_id' => uniqid(),
           'company_id' => $this->session->userdata('company_id'),
@@ -105,18 +109,15 @@ class Data_model extends CI_Model {
           'jam_keluar' => '00:00',
           'catatan_masuk' => '...',
           'catatan_keluar' => '...',
-          'j_masuk' => '00:00',
-          'j_pulang' => '00:00',
+          'j_masuk' => $pattern['jam_masuk'],
+          'j_pulang' => $pattern['jam_pulang'],
           'j_toleransi' => '00:00',
           's_istirahat_photo' => '',
           'foto_absen_masuk' => 'no',
           'foto_absen_keluar' => 'no'
         ];
 
-        $this->db->insert(
-            'tx_absensi', 
-            $txAbsensi
-        );
+
 
         // Jika divisi menggunakan pola kerja shift (work_system = 's-xxx'), simpan jadwal shift
         if ($workSystemType === 's' && $this->input->post('shift_detail_id')) {
@@ -125,8 +126,26 @@ class Data_model extends CI_Model {
                 'employee_id'       => $newPegawaiId,
                 'shift_detail_id'   => $this->input->post('shift_detail_id'),
             ];
+
+            $shiftDetail = $this->db->query("select * from shift_detail where shift_detail_id = ?",[$this->input->post('shift_detail_id')])->row_array();
+           
+            $txAbsensi['j_masuk'] = $shiftDetail['clock_in'];
+            $txAbsensi['j_pulang'] = $shiftDetail['clock_out'];
+
+            $this->db->insert(
+              'tx_absensi', 
+              $txAbsensi
+            );
+
             $this->db->insert('employee_shift', $employeeShiftData);
         }
+        else{
+            $this->db->insert(
+              'tx_absensi', 
+              $txAbsensi
+            );
+        }
+
 
         if($this->db->trans_status() === FALSE) {
           $this->db->trans_rollback();
