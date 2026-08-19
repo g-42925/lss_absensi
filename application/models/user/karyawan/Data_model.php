@@ -119,7 +119,7 @@ class Data_model extends CI_Model {
         ];
 
         if($workSystemType != 's'){
-          $txAbsensi['j_toleransi'] = $pattern ? new DateTime($pattern['jam_masuk'] )->modify("+{$wdPattern['toleransi_terlambat']} minutes")->format('H:i') : "00:00";
+          $txAbsensi['j_toleransi'] = $pattern ? (new DateTime($pattern['jam_masuk']))->modify("+{$wdPattern['toleransi_terlambat']} minutes")->format('H:i') : "00:00";
         }
 
 
