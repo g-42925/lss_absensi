@@ -47,6 +47,8 @@ class Data_model extends CI_Model {
         $workSystemId = explode('-',$division['work_system'])[1];
         
         $q1 = "select * from m_pola_kerja_det where pola_kerja_id = ? and is_day = ?";
+        $q3 = "select * from m_pola_kerja where pola_kerja_id = ?";
+        $wdPattern = $workSystemType === 'wd' ? $this->db->query($q3,[$workSystemId])->row_array() : null;
         $pattern = $workSystemType === 'wd' ? $this->db->query($q1,[$workSystemId,date('N')])->row_array() : null;
         
 
@@ -109,13 +111,16 @@ class Data_model extends CI_Model {
           'jam_keluar' => '00:00',
           'catatan_masuk' => '...',
           'catatan_keluar' => '...',
-          'j_masuk' => $pattern['jam_masuk'],
-          'j_pulang' => $pattern['jam_pulang'],
-          'j_toleransi' => '00:00',
+          'j_masuk' => $pattern['jam_masuk'] ? $pattern['jam_masuk'] : '00:00' ,
+          'j_pulang' => $pattern['jam_pulang'] ? $pattern['jam_pulang'] : "00:00",
           's_istirahat_photo' => '',
           'foto_absen_masuk' => 'no',
           'foto_absen_keluar' => 'no'
         ];
+
+        if($workSystemType != 's'){
+          $txAbsensi['j_toleransi'] = $pattern ? new DateTime($pattern['jam_masuk'] )->modify("+{$wdPattern['toleransi_terlambat']} minutes")->format('H:i') : "00:00";
+        }
 
 
 
@@ -131,6 +136,7 @@ class Data_model extends CI_Model {
            
             $txAbsensi['j_masuk'] = $shiftDetail['clock_in'];
             $txAbsensi['j_pulang'] = $shiftDetail['clock_out'];
+            $txAbsensi['tardines_tolerance'] = $shiftDetail['tardiness_tolerance'];
 
             $this->db->insert(
               'tx_absensi', 
