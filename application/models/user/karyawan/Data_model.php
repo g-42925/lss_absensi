@@ -136,7 +136,7 @@ class Data_model extends CI_Model {
            
             $txAbsensi['j_masuk'] = $shiftDetail['clock_in'];
             $txAbsensi['j_pulang'] = $shiftDetail['clock_out'];
-            $txAbsensi['j_toleransi'] = $shiftDetail['tardiness_tolerance'];
+            $txAbsensi['j_toleransi'] = (new DateTime($shiftDetail['clock_in']))->modify("+{$shiftDetail['tardiness_tolerance']} minutes")->format('H:i');
 
             $this->db->insert(
               'tx_absensi', 
