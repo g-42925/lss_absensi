@@ -2,19 +2,14 @@
 <div class="container-xxl flex-grow-1 container-p-y">
   <!-- Users List Table -->
   <div class="card">
-    <div class="card-header border-bottom">
-      <h5 class="card-title"><?=$namalabel;?></h5>
-      <div class="text-start">
-        <a href="<?=base_url('locations/add?failed=false');?>" class="btn btn-secondary btn-primary btn-sm"><i class="ti ti-plus me-md-1"></i> Tambah Data</a>
-      </div>
-    </div>
     <div class="card-datatable table-responsive">
       <table class="table border-top" id="dataTable">
         <thead>
           <tr>
             <th>Nama&nbsp;Lokasi</th>
             <th>Alamat</th>
-            <th class="text-end" width="15%">Action</th>
+            <th>Latitude</th>
+            <th>Longitude</th>
           </tr>
         </thead>
         <tbody>
@@ -22,16 +17,9 @@
           <tr>
             <td><?= $row['nama_lokasi'];?></td>
             <td><?= $row['alamat_lokasi'];?></td>
+            <td><?= $row['lat'];?></td>
+            <td><?= $row['lon'];?></td>
             <td align="right">
-              <a href="<?=base_url('locations/download_qr/'.$row['lokasi_id']);?>" class="btn p-1" title="Download QR" target="_blank">
-                <i class="ti ti-qrcode"></i>
-              </a>
-              <a href="<?=base_url('locations/edit/'.$row['lokasi_id']).'?failed=false';?>" class="btn p-1">
-                <i class="ti ti-edit"></i>
-              </a>
-              <a href="<?=base_url('locations/hapus/'.$row['lokasi_id']); ?>" class="btn p-1" data-bs-toggle="modal" data-bs-target="#delRow<?=$row['lokasi_id'];?>">
-                <i class="ti ti-trash"></i>
-              </a>
               <!-- Konfirmasi Hapus -->
               <div class="modal fade" id="delRow<?=$row['lokasi_id'];?>" tabindex="-1" aria-hidden="true">
                 <div class="modal-dialog modal-simple modal-enable-otp modal-dialog-centered">

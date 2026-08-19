@@ -38,6 +38,8 @@ class Locations_model extends CI_Model {
                 'lokasi_id'     => $row['lokasi_id'],
                 'nama_lokasi'   => $row['nama_lokasi'],
                 'alamat_lokasi' => $row['alamat_lokasi'],
+                'lat'           => $row['garis_lintang'],
+                'lon'           => $row['garis_bujur'],
                 'total'         => $totalkaryawan
             );
         $no++;
