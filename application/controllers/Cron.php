@@ -26,12 +26,25 @@ class Cron extends CI_Controller {
 
         foreach($employees as $e){
           $division = $this->db->query("select * from divisions where id = ?",[$e['division_id']])->row_array();
+
           $permission = $this->db->query("select * from tx_request_izin x join tx_request_izin_pegawai y on x.request_izin_id = y.request_izin_id where x.is_status = ? and y.pegawai_id = ? and curdate() between x.tanggal_request and x.tanggal_request_end",[1,$e['pegawai_id']])->result_array();
-          $pDetail = $this->db->query("select * from m_pola_kerja_det where pola_kerja_id = ? and is_day = ?",[explode("-", $division['work_system'])[1],date('N')])->row_array();
-          $pPattern = $this->db->query("select * from m_pola_kerja where pola_kerja_id = ?",[explode("-", $division['work_system'])[1]])->row_array();
-          $pTolerance = new DateTime($pDetail['jam_masuk']);
-          $pTolerance->modify("+{$pPattern['toleransi_terlambat']} minutes");
-          $pTolerance = $pTolerance->format("H:i");
+          $workSystem = explode("-", $division['work_system']);
+          $workSystemType = $workSystem[0];
+          $workSystemId = $workSystem[1];
+          
+
+          $qDetail1 = "select * from m_pola_kerja_det where pola_kerja_id = ? and is_day = ?";
+          $qDetail2 = "select * from employee_shift es join shift_detail sd on es.shift_detail_id = sd.shift_detail_id where es.employee_id = ?";
+          $qDetailParams = $workSystemType === 'wd' ? [$workSystemId,date('N')]:[$e['pegawai_id']];
+          $pDetail = $workSystemType === 'wd' ? $this->db->query($qDetail1,$qDetailParams)->row_array():$this->db->query($qDetail2,$qDetailParams)->row_array();
+          $pPattern = $workSystemType === 'wd' ? $this->db->query("select * from m_pola_kerja where pola_kerja_id = ?",[$workSystemId])->row_array() : $pDetail;
+          $pTolerance = $workSystemType === 'wd' ? new DateTime($pDetail['jam_masuk']) : new DateTime($pPattern['clock_in']);
+          $tolerance = $workSystemType === 'wd' ? $pPattern['toleransi_terlambat']:$pDetail['tardiness_tolerance'];
+          $pTolerance->modify("+{$tolerance} minutes");
+          
+          $jMasuk = $workSystemType === 'wd' ? $pDetail['jam_masuk'] : $pPattern['clock_in'];
+          $jKeluar = $workSystemType === 'wd' ? $pDetail['jam_pulang'] : $pPattern['clock_out'];
+
 
           $data1 = [
             'absen_id' => uniqid(),
@@ -45,9 +58,9 @@ class Cron extends CI_Controller {
             'jam_keluar' => '00:00',
             'catatan_masuk' => '...',
             'catatan_keluar' => '...',
-            'j_masuk' => $pDetail['jam_masuk'],
-            'j_pulang' => $pDetail['jam_pulang'],
-            'j_toleransi' => $pTolerance,
+            'j_masuk' => $jMasuk,
+            'j_pulang' => $jKeluar,
+            'j_toleransi' => $pTolerance->format("H:i"),
             's_istirahat_photo' => 'no',
             's_istirahat_latitude' => 0,
             's_istirahat_longitude' => 0,

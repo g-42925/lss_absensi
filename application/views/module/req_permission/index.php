@@ -77,10 +77,6 @@ foreach ($datas as $row):
               <a href="<?= base_url('req_permission/edit/' . $row['request_izin_id']); ?>" class="btn p-1">
                 <i class="ti ti-edit"></i>
               </a>
-              <a href="#" class="btn p-1" data-bs-toggle="modal"
-                data-bs-target="#delRow<?= $row['request_izin_id']; ?>">
-                <i class="ti ti-trash"></i>
-              </a>
               <a href="#" class="<?= $row['tipe_request'] == "s" ? "" : "d-none"?> btn p-1" data-bs-toggle="modal"
                 data-bs-target="#cutRow<?= $row['request_izin_id']; ?>" title="payroll">
                 <i class="ti ti-scissors"></i>

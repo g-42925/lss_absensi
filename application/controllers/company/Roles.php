@@ -97,13 +97,14 @@ class Roles extends CI_Controller {
     }
 
     public function edit($id = null) {
-        isEditable();
         if ($id==null) { redirect('user/company/roles'); }
         $check = $this->db->get_where('m_role', ['role_id' => $id]);
-        if ($check->num_rows()==0) { 
-            $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-danger p-cg" role="alert">Data tidak ditemukan.</div></div>');
-            redirect('company/roles'); 
-        }
+        $actions = $this->db->query("select * from actions")->result_array();
+        $grouped_actions = array_reduce($actions, function ($result, $item) {
+          $result[$item['directory']][] = $item;
+          return $result;
+        }, []);
+
 
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Perusahaan';
@@ -111,6 +112,7 @@ class Roles extends CI_Controller {
         $data['title']      = 'Jabatan';
         $data['namalabel']  = $data['title'];
         $data['auth']       = authUser();
+        $data['actions']    = $grouped_actions;
 
         $data['menu'] = $this->menu->getMenu();
         $data['edit'] = $check->row_array();

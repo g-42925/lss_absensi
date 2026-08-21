@@ -119,4 +119,19 @@ class Console extends CI_Controller{
         ]
     );
   }
+  
+  function add_action(){
+    $this->db->insert('actions', [
+        'directory' => $this->input->post('directory'),
+        'class'        => $this->input->post('class'),
+        'method'      => $this->input->post('method'),
+        'description'        => $this->input->post('description'),
+    ]);
+    
+    echo json_encode(
+        [
+            'succcess' => true
+        ]
+    );
+  }
 }
