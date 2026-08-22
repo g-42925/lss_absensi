@@ -36,7 +36,6 @@
             <th class="w-s-n">Reason</th>
             <th class="w-s-n">Category</th>
             <th class="w-s-n">Photo</th>
-            <th class="w-s-n">No fee</th>
             <th class="w-s-n">Status</th>
             <th class="w-s-n">Handled at</th>
             <th class="w-s-n">...</th>
@@ -53,8 +52,6 @@
             <td class="text-capitalize">
               <a href="javascript:void(0);" onclick="showPhotoPopup('<?= $r['image'] ?>', 'Foto Pengecualian')"><i class="ti ti-photo"></i></a>
             </td> 
-            <td><?= $r['htu'] ? 'yes':'no' ?></td>
-
             <td>
               <?php
                 echo match($r['status']) {
