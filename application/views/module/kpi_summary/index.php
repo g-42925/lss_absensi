@@ -213,8 +213,6 @@
                 ['label' => 'Hari Alpha',           'value' => $kpi_absensi_calc['hari_alpha'],           'icon' => 'ti-x',              'color' => 'danger'],
                 ['label' => '% Kehadiran',          'value' => number_format($kpi_absensi_calc['persen_kehadiran'], 1) . '%', 'icon' => 'ti-percentage', 'color' => 'primary'],
                 ['label' => 'Jml Terlambat',        'value' => $kpi_absensi_calc['jumlah_terlambat'],    'icon' => 'ti-clock',          'color' => 'warning'],
-                ['label' => 'Total Menit Terlambat','value' => $kpi_absensi_calc['total_menit_terlambat'] . ' mnt', 'icon' => 'ti-clock-hour-3', 'color' => 'danger'],
-                ['label' => '% Tepat Masuk',        'value' => number_format($kpi_absensi_calc['persen_tepat_waktu_masuk'], 1) . '%', 'icon' => 'ti-login', 'color' => 'success'],
                 ['label' => 'Jumlah SP',            'value' => $kpi_absensi_calc['jumlah_sp'],            'icon' => 'ti-alert-triangle', 'color' => 'danger'],
               ];
               foreach ($stats as $s):
