@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Premutation extends CI_Controller {
+class Premutation extends MY_Controller {
 
     public $email;
     public $session;
@@ -19,7 +19,6 @@ class Premutation extends CI_Controller {
 
     public function __construct() {
         parent::__construct();
-        is_logged_in();
         $this->load->library('form_validation');
         $this->load->model('other_model', 'other');
         $this->load->model('user/menu_model', 'menu');
@@ -72,6 +71,7 @@ class Premutation extends CI_Controller {
         $this->load->view('templates/fscript-html-end', $data);
     }
 
+    #[SkipPermission]
     public function next_proccess($employeeId){
         $companyId = $this->session->userdata('company_id');
 
@@ -116,7 +116,8 @@ class Premutation extends CI_Controller {
         }
     }
 
-    public function proses(){
+    #[SkipPermission]
+    public function proses($id){
       $this->db->trans_begin();
 
       $target = $this->input->post('target');

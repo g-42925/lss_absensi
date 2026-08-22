@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Task extends CI_Controller
+class Task extends MY_Controller
 {
     public $email;
     public $session;
@@ -15,7 +15,6 @@ class Task extends CI_Controller
     public function __construct()
     {
         parent::__construct();
-        is_logged_in();
         $this->load->library('form_validation');
         $this->load->model('other_model', 'other');
         $this->load->model('user/menu_model', 'menu');
@@ -66,6 +65,7 @@ class Task extends CI_Controller
         $this->load->view('templates/fscript-html-end', $data);
     }
 
+    #[SkipPermission]
     public function add_proses()
     {
         isEditable();
@@ -124,6 +124,7 @@ class Task extends CI_Controller
         $this->load->view('templates/fscript-html-end', $data);
     }
 
+    #[SkipPermission]
     public function edit_proses($id = null){
         isEditable();
         
@@ -157,6 +158,7 @@ class Task extends CI_Controller
         }
     }
 
+    #[SkipPermission]
     public function delete($id = null)
     {
         isEditable();
@@ -174,6 +176,7 @@ class Task extends CI_Controller
         redirect('task/list');
     }
 
+    #[SkipPermission]
     public function toggle_solved($id = null)
     {
         isEditable();
@@ -194,6 +197,7 @@ class Task extends CI_Controller
      * AJAX endpoint: search employees as user types
      * Returns JSON array of {id, text} for select2 AJAX
      */
+    #[SkipPermission]
     public function search_employee()
     {
         $keyword   = $this->input->get('q');

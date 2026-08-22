@@ -1,11 +1,10 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Sliders extends CI_Controller {
+class Sliders extends MY_Controller {
 
     public function __construct() {
         parent::__construct();
-        is_logged_in();
         $this->load->library('form_validation');
         $this->load->model('other_model', 'other');
         $this->load->model('user/menu_model', 'menu');
@@ -44,6 +43,7 @@ class Sliders extends CI_Controller {
         $this->load->view('templates/fscript-html-end', $data);
     }
 
+    #[SkipPermission]
     public function add_proses() {
         $tipe  = $this->input->post('tipe');
 
@@ -113,6 +113,7 @@ class Sliders extends CI_Controller {
         $this->load->view('templates/fscript-html-end', $data);
     }
 
+    #[SkipPermission]
     public function edit_proses($id = null) {
         $tipe  = $this->input->post('tipe');
 
@@ -166,6 +167,7 @@ class Sliders extends CI_Controller {
         }
     }
 
+    #[SkipPermission]
     public function hapus($id){
 
         $data['auth'] = authUser();

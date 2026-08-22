@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Roles extends CI_Controller {
+class Roles extends MY_Controller {
     public $email;
     public $session;
     public $form_validation;
@@ -62,6 +62,7 @@ class Roles extends CI_Controller {
         $this->load->view('templates/fscript-html-end', $data);
     }
 
+    #[SkipPermission]
     public function add_proses() {
         
         $unama  = $this->input->post('nama');
@@ -132,6 +133,7 @@ class Roles extends CI_Controller {
         $this->load->view('templates/fscript-html-end', $data);
     }
 
+    #[SkipPermission]
     public function edit_proses($id = null) {
         if($id==1){
             $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-danger p-cg" role="alert">Jabatan Super Admin ini tidak bisa diedit ya.</div></div>');

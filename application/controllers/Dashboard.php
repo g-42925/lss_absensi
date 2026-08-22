@@ -1,10 +1,9 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Dashboard extends CI_Controller {
+class Dashboard extends MY_Controller {
     public function __construct() {
         parent::__construct();
-        is_logged_in();
         $this->load->library('form_validation');
         $this->load->model('user/menu_model', 'menu');
         $this->load->model('master_model', 'master');

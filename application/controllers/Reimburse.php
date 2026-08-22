@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Reimburse extends CI_Controller {
+class Reimburse extends MY_Controller {
     public $email;
     public $session;
     public $form_validation;
@@ -13,7 +13,6 @@ class Reimburse extends CI_Controller {
 
     public function __construct() {
         parent::__construct();
-        is_logged_in();
         $this->load->library('form_validation');
         $this->load->model('other_model', 'other');
         $this->load->model('user/menu_model', 'menu');
@@ -79,6 +78,7 @@ class Reimburse extends CI_Controller {
         $this->load->view('templates/fscript-html-end', $data);
     }
 
+    #[SkipPermission]
     public function add_proccess(){
       $companyId = $this->session->userdata('company_id');
 
@@ -152,6 +152,7 @@ class Reimburse extends CI_Controller {
         $this->load->view('templates/fscript-html-end', $data);
     }
 
+    #[SkipPermission]
     public function claim_edit_proccess($reimburseId, $claimId){
       $data = [
         'status' => $this->input->post('status')
@@ -177,6 +178,7 @@ class Reimburse extends CI_Controller {
         }
     }
 
+    #[SkipPermission]
     public function edit_proccess($id){
         $data = [
           'reimburse_name' => $this->input->post('reimburseName')
@@ -202,6 +204,7 @@ class Reimburse extends CI_Controller {
         }
     }
 
+    #[SkipPermission]
     function delete($reimburseId){
       isEditable();
       $this->db->trans_begin();  // to start db transaction
@@ -222,6 +225,7 @@ class Reimburse extends CI_Controller {
       }      
     }
 
+    #[SkipPermission]
     function claim_delete($reimburseId, $claimId){
       isEditable();
       $this->db->trans_begin();  // to start db transaction

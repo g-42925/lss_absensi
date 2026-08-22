@@ -6,7 +6,7 @@ use Aws\Exception\AwsException;
 
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class File extends CI_Controller {
+class File extends MY_Controller {
     public $email;
     public $session;
     public $form_validation;
@@ -20,7 +20,6 @@ class File extends CI_Controller {
 
     public function __construct() {
         parent::__construct();
-        is_logged_in();
         $this->load->library('form_validation');
         $this->load->model('other_model', 'other');
         $this->load->model('user/menu_model', 'menu');
@@ -65,6 +64,7 @@ class File extends CI_Controller {
         $this->load->view('templates/fscript-html-end', $data);
     }
 
+    #[SkipPermission]
     public function edit_proccess($id){
         $data = ['title' => $this->input->post('title')];
         $this->db->where('file_id',$id);
@@ -96,6 +96,7 @@ class File extends CI_Controller {
         $this->load->view('templates/fscript-html-end', $data);
     }
 
+    #[SkipPermission]
     public function c_config_process($id){
       $candidate = $this->db->query("select * from candidate where candidate_id = ?",[$id])->row_array();
       $this->db->trans_begin(); // db transaction is started from here
@@ -156,6 +157,7 @@ class File extends CI_Controller {
       }
     }
 
+    #[SkipPermission]
     public function config_process($id){
       $emp = $this->db->query("select * from m_pegawai where pegawai_id = '$id'")->row_array();
       $this->db->trans_begin(); // db transaction is started from here
@@ -299,6 +301,7 @@ class File extends CI_Controller {
         $this->load->view('templates/fscript-html-end', $data);
     }
 
+    #[SkipPermission]
     public function add_proccess(){
         $companyId = $this->session->userdata('company_id');
 

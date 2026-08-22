@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Admin extends CI_Controller {
+class Admin extends MY_Controller {
     public $email;
     public $session;
     public $form_validation;
@@ -59,6 +59,7 @@ class Admin extends CI_Controller {
         $this->load->view('templates/fscript-html-end', $data);
     }
 
+    #[SkipPermission]
     public function add_proses() {
         $unama  = $this->input->post('email');
         $companyId = $this->session->userdata('company_id');
@@ -124,6 +125,7 @@ class Admin extends CI_Controller {
         $this->load->view('templates/fscript-html-end', $data);
     }
 
+    #[SkipPermission]
     public function edit_proses($id = null) {
         ;
         $unama  = $this->input->post('email');

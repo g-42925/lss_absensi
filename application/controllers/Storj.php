@@ -5,7 +5,7 @@ use Aws\Credentials\Credentials;
 
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Storj extends CI_Controller {
+class Storj extends MY_Controller {
     public function __construct() {
         parent::__construct();
     }
@@ -17,6 +17,7 @@ class Storj extends CI_Controller {
     public $upload;
     public $pagination;
 
+    #[SkipPermission]
     public function upload($fileName) {
       $accKey = 'jxoanx7assawl2rzstglt5zm3zia';
       $secretKey = 'jyl5ai53cbtxk4burfc7ishe7zqzjbq6van2nrr6uiwsbxbk2rhk6';
@@ -41,6 +42,7 @@ class Storj extends CI_Controller {
       echo rawurldecode((string)$request->getUri());
   }
 
+  #[SkipPermission]
   public function download($fileName){
     $accKey = 'jxoanx7assawl2rzstglt5zm3zia';
     $secretKey = 'jyl5ai53cbtxk4burfc7ishe7zqzjbq6van2nrr6uiwsbxbk2rhk6';

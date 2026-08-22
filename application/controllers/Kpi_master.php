@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Kpi_master extends CI_Controller {
+class Kpi_master extends MY_Controller {
 
     public $session;
     public $menu;
@@ -15,7 +15,6 @@ class Kpi_master extends CI_Controller {
 
     public function __construct() {
         parent::__construct();
-        is_logged_in();
         $this->load->model('user/menu_model', 'menu');
     }
 
@@ -69,6 +68,7 @@ class Kpi_master extends CI_Controller {
     /**
      * Proses simpan KPI baru
      */
+    #[SkipPermission]
     public function add_proses() {
         isEditable();
 
@@ -134,6 +134,7 @@ class Kpi_master extends CI_Controller {
     /**
      * Proses update KPI
      */
+    #[SkipPermission]
     public function edit_proses($id = null) {
         isEditable();
 
@@ -166,6 +167,7 @@ class Kpi_master extends CI_Controller {
     /**
      * Hapus KPI (soft delete)
      */
+    #[SkipPermission]
     public function delete($id = null) {
         if (!$id) { redirect('kpi_master'); }
 
@@ -184,6 +186,7 @@ class Kpi_master extends CI_Controller {
     /**
      * Toggle status aktif KPI (AJAX)
      */
+    #[SkipPermission]
     public function toggle_aktif($id = null) {
         if (!$id) {
             echo json_encode(['status' => 'error']);
@@ -206,6 +209,7 @@ class Kpi_master extends CI_Controller {
     /**
      * API: ambil daftar KPI untuk dropdown/AJAX
      */
+    #[SkipPermission]
     public function api_list() {
         $companyId = $this->session->userdata('company_id');
         $result = $this->db->query(

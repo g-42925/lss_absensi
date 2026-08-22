@@ -1,11 +1,10 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Overtime extends CI_Controller {
+class Overtime extends MY_Controller {
 
     public function __construct() {
         parent::__construct();
-        is_logged_in();
         $this->load->library('form_validation');
         $this->load->model('other_model', 'other');
         $this->load->model('user/menu_model', 'menu');
@@ -48,6 +47,7 @@ class Overtime extends CI_Controller {
         $this->load->view('templates/fscript-html-end', $data);
     }
 
+    #[SkipPermission]
     public function add_proses() {
         $ukat  = $this->input->post('idp');
         $unama  = $this->input->post('tgl1');
@@ -102,6 +102,7 @@ class Overtime extends CI_Controller {
         $this->load->view('templates/fscript-html-end', $data);
     }
 
+    #[SkipPermission]
     public function edit_proses($id = null) {
 
         if ($id==null) { redirect('overtime'); }
@@ -139,6 +140,7 @@ class Overtime extends CI_Controller {
         }
     }
 
+    #[SkipPermission]
     public function action($id) {
         $data['datal'] = $this->db->get_where('tx_lembur', ['lembur_id' => $id])->row_array();
         $data['userupd'] = dataUser($data['datal']['is_acc_updated']);
@@ -146,6 +148,7 @@ class Overtime extends CI_Controller {
         $this->load->view('module/overtime/option', $data);
     }
 
+    #[SkipPermission]
     public function hapus($id = null){
         
         $data['auth']       = authUser();

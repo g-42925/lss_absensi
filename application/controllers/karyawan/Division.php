@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Division extends CI_Controller {
+class Division extends MY_Controller {
 
     public $email;
     public $session;
@@ -54,6 +54,7 @@ class Division extends CI_Controller {
 
     }
 
+    #[SkipPermission]
     public function edit_proses($id){
       $this->form_validation->set_rules('divisionName', 'Division Name', 'required');
       $this->form_validation->set_rules('latePenalty', 'Late Penalty', 'required');
@@ -164,6 +165,7 @@ class Division extends CI_Controller {
         $this->load->view('templates/fscript-html-end', $data);
     }
 
+    #[SkipPermission]
     public function add_proses(){
         $this->form_validation->set_rules('divisionName', 'Division Name', 'required');
         $this->form_validation->set_rules('penaltyNominal', 'Penalty Nominal', 'required');

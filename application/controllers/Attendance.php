@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Attendance extends CI_Controller {
+class Attendance extends MY_Controller {
 
     public $email;
     public $session;
@@ -14,7 +14,6 @@ class Attendance extends CI_Controller {
 
     public function __construct() {
         parent::__construct();
-        is_logged_in();
         $this->load->library('form_validation');
         $this->load->model('other_model', 'other');
         $this->load->model('user/menu_model', 'menu');
@@ -217,6 +216,7 @@ class Attendance extends CI_Controller {
         $this->load->view('templates/fscript-html-end', $data);
     }
 
+    #[SkipPermission]
     public function absensi($tgl,$tipe,$idp,$value) {
         $res = $this->att->absensi_proses($tgl,$tipe,$idp,$value);
     }
@@ -228,6 +228,7 @@ class Attendance extends CI_Controller {
         $this->load->view('module/attendance/action', $data);
     }
 
+    #[SkipPermission]
     public function req_cancel($idp = null,$tgl = null) {
 
         if ($idp==null || $tgl==null) { redirect('attendance'); }

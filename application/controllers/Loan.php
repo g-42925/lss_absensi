@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Loan extends CI_Controller {
+class Loan extends MY_Controller {
     public $email;
     public $session;
     public $form_validation;
@@ -13,7 +13,6 @@ class Loan extends CI_Controller {
 
     public function __construct() {
         parent::__construct();
-        is_logged_in();
         $this->load->library('form_validation');
         $this->load->model('other_model', 'other');
         $this->load->model('user/menu_model', 'menu');
@@ -85,6 +84,7 @@ class Loan extends CI_Controller {
       $this->load->view('templates/fscript-html-end', $data);   
     }
 
+    #[SkipPermission]
     public function add_proses(){
       $data = [
         'loan_id' => uniqid(),
@@ -132,6 +132,7 @@ class Loan extends CI_Controller {
 
     }
 
+    #[SkipPermission]
      public function edit_proses($id){
       $loan = $this->db->query("select * from loan where loan_id = ?",[$id])->row_array();
       $data = ['paid_amount' => $this->input->post('paid_amount')];
@@ -181,6 +182,7 @@ class Loan extends CI_Controller {
       }
     }
 
+    #[SkipPermission]
     public function delete($loanId){
       $this->db->trans_begin();
       $this->db->delete('loan_pay_log',['loan_id' => $loanId]);

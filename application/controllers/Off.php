@@ -1,10 +1,9 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Off extends CI_Controller {
+class Off extends MY_Controller {
     public function __construct() {
         parent::__construct();
-        is_logged_in();
         $this->load->library('form_validation');
         $this->load->model('other_model', 'other');
         $this->load->model('user/menu_model', 'menu');
@@ -55,6 +54,7 @@ class Off extends CI_Controller {
         $this->load->view('templates/fscript-html-end');       
     }
 
+    #[SkipPermission]
     public function add_proses(){
         $companyId = $this->session->userdata('company_id');
 
@@ -84,6 +84,7 @@ class Off extends CI_Controller {
         $this->load->view('templates/fscript-html-end');    
     }
 
+    #[SkipPermission]
     public function edit_proses(){
         $id = $this->input->post('id');
         $this->db->where('id', $id);
@@ -95,6 +96,7 @@ class Off extends CI_Controller {
         redirect('off');
     }
 
+    #[SkipPermission]
     public function delete($id){
         isEditable();
         $this->db->where('id', $id);

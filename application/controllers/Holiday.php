@@ -1,10 +1,9 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Holiday extends CI_Controller {
+class Holiday extends MY_Controller {
     public function __construct() {
         parent::__construct();
-        is_logged_in();
         $this->load->library('form_validation');
         $this->load->model('other_model', 'other');
         $this->load->model('user/menu_model', 'menu');
@@ -54,6 +53,7 @@ class Holiday extends CI_Controller {
         $this->load->view('templates/fscript-html-end');       
     }
 
+    #[SkipPermission]
     public function add_proses(){
         $companyId = $this->session->userdata('company_id');
 
@@ -85,6 +85,7 @@ class Holiday extends CI_Controller {
         $this->load->view('templates/fscript-html-end');    
     }
 
+    #[SkipPermission]
     public function edit_proses(){
         $id = $this->input->post('id');
         
@@ -97,6 +98,7 @@ class Holiday extends CI_Controller {
         redirect('holiday');
     }
 
+    #[SkipPermission]
     public function delete($id){
         isEditable();
         $this->db->where('id', $id);

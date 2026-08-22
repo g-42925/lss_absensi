@@ -15,7 +15,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
  *   GET  kpi_absensi/generate_one/{pid}/{bulan}/{tahun} → generate satu karyawan
  *   GET  kpi_absensi/export/{bulan}/{tahun} → download CSV semua karyawan
  */
-class Kpi_absensi extends CI_Controller
+class Kpi_absensi extends MY_Controller
 {
     public $email;
     public $session;
@@ -31,7 +31,6 @@ class Kpi_absensi extends CI_Controller
     public function __construct()
     {
         parent::__construct();
-        is_logged_in();
         $this->load->model('user/menu_model', 'menu');
         $this->load->model('user/kpi_absensi_model', 'kpi_m');
     }
@@ -219,6 +218,7 @@ class Kpi_absensi extends CI_Controller
     // GENERATE – Simpan KPI semua karyawan (bulk) ke DB
     // =========================================================
 
+    #[SkipPermission]
     public function generate()
     {
         isEditable();
@@ -267,6 +267,7 @@ class Kpi_absensi extends CI_Controller
     // GENERATE ONE – Simpan KPI satu karyawan ke DB
     // =========================================================
 
+    #[SkipPermission]
     public function generate_one($pegawai_id = null, $bulan = null, $tahun = null)
     {
         isEditable();
@@ -297,6 +298,7 @@ class Kpi_absensi extends CI_Controller
     // EXPORT – Download CSV semua karyawan periode tertentu
     // =========================================================
 
+    #[SkipPermission]
     public function export($bulan = null, $tahun = null)
     {
         $companyId = $this->session->userdata('company_id');

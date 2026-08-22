@@ -4,7 +4,7 @@
 defined('BASEPATH') or exit('No direct script access allowed');
 
 
-class Filebase extends CI_Controller{
+class Filebase extends MY_Controller{
     public $att;
     public $email;
     public $session;
@@ -20,6 +20,7 @@ class Filebase extends CI_Controller{
         $this->load->model('s3_model','s3');
     }
 
+    #[SkipPermission]
     public function upload($fileName,$id,$dir){
         try {
             echo $this->s3->upload(
@@ -35,6 +36,7 @@ class Filebase extends CI_Controller{
         }
     }
 
+    #[SkipPermission]
     public function unknown($fileName, $id){
         try {
             echo $this->s3->upload(
@@ -50,6 +52,7 @@ class Filebase extends CI_Controller{
         }
     }
 
+    #[SkipPermission]
     public function exception($fileName, $id){
         try {
             echo $this->s3->upload(
@@ -65,6 +68,7 @@ class Filebase extends CI_Controller{
         }
     }
 
+    #[SkipPermission]
     public function task($fileName, $id){
         try {
             echo $this->s3->upload(
@@ -80,6 +84,7 @@ class Filebase extends CI_Controller{
         }
     }
 
+    #[SkipPermission]
     public function attendance($fileName, $id){
         try {
             echo $this->s3->upload(

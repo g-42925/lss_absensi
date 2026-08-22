@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Nonaktif extends CI_Controller {
+class Nonaktif extends MY_Controller {
 
     public $email;
     public $session;
@@ -17,7 +17,6 @@ class Nonaktif extends CI_Controller {
     
     public function __construct() {
         parent::__construct();
-        is_logged_in();
         $this->load->library('form_validation');
         $this->load->model('other_model', 'other');
         $this->load->model('user/menu_model', 'menu');
@@ -25,6 +24,7 @@ class Nonaktif extends CI_Controller {
         $this->load->model('user/patterns_model', 'patterns');
         $this->load->model('user/karyawan/timework_model', 'tw');
     }
+
     public function index() {
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Karyawan';
@@ -53,6 +53,7 @@ class Nonaktif extends CI_Controller {
         $this->load->view('templates/fscript-html-end', $data);
     }
 
+    #[SkipPermission]
     public function undo($employeeId){
         isEditable();
         $this->db->set(['is_del' => 'n']);

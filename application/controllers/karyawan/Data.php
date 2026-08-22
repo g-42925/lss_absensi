@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Data extends CI_Controller {
+class Data extends MY_Controller {
 
     public $email;
     public $session;
@@ -22,6 +22,7 @@ class Data extends CI_Controller {
         $this->load->model('user/attendance_model', 'att');
     }
     
+    #[SkipPermission]
     public function kick($id){
         $this->db->where('pegawai_id',$id);
 
@@ -61,6 +62,7 @@ class Data extends CI_Controller {
         $this->load->view('templates/fscript-html-end', $data);
     }
 
+    #[SkipPermission]
     public function kick_all() {
         
         $companyId = $this->session->userdata('company_id');
@@ -73,6 +75,7 @@ class Data extends CI_Controller {
         redirect('karyawan/data/manage_kick');
     }
     
+    #[SkipPermission]
     public function filter(){
 			
 			$data['htmlpagejs'] = 'none';
@@ -111,6 +114,7 @@ class Data extends CI_Controller {
 			$this->load->view('templates/fscript-html-end', $data);
     }
 
+    #[SkipPermission]
     public function all(){
 		$key = $this->input->get('key');
         $companyId = $this->session->userdata('company_id');
@@ -118,6 +122,7 @@ class Data extends CI_Controller {
         echo json_encode($data);
     }
 
+    #[SkipPermission]
     public function filterByDiv(){
 		$data = null;
         $div = $this->input->get('divId');
@@ -133,10 +138,8 @@ class Data extends CI_Controller {
         echo json_encode($data);
     }
 
-    /**
-     * AJAX endpoint: Ambil shift_detail berdasarkan division_id
-     * GET /karyawan/data/get_shift_details?division_id=xxx
-     */
+    
+    #[SkipPermission]
     public function get_shift_details() {
         $divisionId = $this->input->get('division_id');
         if (!$divisionId) {
@@ -240,6 +243,8 @@ class Data extends CI_Controller {
 
     }
 
+
+    #[SkipPermission]
     public function add_proses() {
         
         $unama  = $this->input->post('idkar');
@@ -327,6 +332,7 @@ class Data extends CI_Controller {
         $this->load->view('templates/fscript-html-end', $data);
     }
 
+    #[SkipPermission]
     public function edit_proses($id = null) {
         
         $unama  = $this->input->post('idkar');
@@ -372,6 +378,7 @@ class Data extends CI_Controller {
 
     }
 
+    #[SkipPermission]
     public function hapus($id){
         
         

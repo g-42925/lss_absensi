@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Payroll extends CI_Controller {
+class Payroll extends MY_Controller {
     public $email;
     public $session;
     public $form_validation;
@@ -13,7 +13,6 @@ class Payroll extends CI_Controller {
 
     public function __construct() {
         parent::__construct();
-        is_logged_in();
         $this->load->library('form_validation');
         $this->load->model('other_model', 'other');
         $this->load->model('user/menu_model', 'menu');
@@ -722,6 +721,7 @@ class Payroll extends CI_Controller {
 
 
 
+    #[SkipPermission]
 	public function toCsv($dateX,$dateY){
  		$filename = "data_payroll_" . date('Ymd_His') . ".csv";
 

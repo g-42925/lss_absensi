@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Kpi_evaluation extends CI_Controller {
+class Kpi_evaluation extends MY_Controller {
 
     public $session;
     public $menu;
@@ -16,7 +16,6 @@ class Kpi_evaluation extends CI_Controller {
 
     public function __construct() {
         parent::__construct();
-        is_logged_in();
         $this->load->model('user/menu_model', 'menu');
     }
 
@@ -186,6 +185,7 @@ class Kpi_evaluation extends CI_Controller {
     /**
      * Proses simpan nilai (Insert/Update)
      */
+    #[SkipPermission]
     public function save($pegawai_id = null, $bulan = null, $tahun = null) {
         isEditable();
         if (!$pegawai_id || !$bulan || !$tahun) {
@@ -307,6 +307,7 @@ class Kpi_evaluation extends CI_Controller {
     /**
      * Hapus record evaluasi KPI
      */
+    #[SkipPermission]
     public function delete($id = null, $pegawai_id = null) {
         isEditable();
         if (!$id || !$pegawai_id) { redirect('karyawan/data'); }

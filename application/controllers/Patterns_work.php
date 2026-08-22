@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Patterns_work extends CI_Controller {
+class Patterns_work extends MY_Controller {
     public $email;
     public $session;
     public $form_validation;
@@ -13,7 +13,6 @@ class Patterns_work extends CI_Controller {
 
     public function __construct() {
         parent::__construct();
-        is_logged_in();
         $this->load->library('form_validation');
         $this->load->model('other_model', 'other');
         $this->load->model('user/menu_model', 'menu');
@@ -83,6 +82,7 @@ class Patterns_work extends CI_Controller {
         $this->load->view('templates/fscript-html-end', $data);
     }
 
+    #[SkipPermission]
     public function shift_edit_proses(){
         $data['failed'] = filter_var($this->input->get('failed'), FILTER_VALIDATE_BOOLEAN);
         $data = ['id' => $this->input->post('id'),'name' => $this->input->post('name')];
@@ -152,6 +152,7 @@ class Patterns_work extends CI_Controller {
         $this->load->view('templates/fscript-html-end', $data);
     }
 
+    #[SkipPermission]
     public function shift_set_proses($id){
       $this->db->trans_begin();
 
@@ -221,6 +222,7 @@ class Patterns_work extends CI_Controller {
       $this->load->view('templates/fscript-html-end', $data);
     }
 
+    #[SkipPermission]
     public function shift_off_set_proses($id){
       isEditable();
 
@@ -303,6 +305,7 @@ class Patterns_work extends CI_Controller {
         $this->load->view('templates/fscript-html-end', $data);
     }
 
+    #[SkipPermission]
     public function shift_detail_edit_proses($shiftId,$id){
         $data = [
           'shift_id' => $this->input->post(
@@ -368,6 +371,7 @@ class Patterns_work extends CI_Controller {
         $this->load->view('templates/fscript-html-end', $data);
     }
 
+    #[SkipPermission]
     public function shift_detail_add_proses(){
       $filter = [
         'name' => $this->input->post(
@@ -438,6 +442,7 @@ class Patterns_work extends CI_Controller {
       }
     }
 
+    #[SkipPermission]
     public function shift_add_proses(){
         $this->form_validation->set_rules('name', 'Name', 'required');
 
@@ -501,6 +506,7 @@ class Patterns_work extends CI_Controller {
         $this->load->view('templates/fscript-html-end', $data);
     }
 
+    #[SkipPermission]
     public function add_proses() {
         $unama  = $this->input->post('nama');
 
@@ -577,6 +583,7 @@ class Patterns_work extends CI_Controller {
         $this->load->view('templates/fscript-html-end', $data);
     }
 
+    #[SkipPermission]
     public function edit_proses($id = null) {
         $unama  = $this->input->post('nama');
 
@@ -616,6 +623,7 @@ class Patterns_work extends CI_Controller {
 
     }
 
+    #[SkipPermission]
     public function hapus($id){
         
         $data['auth'] = authUser();
@@ -666,6 +674,7 @@ class Patterns_work extends CI_Controller {
         $this->load->view('templates/fscript-html-end', $data);
     }
 
+    #[SkipPermission]
     public function assign_proses($id = null) {
         
         $data['auth'] = authUser();
@@ -697,6 +706,7 @@ class Patterns_work extends CI_Controller {
         }
     }
 
+    #[SkipPermission]
     public function hapus_assign($id = null, $idx = null){
         
         $data['auth'] = authUser();

@@ -6,7 +6,7 @@ use Aws\Exception\AwsException;
 
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Image extends CI_Controller {
+class Image extends MY_Controller {
 	  public function __construct() {
         parent::__construct();
         $this->load->model('user/attendance_model', 'att');
@@ -21,6 +21,7 @@ class Image extends CI_Controller {
   
   
 
+    #[SkipPermission]
     function view($path,$fileName){
       $companyId = $this->session->userdata('company_id');
       $company = $this->db->query("select * from companies where id = ?",[$companyId])->row_array();

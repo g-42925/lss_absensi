@@ -6,17 +6,20 @@ class MY_Controller extends CI_Controller {
     public function __construct() {
         parent::__construct();
 
-        // 1. Cek Sesi Login
-        if (!$this->session->userdata('u_id')) {
-          redirect('auth');
-        }
+       
 
         // 2. Ambil Segmen URL/Route Saat Ini
         $directory = $this->router->directory;
         $class     = $this->router->class;
         $method    = $this->router->method;
 
-        
+        $reflection = new ReflectionMethod($this, $method);
+
+        $skipPermission = !empty($reflection->getAttributes(SkipPermission::class));
+
+        if ($skipPermission) return;
+
+        if (!$this->session->userdata('u_id')) redirect('auth');
 
         // 3. Susun Format Current Slug (Handling Sub-folder & Root)
         $current_slug = $directory.$class.'/'.$method;
@@ -24,28 +27,7 @@ class MY_Controller extends CI_Controller {
         // 4. Whitelist Halaman Bebas Akses (Tanpa Perlu Cek Permission)
         $whitelisted_slugs = [
           'dashboard/index',
-          'auth/logout',
-          'company/profile/edit_proses',
-          'company/admin/add_proses',
-          'company/admin/edit_proses',
-          'company/admin/hapus',
-          'company/roles/add_proses',
-          'company/roles/edit_proses',
-          'karyawan/data/filter',
-          'karyawan/data/all',
-          'karyawan/data/get_shift_details',
-          'karyawan/data/add_proses',
-          'karyawan/data/edit_proses',
-          'karyawan/deduction/filter',
-          'karyawan/division/edit_proses',
-          'karyawan/division/add_proses',
-          'karyawan/position/add_proses',
-          'karyawan/position/edit_proses',
-          'karyawan/premutation/next_proccess',
-          'job/edit_proccess',
-          'job/add_proccess',
-          'candidate/add_proccess',
-          'candidate/edit_proccess'
+          'auth/logout'
         ];
 
         // 5. Validasi Akses

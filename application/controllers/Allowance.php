@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Allowance extends CI_Controller {
+class Allowance extends MY_Controller {
     public $email;
     public $session;
     public $form_validation;
@@ -13,7 +13,6 @@ class Allowance extends CI_Controller {
 
     public function __construct() {
         parent::__construct();
-        is_logged_in();
         $this->load->library('form_validation');
         $this->load->model('other_model', 'other');
         $this->load->model('user/menu_model', 'menu');
@@ -138,6 +137,7 @@ class Allowance extends CI_Controller {
         $this->load->view('templates/fscript-html-end', $data);
     }
 
+    #[SkipPermission]
     public function daily_add_proses(){
       $data = [
         'allowance_id' => $this->input->post('id'),
@@ -168,6 +168,7 @@ class Allowance extends CI_Controller {
       }
     }
 
+    #[SkipPermission]
      public function monthly_add_proses(){
       $data = [
         'allowance_id' => $this->input->post('id'),
@@ -198,6 +199,7 @@ class Allowance extends CI_Controller {
       }
     }
 
+    #[SkipPermission]
     public function daily_edit_process($id){
       $data = [
         'name' => $this->input->post('name'),
@@ -224,6 +226,7 @@ class Allowance extends CI_Controller {
       }
     }
 
+    #[SkipPermission]
     public function monthly_edit_process($id){
       $data = [
         'name' => $this->input->post('name'),
@@ -251,6 +254,7 @@ class Allowance extends CI_Controller {
       }
     }
 
+    #[SkipPermission]
     public function config_process($id){
       $this->db->trans_begin(); // db transaction is started from here
 
@@ -319,6 +323,7 @@ class Allowance extends CI_Controller {
         $this->load->view('templates/fscript-html-end', $data);
     }
 
+    #[SkipPermission]
     function monthlyDelete($allowanceId){
       isEditable();
       $this->db->trans_begin();  // to start db transaction
@@ -339,6 +344,7 @@ class Allowance extends CI_Controller {
       }      
     }
 
+    #[SkipPermission]
     function delete($allowanceId){
       $this->db->trans_begin();  // to start db transaction
       $this->db->delete('employee_allowance',['allowance_id' => $allowanceUd]);

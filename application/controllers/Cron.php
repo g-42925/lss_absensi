@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Cron extends CI_Controller {
+class Cron extends MY_Controller {
     public function __construct() {
         parent::__construct();
         $this->load->model('user/attendance_model', 'att');
@@ -16,6 +16,7 @@ class Cron extends CI_Controller {
 
     // This function is called by the cron job to update attendance data
     
+    #[SkipPermission]
     public function default() {
       $this->db->query("SET time_zone = '+07:00'");
       $companies = $this->db->query("select * from companies where active = ?",[1])->result_array();
@@ -280,6 +281,7 @@ class Cron extends CI_Controller {
       }
     }
 
+    #[SkipPermission]
     public function recap(){
       $companies = $this->db->query("select * from companies")->result_array();
 
@@ -331,6 +333,7 @@ class Cron extends CI_Controller {
       }
     }
     
+    #[SkipPermission]
     public function deduction(){
       $this->db->query("SET time_zone = '+07:00'");
       $companies = $this->db->query("select * from companies")->result_array();

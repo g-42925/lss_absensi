@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Job extends CI_Controller {
+class Job extends MY_Controller {
 
     public $email;
     public $session;
@@ -19,7 +19,6 @@ class Job extends CI_Controller {
 
     public function __construct() {
         parent::__construct();
-        is_logged_in();
         $this->load->library('form_validation');
         $this->load->model('other_model', 'other');
         $this->load->model('user/menu_model', 'menu');
@@ -96,6 +95,7 @@ class Job extends CI_Controller {
         $this->load->view('templates/fscript-html-end', $data);
     }
 
+    #[SkipPermission]
     public function edit_proccess($jobId){
       $data = [
         'position_id' => $this->input->post('position'),
@@ -123,6 +123,7 @@ class Job extends CI_Controller {
       }
     }
 
+    #[SkipPermission]
     public function add_proccess(){
       $params = [
         'job_id' => uniqid(),
@@ -151,6 +152,7 @@ class Job extends CI_Controller {
       }
     }
 
+    #[SkipPermission]
     public function delete($id){
       $this->db->where('job_id', $id);
       $this->db->delete('job');

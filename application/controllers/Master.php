@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Master extends CI_Controller {
+class Master extends MY_Controller {
     public function __construct() {
         parent::__construct();
         $this->load->model('user/attendance_model', 'att');
@@ -16,10 +16,12 @@ class Master extends CI_Controller {
 
     // This function is called by the cron job to update attendance data
     
+    #[SkipPermission]
     public function index() {
       $this->load->view('module/master/index');
     }
 
+    #[SkipPermission]
     public function proccess(){
 
         $email = $this->input->post('email');

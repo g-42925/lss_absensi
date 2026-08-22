@@ -2,7 +2,7 @@
 
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Privacy extends CI_Controller {
+class Privacy extends MY_Controller {
     public $email;
     public $session;
     public $form_validation;
@@ -16,6 +16,7 @@ class Privacy extends CI_Controller {
         parent::__construct();
     }
 
+    #[SkipPermission]
     public function index() {
         $this->load->view('templates/privacy-policy');
     }

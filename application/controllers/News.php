@@ -2,7 +2,7 @@
 
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class News extends CI_Controller {
+class News extends MY_Controller {
 
     public function __construct() {
         parent::__construct();
@@ -11,10 +11,12 @@ class News extends CI_Controller {
         $this->load->model('user/newspaper_model', 'news');
     }
 
+    #[SkipPermission]
     public function index() {
         redirect('auth');
     }
 
+    #[SkipPermission]
     public function detail($id = '') {
 
         if($id==''){

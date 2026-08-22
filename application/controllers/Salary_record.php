@@ -3,7 +3,7 @@
 
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Salary_record extends CI_Controller
+class Salary_record extends MY_Controller
 {
 
   public $email;
@@ -18,7 +18,6 @@ class Salary_record extends CI_Controller
   public function __construct()
   {
     parent::__construct();
-    is_logged_in();
     $this->load->library('form_validation');
     $this->load->model('other_model', 'other');
     $this->load->model('user/menu_model', 'menu');

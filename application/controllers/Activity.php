@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Activity extends CI_Controller{
+class Activity extends MY_Controller{
     public $email;
     public $session;
     public $form_validation;
@@ -13,13 +13,13 @@ class Activity extends CI_Controller{
 
     public function __construct(){
         parent::__construct();
-        is_logged_in();
         $this->load->library('form_validation');
         $this->load->model('other_model', 'other');
         $this->load->model('user/menu_model', 'menu');
         $this->load->model('user/req_permission_model', 'rp');
     }
 
+    #[SkipPermission]
     public function filter($date){
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Aktivitas';

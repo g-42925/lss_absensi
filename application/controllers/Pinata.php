@@ -1,6 +1,6 @@
 <?php
 
-class Pinata extends CI_Controller {
+class Pinata extends MY_Controller {
     public function __construct() {
         parent::__construct();
     }
@@ -39,6 +39,7 @@ class Pinata extends CI_Controller {
       ];
     }
 
+    #[SkipPermission]
     public function attendance($fileName, $id) {
       $company = $this->db->query("SELECT * FROM companies WHERE id = ?", [$id])->row_array();
 
@@ -49,6 +50,7 @@ class Pinata extends CI_Controller {
       echo $result["url"];
     }
 
+    #[SkipPermission]
     public function unknown($fileName, $id) {
       $company = $this->db->query("SELECT * FROM companies WHERE id = ?", [$id])->row_array();
 
@@ -59,6 +61,7 @@ class Pinata extends CI_Controller {
       echo $result["url"];
     }
 
+    #[SkipPermission]
     public function exception($fileName, $id) {
       $company = $this->db->query("SELECT * FROM companies WHERE id = ?", [$id])->row_array();
 
@@ -69,6 +72,7 @@ class Pinata extends CI_Controller {
       echo $result["url"];
     }
 
+    #[SkipPermission]
     public function task($fileName, $id) {
       $company = $this->db->query("SELECT * FROM companies WHERE id = ?", [$id])->row_array();
 
@@ -79,6 +83,7 @@ class Pinata extends CI_Controller {
       echo $result["url"];
      }
 
+    #[SkipPermission]
     public function upload($fileName, $id) {
       $company = $this->db->query("SELECT * FROM companies WHERE id = ?", [$id])->row_array();
 

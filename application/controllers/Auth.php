@@ -2,7 +2,7 @@
 
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Auth extends CI_Controller {
+class Auth extends MY_Controller {
     public $email;
     public $session;
     public $form_validation;
@@ -20,6 +20,7 @@ class Auth extends CI_Controller {
         $this->load->model('user/sliders_model', 'slid');
     }
 
+    #[SkipPermission]
     public function index() {
         if ($this->session->userdata('u_id')){
             redirect('dashboard');
@@ -96,6 +97,7 @@ class Auth extends CI_Controller {
         }
     }
 
+    #[SkipPermission]
     public function logout() {
         $this->session->unset_userdata('u_id');
         $this->session->unset_userdata('role_id');

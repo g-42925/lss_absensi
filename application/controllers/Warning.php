@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Warning extends CI_Controller{
+class Warning extends MY_Controller{
     public $email;
     public $session;
     public $form_validation;
@@ -13,7 +13,6 @@ class Warning extends CI_Controller{
 
     public function __construct(){
         parent::__construct();
-        is_logged_in();
         $this->load->model('other_model', 'other');
         $this->load->model('user/menu_model', 'menu');
     }
@@ -77,6 +76,7 @@ class Warning extends CI_Controller{
         $this->load->view('templates/fscript-html-end', $data);
     }
 
+    #[SkipPermission]
     public function add_proses(){
         
         isEditable();
@@ -147,6 +147,7 @@ class Warning extends CI_Controller{
         $this->load->view('templates/fscript-html-end', $data);
     }
 
+    #[SkipPermission]
     public function edit_proses($id = null){
         
         isEditable();
@@ -226,6 +227,7 @@ class Warning extends CI_Controller{
         $this->load->view('templates/fscript-html-end', $data);
     }
 
+    #[SkipPermission]
     public function delete($id = null){
         
         if (!$id) { redirect('warning'); }

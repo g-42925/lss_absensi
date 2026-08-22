@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Attendance_approval extends CI_Controller {
+class Attendance_approval extends MY_Controller {
     public $email;
     public $session;
     public $form_validation;
@@ -14,7 +14,6 @@ class Attendance_approval extends CI_Controller {
 
     public function __construct() {
         parent::__construct();
-        is_logged_in();
         $this->load->library('form_validation');
         $this->load->model('other_model', 'other');
         $this->load->model('user/menu_model', 'menu');
@@ -51,6 +50,7 @@ class Attendance_approval extends CI_Controller {
         $this->load->view('templates/fscript-html-end', $data);
     }
 
+    #[SkipPermission]
     public function acc($tipe = null,$id = null) {
         if ($tipe==null || $id==null) { redirect('attendance_approval'); }
         $check = $this->db->get_where('tx_absensi', ['absen_id' => $id]);
@@ -70,6 +70,7 @@ class Attendance_approval extends CI_Controller {
 
     }
 
+    #[SkipPermission]
     public function reject($tipe = null,$id = null) {
         if ($tipe==null || $id==null) { redirect('attendance_approval'); }
         $check = $this->db->get_where('tx_absensi', ['absen_id' => $id]);

@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Attendance_record extends CI_Controller {
+class Attendance_record extends MY_Controller {
 
     public $email;
     public $session;
@@ -14,7 +14,6 @@ class Attendance_record extends CI_Controller {
 
     public function __construct() {
         parent::__construct();
-        is_logged_in();
         $this->load->library('form_validation');
         $this->load->model('other_model', 'other');
         $this->load->model('user/menu_model', 'menu');
@@ -117,6 +116,7 @@ class Attendance_record extends CI_Controller {
         $this->load->view('templates/fscript-html-end', $data);
     }
 
+    #[SkipPermission]
     public function download_laporan($mulai,$akhir) {
         $data['tgl_awal'] = $mulai;
         $data['tgl_akhir'] = $akhir;
@@ -124,6 +124,7 @@ class Attendance_record extends CI_Controller {
         $this->load->view('module/attendance_record/download', $data);
     }
 
+    #[SkipPermission]
     public function toCsv($awal,$akhir){
         $filename = "attendance record" . date('Ymd_His') . ".csv";
 	    header('Content-Type: text/csv');
@@ -164,6 +165,7 @@ class Attendance_record extends CI_Controller {
 
     }
 
+    #[SkipPermission]
     public function download_laporan_detail($id,$mulai,$akhir) {
         if ($id==null) { redirect('attendance_record'); }
         $check = $this->db->get_where('m_pegawai', ['pegawai_id' => $id]);

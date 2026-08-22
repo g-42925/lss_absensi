@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Interview extends CI_Controller {
+class Interview extends MY_Controller {
 
     public $email;
     public $session;
@@ -19,7 +19,6 @@ class Interview extends CI_Controller {
 
     public function __construct() {
         parent::__construct();
-        is_logged_in();
         $this->load->library('form_validation');
         $this->load->model('other_model', 'other');
         $this->load->model('user/menu_model', 'menu');
@@ -76,6 +75,7 @@ class Interview extends CI_Controller {
     
     }
 
+    #[SkipPermission]
     public function edit_proccess($interviewId){
         $this->form_validation->set_rules('date', 'Date', 'required');
 
@@ -122,6 +122,7 @@ class Interview extends CI_Controller {
         }        
     }
 
+    #[SkipPermission]
     public function add_proccess(){        
         $this->form_validation->set_rules('date', 'Date', 'required');
 
