@@ -41,7 +41,7 @@ class Roles extends MY_Controller {
         $this->load->view('templates/fscript-html-end', $data);
     }
 
-    public function add($failed) {
+    public function add($failed = 0) {
         isEditable();
 
         $data['htmlpagejs'] = 'none';
@@ -51,6 +51,16 @@ class Roles extends MY_Controller {
         $data['namalabel']  = $data['title'];
         $data['auth']       = authUser();
         $data['failed']     = $failed;
+        
+        $actions = $this->db->query("select * from actions")->result_array();
+        
+        $grouped_actions = array_reduce($actions, function ($result, $item) {
+          $result[$item['directory']][] = $item;
+          return $result;
+        }, []);
+
+        $data['actions']    = $grouped_actions;
+        $data['slugs']      = [];
         
         $data['menu'] = $this->menu->getMenu();
 
@@ -79,11 +89,24 @@ class Roles extends MY_Controller {
             $query = $this->db->get_where('m_role', ['nama_role' => $unama, 'is_del' => 'n'])->num_rows();
             
             if ($query < 1) {
-                $res = $this->roles->add_proses(
-                    $this->session->userdata('company_id')
-                );
+                $dataInsert = [
+                    'company_id'        => $this->session->userdata('company_id'),
+                    'nama_role'         => $this->input->post('nama'),
+                    'is_status'         => $this->input->post('status'),
+                    'created_at'        => date('Y-m-d H:i:s')
+                ];
+                $res = $this->db->insert('m_role', $dataInsert);
+                $id = $this->db->insert_id();
+                
                 if ($res==true) {
-                  redirect('company/roles');
+                    $roles = $this->input->post('roles') ?? [];
+                    foreach($roles as $role){
+                        $this->db->insert('role_actions',[
+                            'role_id' => $id,
+                            'slug' => $role
+                        ]);
+                    }
+                    redirect('company/roles');
                 }
                 else{
                     $this->session->set_flashdata('message', '<div class="alert alert-danger p-cg" role="alert">Proses gagal, silahkan coba lagi.</div>');

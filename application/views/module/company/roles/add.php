@@ -25,47 +25,20 @@
           </div>
         </div>
         <hr class="my-4 mx-n4" />
-        <h6>Akses Menu</h6>
         <div class="row g-3">
           <div class="col-xl-12 col-lg-12">
             <div class="row">
-              <?php foreach ($menu as $m) : ?>
-              <div class="col-xl-3 col-lg-3 col-md-3 col-sm-4 col-xs-6 mb-3">
-                <?php if ($m['tipe']==1) { ?>
-                  <div class="mb-2"><?=$m['nama_menu'];?></div>
-                  <?php $subMenu = $this->menu->getSubMenu('',$m['menu_id']); ?>
-                  <?php foreach ($subMenu as $sm) : ?>
-                  <?php if ($sm['tipe']==1) { ?>
-                  <div class="pe-4 ms-4 pt-1">
-                    <div class="mb-2"><?=$sm['nama_menu'];?></div>
-                    <?php $subMenu = $this->menu->getSubMenu('',$sm['menu_id']); ?>
-                    <?php foreach ($subMenu as $smx) : ?>
-                    <div class="form-check form-check-primary">
-                      <label class="form-check-label">
-                        <input class="form-check-input" type="checkbox" name="roles[]" value="<?=$sm['menu_id']."~".$smx['menu_id']?>" />
-                        <?=$smx['nama_menu']?>
-                      </label>
-                    </div>
-                    <?php endforeach; ?>
-                  </div>
-                  <?php } else { ?>
-                  <div class="form-check form-check-primary">
-                    <label class="form-check-label">
-                      <input class="form-check-input" type="checkbox" name="roles[]" value="<?=$m['menu_id']."~".$sm['menu_id']?>" />
-                      <?=$sm['nama_menu']?>
-                    </label>
-                  </div>
-                  <?php } ?>
+              <?php foreach ($actions as $act) : ?>
+                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-4 col-xs-6 mb-3 flex flex-col gap-3 border-l first:border-l-0 border-black p-3">
+                  <?php foreach ($act as $x) : ?>
+                      <div class="form-check form-check-primary">
+                        <label class="form-check-label">
+                          <input class="form-check-input" type="checkbox" name="roles[]" value="<?= $x['directory'] == '' ? $x['class'].'/'.$x['method'] : $x['directory'].'/'.$x['class'].'/'.$x['method'] ?>" />
+                          <?= $x['description'] ?> (<?= $x['directory'] == '' ? $x['class'].'/'.$x['method'] : $x['directory'].'/'.$x['class'].'/'.$x['method'] ?>)
+                        </label>
+                      </div>
                   <?php endforeach; ?>
-                <?php } else if ($m['tipe']==2) { ?>
-                  <div class="form-check form-check-primary">
-                    <label class="form-check-label">
-                      <input class="form-check-input" type="checkbox" name="roles[]" value="<?=$m['menu_id']."~".$m['menu_id']?>" />
-                      <?=$m['nama_menu'];?>
-                    </label>
-                  </div>
-                <?php } ?>
-              </div>
+                </div>
               <?php endforeach; ?>
             </div>
           </div>

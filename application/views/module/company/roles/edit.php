@@ -30,7 +30,7 @@
                   <?php foreach ($act as $x) : ?>
                       <div class="form-check form-check-primary">
                         <label class="form-check-label">
-                          <input <?= in_array($x['directory'].'/'.$x['class'].'/'.$x['method'],$slugs) || in_array($x['class'].'/'.$x['method'],$slugs) ? 'checked' : '' ?> onChange="onChg(this)" class="form-check-input" type="checkbox" name="roles[]" value="<?= $x['directory'] == '' ? $x['class'].'/'.$x['method'] : $x['directory'].'/'.$x['class'].'/'.$x['method'] ?>" />
+                          <input <?= in_array($x['directory'].'/'.$x['class'].'/'.$x['method'],$slugs) || in_array($x['class'].'/'.$x['method'],$slugs) ? 'checked' : '' ?> class="form-check-input" type="checkbox" name="roles[]" value="<?= $x['directory'] == '' ? $x['class'].'/'.$x['method'] : $x['directory'].'/'.$x['class'].'/'.$x['method'] ?>" />
                           <?= $x['description'] ?> (<?= $x['directory'] == '' ? $x['class'].'/'.$x['method'] : $x['directory'].'/'.$x['class'].'/'.$x['method'] ?>)
                         </label>
                       </div>
@@ -44,34 +44,7 @@
           <a href="javascript:window.history.back();" class="btn btn-label-secondary me-sm-3 me-1">Batal</a>
           <button type="submit" class="btn btn-primary">Simpan Data</button>
         </div>
-        <input name="uncheck" type="hidden" class="p-3 border-2 border-black rounded-md" id="target">
       </form>
     </div>
   </div>
 </div>
-
-<script>
-function onChg(checkbox){
-  var target = document.getElementById('target');
-  var value = target.value
-    if (!checkbox.checked) {
-      if(target.value == ''){
-        target.value = checkbox.value.split('~')[1];
-      }
-      else{ 
-        target.value = `${target.value}/${checkbox.value.split('~')[1]}`;
-      }
-    }
-    else{
-        if(target.value !== ''){
-          if(target.value.includes(`/${checkbox.value}`)){
-            target.value = target.value.replace(`/${checkbox.value.split('~')[1]}`, '');
-          }
-          else{
-            target.value = target.value.replace(`${checkbox.value.split('~')[1]}`, '');
-            target.value = target.value.replace(`/`, '');
-          }
-        }                                                                                                                                                                                       
-    }
-}
-</script>

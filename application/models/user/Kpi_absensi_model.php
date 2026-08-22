@@ -465,7 +465,7 @@ class Kpi_absensi_model extends CI_Model
      * @param  int $company_id
      * @return array
      */
-    public function get_all_pegawai($company_id,$division,$keyword){
+    public function get_all_pegawai($company_id, $division = 'all', $keyword = 'all'){
         if($division != 'all'){
             if($keyword != 'all'){
                 return $this->db->query(

@@ -1,4 +1,5 @@
 <?php
+
 defined('BASEPATH') or exit('No direct script access allowed');
 
 class MY_Controller extends CI_Controller {
@@ -6,32 +7,33 @@ class MY_Controller extends CI_Controller {
     public function __construct() {
         parent::__construct();
 
-       
+        $allowed_slugs = [];
 
-        // 2. Ambil Segmen URL/Route Saat Ini
-        $directory = $this->router->directory;
-        $class     = $this->router->class;
-        $method    = $this->router->method;
-
-        $reflection = new ReflectionMethod($this, $method);
-
+        $directory      = $this->router->directory;
+        $class          = $this->router->class;
+        $method         = $this->router->method;
+        $reflection     = new ReflectionMethod($this, $method);
         $skipPermission = !empty($reflection->getAttributes(SkipPermission::class));
+
+        if($this->session->userdata('role_id') == '1' || $this->session->userdata('role_id') == '16') return;
 
         if ($skipPermission) return;
 
         if (!$this->session->userdata('u_id')) redirect('auth');
 
-        // 3. Susun Format Current Slug (Handling Sub-folder & Root)
+        $roleId = $this->session->userdata('role_id');
+
+        $actions = $this->db->query("select * from role_actions where role_id = ?",[$roleId])->result_array();
+
+        foreach($actions as $act) $allowed_slugs[] = $act['slug'];
+        
+
         $current_slug = $directory.$class.'/'.$method;
 
-        // 4. Whitelist Halaman Bebas Akses (Tanpa Perlu Cek Permission)
         $whitelisted_slugs = [
           'dashboard/index',
           'auth/logout'
         ];
-
-        // 5. Validasi Akses
-        $allowed_slugs = $this->session->userdata('slugs') ;
 
         if(!in_array($current_slug,$whitelisted_slugs) && !in_array($current_slug,$allowed_slugs)){
           show_error('Anda tidak memiliki hak akses untuk membuka halaman ini.', 403, '403 Forbidden - Akses Ditolak');
