@@ -97,14 +97,20 @@ class Roles extends CI_Controller {
     }
 
     public function edit($id = null) {
-        if ($id==null) { redirect('user/company/roles'); }
+        if ($id==null) redirect('user/company/roles');
+        
         $check = $this->db->get_where('m_role', ['role_id' => $id]);
+
+        $actions = $this->db->query("select * from role_actions where role_id = '$id'")->result_array();
+
+        $slugs = array_column($actions, 'slug');
+        
         $actions = $this->db->query("select * from actions")->result_array();
+        
         $grouped_actions = array_reduce($actions, function ($result, $item) {
           $result[$item['directory']][] = $item;
           return $result;
         }, []);
-
 
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Perusahaan';
@@ -114,8 +120,9 @@ class Roles extends CI_Controller {
         $data['auth']       = authUser();
         $data['actions']    = $grouped_actions;
 
-        $data['menu'] = $this->menu->getMenu();
-        $data['edit'] = $check->row_array();
+        $data['menu']       = $this->menu->getMenu();
+        $data['edit']       = $check->row_array();
+        $data['slugs']      = $slugs;
 
         $this->load->view('templates/header', $data);
         $this->load->view('templates/sidemenu', $data);
@@ -126,26 +133,14 @@ class Roles extends CI_Controller {
     }
 
     public function edit_proses($id = null) {
-        
-
         if($id==1){
             $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-danger p-cg" role="alert">Jabatan Super Admin ini tidak bisa diedit ya.</div></div>');
             redirect('company/roles');
         }
         else{
-            if ($id==null){ 
-                redirect('company/roles'); 
-            }
-
-            $check = $this->db->get_where('m_role', ['role_id' => $id,'is_del' => 'n']);
-
-            if($check->num_rows()==0) { 
-                $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-danger p-cg" role="alert">Data tidak ditemukan.</div></div>');
-                redirect('company/roles'); 
-            }
+            if($id==null) redirect('company/roles'); 
+          
             
-            $unama  = $this->input->post('nama');
-
             $this->form_validation->set_rules('nama', 'Nama', 'trim|required|xss_clean|htmlspecialchars');
             $this->form_validation->set_rules('status', 'Status', 'trim|required|xss_clean|htmlspecialchars');
             $this->form_validation->set_rules('roles[]', 'Menu', 'trim|xss_clean|htmlspecialchars');
@@ -153,24 +148,53 @@ class Roles extends CI_Controller {
             if ($this->form_validation->run() == false) {
                 $this->session->set_flashdata('message', '<div class="alert alert-danger p-cg" role="alert">'.validation_errors().'</div>');
                 redirect('company/roles/edit/'.$id);
-            } 
-            else{
-                $companyId = $this->session->userdata('company_id');
-                
-                foreach($this->input->post('roles') as $role){
-                    $r = explode("~", $role);
-                    $menu_id = $r[1];
-                    $exist = $this->db->get_where('m_role_access', ['company_id' => $companyId, 'id_role' => $id,'id_menu' => $menu_id])->num_rows();
-                    if($exist<1) $this->db->query("INSERT INTO m_role_access (company_id,id_role,id_menu) VALUES ('$companyId','$id', '$menu_id')");
-                }
-
-                foreach(explode("/",$this->input->post('uncheck')) as $role){
-                    $this->db->query("DELETE FROM m_role_access WHERE company_id = '$companyId' AND id_role = '$id' AND id_menu = '$role'");
-                }
-
-                $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-success p-cg" role="alert">Data berhasil disimpan.</div></div>');
-                redirect('company/roles');
             }
+            else{
+                $nama = $this->input->post('nama');
+                $status = $this->input->post('status');
+                $params = ['nama_role' => $nama,'is_status' => $status];
+                $this->db->where('role_id', $id);
+                $this->db->update('m_role', $params);
+                $this->db->where('role_id', $id);
+                $this->db->delete('role_actions');
+              
+                $roles = $this->input->post('roles') ?? [];
+
+                foreach($roles as $role){
+                  $this->db->insert('role_actions',[
+                    'role_id' => $id,
+                    'slug' => $role
+                  ]);
+                }
+               
+                redirect(
+                    'company/roles'
+                );
+                
+            }
+            
+            
+            // if ($this->form_validation->run() == false) {
+            //     $this->session->set_flashdata('message', '<div class="alert alert-danger p-cg" role="alert">'.validation_errors().'</div>');
+            //     redirect('company/roles/edit/'.$id);
+            // } 
+            // else{
+            //     $companyId = $this->session->userdata('company_id');
+                
+            //     foreach($this->input->post('roles') as $role){
+            //         $r = explode("~", $role);
+            //         $menu_id = $r[1];
+            //         $exist = $this->db->get_where('m_role_access', ['company_id' => $companyId, 'id_role' => $id,'id_menu' => $menu_id])->num_rows();
+            //         if($exist<1) $this->db->query("INSERT INTO m_role_access (company_id,id_role,id_menu) VALUES ('$companyId','$id', '$menu_id')");
+            //     }
+
+            //     foreach(explode("/",$this->input->post('uncheck')) as $role){
+            //         $this->db->query("DELETE FROM m_role_access WHERE company_id = '$companyId' AND id_role = '$id' AND id_menu = '$role'");
+            //     }
+
+                // $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-success p-cg" role="alert">Data berhasil disimpan.</div></div>');
+                // redirect('company/roles');
+            // }
         }
     }
 

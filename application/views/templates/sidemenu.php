@@ -9,8 +9,8 @@
             <a href="<?=base_url('dashboard');?>" class="app-brand-link">
               <img src="<?=base_url('assets/temp/assets/logo/client/logo_5.png');?>" width="50">
               <p class="ml-3 text-lg font-bold text-slate-700">
-  Leryn <span class="text-blue-600">Absensi</span>
-</p>
+                Leryn <span class="text-blue-600">Absensi</span>
+              </p>
             </a>
 
             <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto">

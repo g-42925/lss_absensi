@@ -50,6 +50,9 @@ class Auth extends CI_Controller {
             if ($user['is_status']=='y') {
                 if (password_verify($password, $user['password'])) {
                     $role = $this->db->query("select * from m_role where role_id = ?",[$user['role_id']])->row_array();
+                    $actions = $this->db->query("select * from role_actions where role_id = ?",$user['role_id'])->result_array();
+                    
+                    $slugs = [];
 
                     $data = [
                         'u_id'          => $user['user_id'],
@@ -61,8 +64,21 @@ class Auth extends CI_Controller {
                         'position_id'   => $user['position_id'],
                         'login_expired' => time() + $rememberDuration
                     ];
-                    $this->session->set_userdata($data);
-                    redirect('auth');
+
+                    foreach($actions as $act){
+                      $slugs[] = $act[
+                        'slug'
+                      ];
+                    }
+
+                    $data['slugs'] = $slugs;
+
+                    $this->session->set_userdata(
+                        $data
+                    );
+                    redirect(
+                        'auth'
+                    );
                 } 
                 else {
                     $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">Kata sandi tidak sesuai. "'.$password.'" </div>');

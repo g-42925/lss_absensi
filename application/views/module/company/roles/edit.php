@@ -26,16 +26,16 @@
           <div class="col-xl-12 col-lg-12">
             <div class="row">
               <?php foreach ($actions as $act) : ?>
-                <?php foreach ($act as $x) : ?>
-                  <div class="col-xl-3 col-lg-3 col-md-3 col-sm-4 col-xs-6 mb-3">
-                       <div class="form-check form-check-primary">
+                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-4 col-xs-6 mb-3 flex flex-col gap-3 border-l first:border-l-0 border-black p-3">
+                  <?php foreach ($act as $x) : ?>
+                      <div class="form-check form-check-primary">
                         <label class="form-check-label">
-                          <input onChange="onChg(this)" class="form-check-input" type="checkbox" name="roles[]" value="<?=$x['id']."~".$x['id']?>" />
-                          <?=$x['description']?>
+                          <input <?= in_array($x['directory'].'/'.$x['class'].'/'.$x['method'],$slugs) || in_array($x['class'].'/'.$x['method'],$slugs) ? 'checked' : '' ?> onChange="onChg(this)" class="form-check-input" type="checkbox" name="roles[]" value="<?= $x['directory'] == '' ? $x['class'].'/'.$x['method'] : $x['directory'].'/'.$x['class'].'/'.$x['method'] ?>" />
+                          <?= $x['description'] ?> (<?= $x['directory'] == '' ? $x['class'].'/'.$x['method'] : $x['directory'].'/'.$x['class'].'/'.$x['method'] ?>)
                         </label>
                       </div>
-                  </div>
-                <?php endforeach; ?>
+                  <?php endforeach; ?>
+                </div>
               <?php endforeach; ?>
             </div>
           </div>

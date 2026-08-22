@@ -2,7 +2,7 @@
 
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Profile extends CI_Controller {
+class Profile extends MY_Controller {
     public $email;
     public $session;
     public $form_validation;
@@ -26,7 +26,6 @@ class Profile extends CI_Controller {
     }
 
     public function index() {
-        
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Perusahaan';
         $data['title']      = 'Profil';
