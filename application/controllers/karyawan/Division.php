@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Division extends MY_Controller {
+class Division extends CI_Controller {
 
     public $email;
     public $session;
