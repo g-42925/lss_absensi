@@ -110,7 +110,6 @@ class Deduction extends MY_Controller{
         $this->load->view('templates/fscript-html-end', $data);
     }
 
-    #[SkipPermission]
     public function delete($deductionId){
       isEditable();
 

@@ -344,8 +344,6 @@ class Req_permission extends MY_Controller {
             $this->load->view('module/req_permission/download_perid', $data);
         }
     }
-
-    #[SkipPermission]
     public function cut($employeeId,$startFrom,$until){
       $check_izin = $this->db->query("SELECT tri.tipe_request FROM tx_request_izin tri JOIN tx_request_izin_pegawai trip ON tri.request_izin_id = trip.request_izin_id WHERE trip.pegawai_id = ? AND tri.tanggal_request = ? AND tri.tanggal_request_end = ?", [$employeeId, $startFrom, $until])->row_array();
 
@@ -407,6 +405,7 @@ class Req_permission extends MY_Controller {
       }
     }
 
+    #[SkipPermission]
     public function print($id){
       $data['data'] = $this->db->query("select * from tx_request_izin tri join tx_request_izin_pegawai trip on tri.request_izin_id = trip.request_izin_id join m_pegawai mp on trip.pegawai_id = mp.pegawai_id join position p on p.id = mp.position_id join divisions d on mp.division_id = d.id where tri.request_izin_id = ?",[$id])->row_array();
 

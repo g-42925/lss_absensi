@@ -49,7 +49,8 @@ class Attendance_record extends MY_Controller {
         $this->load->view('templates/footer', $data);
         $this->load->view('templates/fscript-html-end', $data);
     }
-
+    
+    #[SkipPermission]
     public function filter() {        
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Rekap Kehadiran';

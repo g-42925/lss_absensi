@@ -125,7 +125,8 @@ class Console extends CI_Controller{
         'directory' => $this->input->post('directory'),
         'class'        => $this->input->post('class'),
         'method'      => $this->input->post('method'),
-        'description'        => $this->input->post('description'),
+        'description'  => $this->input->post('description'),
+        'feature'    => $this->input->post('feature')
     ]);
     
     echo json_encode(
