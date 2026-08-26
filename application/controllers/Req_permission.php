@@ -128,7 +128,8 @@ class Req_permission extends MY_Controller {
         if ($ukat=='lm' || $ukat=='csh' || $ukat=='tl') {
             $this->form_validation->set_rules('jmasuk', 'Masuk', 'trim|required|xss_clean|htmlspecialchars');
             $this->form_validation->set_rules('jkeluar', 'Keluar', 'trim|required|xss_clean|htmlspecialchars');
-        }else{
+        }
+        else{
             $this->form_validation->set_rules('jmasuk', 'Masuk', 'trim|xss_clean|htmlspecialchars');
             $this->form_validation->set_rules('jkeluar', 'Keluar', 'trim|xss_clean|htmlspecialchars');
         }

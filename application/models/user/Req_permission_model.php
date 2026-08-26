@@ -342,6 +342,8 @@ class Req_permission_model extends CI_Model {
 
         $companyId = $this->session->userdata('company_id');
 
+        $status = $this->db->query("select * from employee_leave_balance where employee_id = ?",[$this->input->post('idp')[0]])->row_array();
+
         $cek = $this->db->query("SELECT * FROM tx_request_izin WHERE request_izin_id='$id'")->row_array();
 
         $employee = $this->db->query("select * from m_pegawai where pegawai_id = ?",[$this->input->post('idp')[0]])->row_array();
@@ -359,6 +361,16 @@ class Req_permission_model extends CI_Model {
 
         if($cekimgpdf){
           $this->db->set([
+            'used' => $status['used'] + $difference
+          ]);
+          $this->db->where([
+            'employee_id',
+            $this->input->post('idp')[0]
+          ]);
+          $this->db->update([
+            'employee_leave_balance'
+          ]);
+          $this->db->set([
             'tipe_request'          => $this->input->post('kat'),
             'tanggal_request'       => $this->input->post('tgl1'),
             'tanggal_request_end'   => $tglakh,
@@ -374,6 +386,16 @@ class Req_permission_model extends CI_Model {
           ]); 
         }
         else{
+          $this->db->set([
+            'used' => $status['used'] + $difference
+          ]);
+          $this->db->where([
+            'employee_id',
+            $this->input->post('idp')[0]
+          ]);
+          $this->db->update([
+            'employee_leave_balance'
+          ]);
           $this->db->set([
             'tipe_request'          => $this->input->post('kat'),
             'tanggal_request'       => $this->input->post('tgl1'),

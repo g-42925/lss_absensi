@@ -103,7 +103,7 @@ class Mobile extends CI_Controller{
   
   function leavelist($pegawaiId){
     $status = $this->db->query("select * from employee_leave_balance where employee_id = ? order by id desc limit 1",[$pegawaiId])->row_array();
-    $all = $this->db->query("SELECT * FROM tx_request_izin_pegawai x JOIN tx_request_izin y ON x.request_izin_id = y.request_izin_id WHERE x.pegawai_id = ? and (y.tipe_request = 'c' or y.tipe_request = 's') and tanggal_request between ? and ? order by y.created_at desc",[$pegawaiId,$status['from'], $status['to']])->result_array();
+    $all = $this->db->query("SELECT * FROM tx_request_izin_pegawai x JOIN tx_request_izin y ON x.request_izin_id = y.request_izin_id WHERE x.pegawai_id = ? and (y.tipe_request = 'c' or y.tipe_request = 's') and x.tanggal_request between ? and ? order by y.created_at desc",[$pegawaiId,$status['from'], $status['to']])->result_array();
     
     http_response_code(200);
 
@@ -2552,7 +2552,7 @@ function login(){
 
   public function cshList($pegawaiId){
     $status = $this->db->query("select * from employee_leave_balance where employee_id = ? order by id desc limit 1",[$pegawaiId])->row_array();
-    $r3 = $this->db->query("select * from exception where employee_id = ? and (type='Cuti pulang' or type='Cuti setengah hari') and date between ? and ? order by created_at desc ",[$pegawaiId,date('Y-m-d'),$status['from'],$status['to']])->result_array();
+    $r3 = $this->db->query("select * from exception where employee_id = ? and (type='Cuti pulang' or type='Cuti setengah hari') and date between ? and ? order by created_at desc ",[$pegawaiId,$status['from'],$status['to']])->result_array();
 
     http_response_code(200);
 

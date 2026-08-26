@@ -111,15 +111,18 @@ class Except extends MY_Controller {
       $this->db->trans_begin(); // to start db transaction
 
       $status = $this->input->post('status');
+
       
       $exception = $this->db->query("select * from exception where id = ?",[$id])->row_array();
       $employee = $this->db->query("select * from m_pegawai where pegawai_id = ?",[$exception['employee_id']])->row_array();
 
+      $leaveStatus = $this->db->query("select * from employee_leave_balance where employee_id = ? order by id desc",[$exception['employee_id']])->row_array();
+
       if($status == "1" && $exception['is_csh']){
         if($employee['jumlah_cuti'] >= 0.5){
-          $this->db->set(['jumlah_cuti' => $employee['jumlah_cuti'] - 0.5]);
+          $leaveStatus->db->set(['used', $leaveStatus['used'] - 0.5]);
           $this->db->where(['pegawai_id' => $employee['pegawai_id']]);
-          $this->db->update('m_pegawai');
+          $this->db->update('employee_leave_balance');
         }
         else{
           if (date('m') === '02') {

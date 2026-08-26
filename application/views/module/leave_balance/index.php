@@ -1,19 +1,16 @@
 <div class="container-xxl flex-grow-1 container-p-y">
   <div class="card">
     <div class="card-header border-bottom">
-      <div class="d-flex justify-content-between align-items-center">
-        <h5 class="card-title mb-0"><?=$namalabel;?></h5>
-      </div>
       <form method="get" action="<?= site_url('leave_balance') ?>" class="row mt-3 g-2">
         <div class="col-xl-3 col-lg-3 col-md-4 col-sm-12">
-            <select name="divisionId" class="form-select select2">
-                <option value="all">Semua Divisi</option>
-                <?php foreach ($divisions as $row): ?>
-                  <option <?= (isset($div) && $div == $row['id']) ? 'selected':'' ?> value="<?= $row['id']; ?>">
-                    <?= $row['division_name']; ?>
-                  </option>
-                <?php endforeach; ?>
-            </select>
+          <select name="divisionId" class="form-select select2">
+              <option value="all">Semua Divisi</option>
+              <?php foreach ($divisions as $row): ?>
+                <option <?= (isset($div) && $div == $row['id']) ? 'selected':'' ?> value="<?= $row['id']; ?>">
+                  <?= $row['division_name']; ?>
+                </option>
+              <?php endforeach; ?>
+          </select>
         </div>
         <div class="col-xl-3 col-lg-3 col-md-4 col-sm-12">
             <input type="text" name="name" value="<?= isset($name) ? $name : '' ?>" class="form-control" placeholder="Nama Karyawan" />
