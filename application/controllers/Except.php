@@ -121,7 +121,7 @@ class Except extends MY_Controller {
       if($status == "1" && $exception['is_csh']){
         if($employee['jumlah_cuti'] >= 0.5){
           $this->db->set(['used' => $leaveStatus['used'] - 0.5]);
-          $this->db->where('pegawai_id', $employee['pegawai_id']);
+          $this->db->where('employee_id', $employee['pegawai_id']);
           $this->db->update('employee_leave_balance');
         }
         else{
