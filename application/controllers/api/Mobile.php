@@ -102,92 +102,28 @@ class Mobile extends CI_Controller{
   }
   
   function leavelist($pegawaiId){
-    $differencePendingDays = [];
-    $differenceApprovedDays = [];
-    $r1 = $this->db->query("SELECT * FROM m_pegawai WHERE pegawai_id = ?", array($pegawaiId))->row_array();
+    $status = $this->db->query("select * from employee_leave_balance where employee_id = ? order by id desc limit 1",[$pegawaiId])->row_array();
+    $all = $this->db->query("SELECT * FROM tx_request_izin_pegawai x JOIN tx_request_izin y ON x.request_izin_id = y.request_izin_id WHERE x.pegawai_id = ? and (y.tipe_request = 'c' or y.tipe_request = 's') and tanggal_request between ? and ? order by y.created_at desc",[$pegawaiId,$status['from'], $status['to']])->result_array();
     
-    
-    
-    $all = $this->db->query("SELECT * 
-        FROM tx_request_izin_pegawai x 
-        JOIN tx_request_izin y 
-          ON x.request_izin_id = y.request_izin_id 
-        WHERE x.pegawai_id = ? and (y.tipe_request = 'c' or y.tipe_request = 's') order by y.created_at desc",
-        [$pegawaiId]
-    )->result_array();
-    
-    $pending = $this->db->query("SELECT * 
-        FROM tx_request_izin_pegawai x 
-        JOIN tx_request_izin y 
-          ON x.request_izin_id = y.request_izin_id 
-        WHERE x.pegawai_id = ? and (y.tipe_request = 'c' or y.tipe_request = 's') and is_status = '0' order by y.created_at desc",
-        [$pegawaiId]
-    )->result_array();
-    
-    
-    $exceptionPending = $this->db->query("SELECT * 
-        FROM exception where employee_id = ? and type='Cuti setengah hari' and status = '0'",
-        [$pegawaiId]
-    )->num_rows();
+    http_response_code(200);
 
-    $approved = $this->db->query("SELECT * 
-        FROM tx_request_izin_pegawai x 
-        JOIN tx_request_izin y 
-          ON x.request_izin_id = y.request_izin_id 
-        WHERE x.pegawai_id = ? and (y.tipe_request = 'c' or y.tipe_request = 's') and is_status = '1' order by y.created_at desc",
-        [$pegawaiId]
-    )->result_array();
-    
-    $exception = $this->db->query("SELECT * 
-        FROM exception where employee_id = ? and type='Cuti setengah hari' and status = '1'",
-        [$pegawaiId]
-    )->num_rows();
-    
+    $result = [
+        "list"   => $all,
+        "quota"  => (double) $status['quota'],
+        "used"   => (double) $status['used'],
+    ];
 
-    foreach($pending as $f){
-        $tanggalAwal = new DateTime($f['tanggal_request']);
-        $tanggalAkhir = new DateTime($f['tanggal_request_end']);
-        $difference = $tanggalAwal->diff($tanggalAkhir)->days+1;
-        $differencePendingDays[] = $difference;
-    }
-    
-
-    foreach($approved as $f){
-        $tanggalAwal = new DateTime($f['tanggal_request']);
-        $tanggalAkhir = new DateTime($f['tanggal_request_end']);
-        $difference = $tanggalAwal->diff($tanggalAkhir)->days+1;
-        $differenceApprovedDays[] = $difference;
-    }
-    
-
-    if($r1){
-        http_response_code(200);
-
-        $result = [
-            "list"   => $all,
-            "quota"  => $r1['jumlah_cuti'] - array_sum($differencePendingDays) - ($exceptionPending / 2),
-            "used"   => array_sum($differencePendingDays) + array_sum($differenceApprovedDays) + ($exception / 2)
-        ];
-
-        echo json_encode([
-            "success" => true,
-            "result"  => $result
-        ]);
-    }
-    else{
-        http_response_code(200);
-
-        echo json_encode([
-            "success" => false,
-        ]);
-    }
+    echo json_encode([
+        "success" => true,
+        "result"  => $result
+    ]);
 
   }
 
   function xleavelist($pegawaiId){
     $differencesPending = [];
     $differencesApproved = [];
-    
+    $status = $this->db->query("select * from employee_leave_balance where employee_id = ? order by id desc limit 1",[$pegawaiId])->row_array();
     $r1 = $this->db->query("SELECT * FROM m_pegawai WHERE pegawai_id = ?", array($pegawaiId))->row_array();
     $r2 = $this->db->query("SELECT * 
         FROM tx_request_izin_pegawai x 
@@ -2615,69 +2551,24 @@ function login(){
   }
 
   public function cshList($pegawaiId){
-    $differencesPending = [];
-    $differencesApproved = [];
+    $status = $this->db->query("select * from employee_leave_balance where employee_id = ? order by id desc limit 1",[$pegawaiId])->row_array();
+    $r3 = $this->db->query("select * from exception where employee_id = ? and (type='Cuti pulang' or type='Cuti setengah hari') and date between ? and ? order by created_at desc ",[$pegawaiId,date('Y-m-d'),$status['from'],$status['to']])->result_array();
+
+    http_response_code(200);
+
+    $result = [
+        "list"   => $r3,
+        "quota"  => (float) $status['quota'], // quota real dikurangi pending (terkunci)
+        "used"   => (float) $status['used'], // hanya approved
+        "locked" => 0   // pending (opsional, biar user tahu ada cuti terpending)
+    ];
+
+    echo json_encode([
+        "success" => true,
+        "result"  => $result
+    ]);
     
-    $r1 = $this->db->query("SELECT * FROM m_pegawai WHERE pegawai_id = ?", array($pegawaiId))->row_array();
-    $r3 = $this->db->query("select * from exception where employee_id = ? and date = ? and (type='Cuti pulang' or type='Cuti setengah hari') order by created_at desc ",[$pegawaiId,date('Y-m-d')])->result_array();
-    $r2 = $this->db->query("SELECT * 
-        FROM tx_request_izin_pegawai x 
-        JOIN tx_request_izin y 
-          ON x.request_izin_id = y.request_izin_id 
-        WHERE x.pegawai_id = ? AND y.tipe_request = 'c'",
-        array($pegawaiId)
-    )->result_array();
-
-    
-
-    // Filter pending (status 0)
-    $filteredPending = array_filter($r2, function($row) {
-        return $row['is_status'] == 0;
-    });
-
-    // Filter approved (status 1)
-    $filteredApproved = array_filter($r2, function($row) {
-        return $row['is_status'] == 1;
-    });
-
-    // Hitung hari pending
-    foreach($filteredPending as $f){
-        $tanggalAwal = new DateTime($f['tanggal_request']);
-        $tanggalAkhir = new DateTime($f['tanggal_request_end']);
-        $difference = $tanggalAwal->diff($tanggalAkhir)->days+1;
-        $differencesPending[] = $difference;
-    }
-
-    // Hitung hari approved
-    foreach($filteredApproved as $f){
-        $tanggalAwal = new DateTime($f['tanggal_request']);
-        $tanggalAkhir = new DateTime($f['tanggal_request_end']);
-        $difference = $tanggalAwal->diff($tanggalAkhir)->days+1;
-        $differencesApproved[] = $difference;
-    }
-    
-    if($r1){
-        http_response_code(200);
-
-        $result = [
-            "list"   => $r3,
-            "quota"  => $r1['jumlah_cuti'] - array_sum($differencesPending), // quota real dikurangi pending (terkunci)
-            "used"   => array_sum($differencesApproved) + array_sum($differencesPending), // hanya approved
-            "locked" => array_sum($differencesPending)   // pending (opsional, biar user tahu ada cuti terpending)
-        ];
-
-        echo json_encode([
-            "success" => true,
-            "result"  => $result
-        ]);
-    }
-    else{
-        http_response_code(200);
-
-        echo json_encode([
-            "success" => false,
-        ]);
-    }
+   
   }
 
   public function log($empId){

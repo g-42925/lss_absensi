@@ -15,7 +15,7 @@ class MY_Controller extends CI_Controller {
         $reflection     = new ReflectionMethod($this, $method);
         $skipPermission = !empty($reflection->getAttributes(SkipPermission::class));
 
-        if($this->session->userdata('role_id') == '1' || $this->session->userdata('role_id') == '16') return;
+        if($this->session->userdata('role_id') == '1') return;
 
         if ($skipPermission) return;
 

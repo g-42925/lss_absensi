@@ -71,10 +71,6 @@
             </select>
           </div>
           <div class="col-xl-6 col-md-6 col-sm-6 col-xs-6">
-            <label class="form-label">Jumlah Cuti</label>
-            <input type="text" class="form-control" name="jumlahCuti" placeholder="..." />
-          </div>
-          <div class="col-xl-6 col-md-6 col-sm-6 col-xs-6">
             <label class="form-label" for="multicol-country">Status pegawai<i class="text-danger">*</i></label>
             <select class="select2 form-select" name="statusPegawai" onchange="onStatusChange(this.value)" required>
               <option value="contract">Contract</option>
