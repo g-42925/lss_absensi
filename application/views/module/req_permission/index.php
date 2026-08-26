@@ -38,7 +38,6 @@
             <th>Photo</th>
             <th>Reason</th>
             <th>Status</th>
-            <th>Remain</th>
             <th class="text-end w-s-n">...</th>
           </tr>
         </thead>
@@ -72,7 +71,6 @@ foreach ($datas as $row):
             <td class="w-s-n">
               <?= $row['is_status']?>
             </td>
-            <td><?= $row['remain'] == '0' ? '0':$row['remain'] ?></td>
             <td align="right">
               <a href="<?= base_url('req_permission/edit/' . $row['request_izin_id']); ?>" class="btn p-1">
                 <i class="ti ti-edit"></i>

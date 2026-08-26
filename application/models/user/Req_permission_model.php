@@ -381,7 +381,6 @@ class Req_permission_model extends CI_Model {
             'approvedBy'            => $approvedBy,
             'jumlah_cuti'           => $jumlahhari+1,
             'file_dokumen'          => $filex,
-            'remain'                => $remain ,
             'image'                 => $photo,
           ]); 
         }
@@ -407,7 +406,6 @@ class Req_permission_model extends CI_Model {
             'approvedBy'            => $approvedBy,
             'jumlah_cuti'           => $jumlahhari+1,
             'file_dokumen'          => $filex,
-            'remain'                => $remain,
           ]);           
         }        
 
