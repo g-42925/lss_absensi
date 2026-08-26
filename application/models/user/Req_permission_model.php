@@ -363,13 +363,13 @@ class Req_permission_model extends CI_Model {
           $this->db->set([
             'used' => $status['used'] + $difference
           ]);
-          $this->db->where([
+          $this->db->where(
             'employee_id',
             $this->input->post('idp')[0]
-          ]);
-          $this->db->update([
+          );
+          $this->db->update(
             'employee_leave_balance'
-          ]);
+          );
           $this->db->set([
             'tipe_request'          => $this->input->post('kat'),
             'tanggal_request'       => $this->input->post('tgl1'),
@@ -389,13 +389,13 @@ class Req_permission_model extends CI_Model {
           $this->db->set([
             'used' => $status['used'] + $difference
           ]);
-          $this->db->where([
+          $this->db->where(
             'employee_id',
             $this->input->post('idp')[0]
-          ]);
-          $this->db->update([
+          );
+          $this->db->update(
             'employee_leave_balance'
-          ]);
+          );
           $this->db->set([
             'tipe_request'          => $this->input->post('kat'),
             'tanggal_request'       => $this->input->post('tgl1'),
