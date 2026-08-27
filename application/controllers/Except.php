@@ -116,7 +116,7 @@ class Except extends MY_Controller {
       $exception = $this->db->query("select * from exception where id = ?",[$id])->row_array();
       $employee = $this->db->query("select * from m_pegawai where pegawai_id = ?",[$exception['employee_id']])->row_array();
 
-      $leaveStatus = $this->db->query("select * from employee_leave_balance where employee_id = ? order by id desc",[$exception['employee_id']])->row_array();
+      $leaveStatus = $this->db->query("select * from employee_leave_balance where employee_id = ? order by id desc limit 1",[$exception['employee_id']])->row_array();
 
       if($status == "1" && $exception['is_csh']){
         if($employee['jumlah_cuti'] >= 0.5){
