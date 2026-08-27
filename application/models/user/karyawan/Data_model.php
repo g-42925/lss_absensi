@@ -151,6 +151,27 @@ class Data_model extends CI_Model {
             );
         }
 
+        if($this->input->post('statusPegawai') === 'contract'){
+          $this->db->insert('employee_leave_balance',[
+            'id' => uniqid(),
+            'employee_id' => $newPegawaiId,
+            'from' => $this->input->post('contract_start_date'),
+            'to' => $this->input->post('contract_end_date'),
+            'quota' => 0,
+            'used' => 0
+          ]);
+        }
+        else{
+          $this->db->insert('employee_leave_balance',[
+            'id' => uniqid(),
+            'employee_id' => $newPegawaiId,
+            'from' => date('Y-m-d'),
+            'to' => date('Y-m-d', strtotime('+1 year -1 day')),
+            'quota' => 0,
+            'used' => 0
+          ]);
+        }
+
 
         if($this->db->trans_status() === FALSE) {
           $this->db->trans_rollback();

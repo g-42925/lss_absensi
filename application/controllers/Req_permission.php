@@ -346,6 +346,7 @@ class Req_permission extends MY_Controller {
         }
     }
     public function cut($employeeId,$startFrom,$until){
+      $status = $this->db->query("select * from employee_leave_balance where employee_id = ? order by id desc limit 1",[$employeeId])->row_array();
       $check_izin = $this->db->query("SELECT tri.tipe_request FROM tx_request_izin tri JOIN tx_request_izin_pegawai trip ON tri.request_izin_id = trip.request_izin_id WHERE trip.pegawai_id = ? AND tri.tanggal_request = ? AND tri.tanggal_request_end = ?", [$employeeId, $startFrom, $until])->row_array();
 
       if (!$check_izin || $check_izin['tipe_request'] !== 's') {
@@ -363,7 +364,7 @@ class Req_permission extends MY_Controller {
 
       $employee = $this->db->query("select * from m_pegawai where pegawai_id = ?",[$employeeId])->row_array();
 
-      if (date('m') === '02') {
+      if(date('m') === '02') {
         $amount = $employee['salary'] / 24;
       }
       else{
@@ -373,27 +374,26 @@ class Req_permission extends MY_Controller {
       $this->db->trans_begin();
 
       foreach ($periode as $tanggal) {
-          if ($employee['jumlah_cuti'] > 0) {
-              $offDaysAmount = $employee['jumlah_cuti'];
-              $data = ['jumlah_cuti' => $offDaysAmount - 1];
-              $this->db->where('pegawai_id', $employeeId);
-              $this->db->update('m_pegawai', $data);
-              $employee['jumlah_cuti'] = $employee['jumlah_cuti'] - 1;
-          } else {
-              $data = [
-                  'deduction_id' => uniqid(),
-                  'employee_id' => $employeeId,
-                  'deduction_type' => 'denda sakit',
-                  'date' => $tanggal->format('Y-m-d'),
-                  'amount' => $amount,
-                  'note' => '...'
-              ];
+        
+        
+        if ($status['quota'] > 0) {
+            $data = ['used' => $status['used'] + 1];
+            $this->db->where('employee_id', $employeeId);
+            $this->db->update('employee_leave_balance', $data);
+        } 
+        else {
+            $data = [
+                'deduction_id' => uniqid(),
+                'employee_id' => $employeeId,
+                'deduction_type' => 'denda sakit',
+                'date' => $tanggal->format('Y-m-d'),
+                'amount' => $amount,
+                'note' => '...'
+            ];
 
-              $this->db->insert('salary_deduction', $data);
-          }
+            $this->db->insert('salary_deduction', $data);
+        }
       }
-
-      
 
       if($this->db->trans_status() === FALSE) {
         $this->db->trans_rollback();

@@ -42,8 +42,10 @@ class Leave_balance extends MY_Controller {
             FROM employee_leave_balance b
             JOIN m_pegawai p ON p.pegawai_id = b.employee_id
             LEFT JOIN divisions d ON d.id = p.division_id
-            WHERE p.company_id = ?
+            WHERE p.company_id = ? and p.is_del = 'n'
         ";
+
+        
         $params = [$companyId];
 
         if (!empty($div) && $div != 'all') {
