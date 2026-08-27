@@ -38,7 +38,6 @@
             <th>Photo</th>
             <th>Reason</th>
             <th>Status</th>
-            <th>Remain</th>
             <th>...</th>
 
           </tr>
@@ -74,9 +73,6 @@
             </td>
             <td class="w-s-n">
               <?= $row['is_status'] ?>
-            </td>
-            <td class="w-s-n">
-              <?= $row['jumlah_cuti'] ?>
             </td>
             <?php if ($status == "csh"): ?>
               <td align="right">
