@@ -1531,6 +1531,15 @@ function login(){
       );
     }     
   }
+  
+  public function claimEdit($id){
+    $json = file_get_contents('php://input');
+    $post = json_decode($json,true);
+    $this->db->where('reimburse_claim_id',$id);
+    $this->db->set(['value' => $post['value'],'photo' => $post['photo']]);
+    $this->db->update('reimburse_claim');
+    echo json_encode(['success' => true]);
+  }
 
   public function makeclaim(){
      $json = file_get_contents('php://input');

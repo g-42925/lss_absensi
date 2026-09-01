@@ -57,6 +57,7 @@ class Auth extends MY_Controller {
 
                     $data = [
                         'u_id'          => $user['user_id'],
+                        'email'         => $user['email_address'],
                         'role_id'       => $user['role_id'],
                         'role_name'     => $role['nama_role'],
                         'permission_id' => $user['permission_id'],

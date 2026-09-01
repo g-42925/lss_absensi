@@ -52,10 +52,10 @@ class Attendance extends MY_Controller {
         $this->load->view('module/attendance/filter', $data);
         $this->load->view('templates/footer', $data);
         $this->load->view('templates/fscript-html-end', $data);
-		}
+	}
 
-        #[SkipPermission]
-        public function filter(){
+    #[SkipPermission]
+    public function filter(){
         $data['htmlpagejs'] = 'none';
         $data['nmenu']      = 'Kehadiran Harian';
         $data['title']      = 'Kehadiran Harian';
