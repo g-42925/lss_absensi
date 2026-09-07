@@ -21,7 +21,7 @@ class Erp extends CI_Controller{
     echo json_encode($employeeList);
   }
   
-  function payroll($erpId){
+  function payroll($erpId,$year,$month){
     $data['filter'] = date('m');
 
     $thpGrandTotal = 0;
@@ -82,8 +82,8 @@ class Erp extends CI_Controller{
     $employees = $this->db->query("select * from m_pegawai where company_id = ? and is_del = 'n'",[$company['id']])->result_array();
 
     foreach ($employees as $index => $emp) {
-      $awalBulan = date('Y-m-01');
-      $akhirBulan = date('Y-m-t');
+      $awalBulan = date($year.'-'.$month.'-'.'01');
+      $akhirBulan = date($year.'-'.$month.'-'.'t');
       $deduction = $this->db->query("select * from salary_deduction where employee_id = $emp[pegawai_id] and date between '$awalBulan' and '$akhirBulan'")->result_array();
       $employees[$index]['deduction'] = $deduction;
     }
@@ -140,8 +140,8 @@ class Erp extends CI_Controller{
     }
 
     foreach ($employees as $index => $emp) {
-      $awalBulan = date('Y-m-01');
-      $akhirBulan = date('Y-m-t');
+      $awalBulan = date($year.'-'.$month.'-'.'01');
+      $akhirBulan = date($year.'-'.$month.'-'.'t');
       $recap = $this->db->query("select * from recap where employee_id = ? and date between ? and ? and required = ?", [$emp['pegawai_id'], $awalBulan, $akhirBulan, true])->result_array();
       $absences = $this->db->query("select * from tx_absensi where pegawai_id = ? and tanggal_absen between ? and ?", [$emp['pegawai_id'], $awalBulan, $akhirBulan])->result_array();
       foreach ($this->db->query("select * from allowance a join employee_allowance ea on a.allowance_id = ea.allowance_id where a.company_id = ? and ea.employee_id = ?", [$company['id'], $emp['pegawai_id']])->result_array() as $idx => $a) {
@@ -207,8 +207,8 @@ class Erp extends CI_Controller{
       $tahun = date('Y');
       $isFebruari = $bulan == 2;
       $isKabisat = checkdate(2, 29, $tahun);
-      $awalBulan = date('Y-m-01');
-      $akhirBulan = date('Y-m-t');
+      $awalBulan = date($year.'-'.$month.'-'.'01');
+      $akhirBulan = date($year.'-'.$month.'-'.'t');
       $recap = $this->db->query("select * from recap where employee_id = ? and date between ? and ? and required = ?", [$emp['pegawai_id'], $awalBulan, $akhirBulan, true])->num_rows();
       $basicIncome = $isFebruari ? ($isKabisat ? $emp['salary'] / 24 : $emp['salary'] / 25) : $emp['salary'] / 26;
 

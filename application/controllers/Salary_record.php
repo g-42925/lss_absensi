@@ -126,7 +126,7 @@ class Salary_record extends MY_Controller
         if ($d['deduction_type'] == 'late penalty') {
           $latePenalty += $d['amount'];
         }
-        if ($d['deduction_type'] == 'mmc') {
+        if ($d['deduction_type'] == 'denda sakit') {
           $sick += $d['amount'];
         }
       }
@@ -361,7 +361,7 @@ class Salary_record extends MY_Controller
         if ($d['deduction_type'] == 'late penalty') {
           $latePenalty += $d['amount'];
         }
-        if ($d['deduction_type'] == 'mmc') {
+        if ($d['deduction_type'] == 'denda sakit') {
           $sick += $d['amount'];
         }
       }
@@ -540,7 +540,7 @@ class Salary_record extends MY_Controller
       if ($d['deduction_type'] == 'late penalty') {
         $latePenalty += $d['amount'];
       }
-      if ($d['deduction_type'] == 'mmc') {
+      if ($d['deduction_type'] == 'denda sakit') {
         $sick += $d['amount'];
       }
     }

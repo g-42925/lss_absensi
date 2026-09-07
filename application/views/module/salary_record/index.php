@@ -25,7 +25,7 @@
     </div>
 
     <!-- Table -->
-    <div class="overflow-hidden rounded-md bg-white shadow">
+    <div class="overflow-x-auto rounded-md bg-white shadow">
       <table class="min-w-full border-collapse">
         
         <!-- Head -->
