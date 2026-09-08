@@ -106,6 +106,9 @@ class Leave_balance extends MY_Controller {
         $employee_ids = $this->input->post('employee_id');
         if (!empty($employee_ids) && is_array($employee_ids)) {
             foreach ($employee_ids as $emp_id) {
+                $this->db->where('employee_id', $emp_id);
+                $this->db->delete('employee_leave_balance');
+
                 $this->db->insert('employee_leave_balance', [
                     'employee_id' => $emp_id,
                     'from' => $this->input->post('from'),
