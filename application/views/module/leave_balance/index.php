@@ -64,6 +64,10 @@
               <a href="<?= site_url('leave_balance/edit/'.$row['id']) ?>" class="btn p-1">
                 <i class="ti ti-edit"></i>
               </a>
+              <!-- renew button -->
+              <a href="<?= site_url('leave_balance/renew/'.$row['employee_id']) ?>" class="btn p-1" onclick="return confirm('Apakah anda yakin ingin mereset sisa cuti karyawan ini?');">
+                <i class="ti ti-refresh"></i>
+              </a>
               <a href="<?= site_url('leave_balance/delete/'.$row['id']) ?>" class="btn p-1" onclick="return confirm('Hapus data ini?');">
                 <i class="ti ti-trash"></i>
               </a>

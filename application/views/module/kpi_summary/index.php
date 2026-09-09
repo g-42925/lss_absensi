@@ -20,8 +20,8 @@
     <div class="card-body pt-3">
       <form method="POST" action="<?= base_url('kpi_summary/index/' . $pegawai['pegawai_id']); ?>"
             class="d-flex align-items-center gap-2 flex-wrap">
-        <label class="fw-semibold mb-0 text-nowrap">Pilih Periode:</label>
-        <select name="bulan" class="form-select" style="width:auto;" required>
+        <label class="fw-semibold mb-0 text-nowrap">Bulan Awal:</label>
+        <select name="bulan_awal" class="form-select" style="width:auto;" required>
           <?php
             $months = [
               1=>'Januari',2=>'Februari',3=>'Maret',4=>'April',
@@ -29,11 +29,23 @@
               9=>'September',10=>'Oktober',11=>'November',12=>'Desember'
             ];
             foreach ($months as $num => $name) {
-              $sel = ($num == $bulan) ? 'selected' : '';
+              $sel = ($num == $bulan_awal) ? 'selected' : '';
               echo "<option value=\"$num\" $sel>$name</option>";
             }
           ?>
         </select>
+        
+        <label class="fw-semibold mb-0 text-nowrap ms-2">Bulan Akhir:</label>
+        <select name="bulan_akhir" class="form-select" style="width:auto;" required>
+          <?php
+            foreach ($months as $num => $name) {
+              $sel = ($num == $bulan_akhir) ? 'selected' : '';
+              echo "<option value=\"$num\" $sel>$name</option>";
+            }
+          ?>
+        </select>
+        
+        <label class="fw-semibold mb-0 text-nowrap ms-2">Tahun:</label>
         <select name="tahun" class="form-select" style="width:auto;" required>
           <?php
             $curr_year = date('Y');
@@ -46,6 +58,12 @@
         <button type="submit" class="btn btn-primary">
           <i class="ti ti-search me-1"></i> Tampilkan
         </button>
+        <a id="btnExportExcel"
+           href="<?= base_url('kpi_summary/export_excel/' . $pegawai['pegawai_id']); ?>?bulan_awal=<?= $bulan_awal; ?>&bulan_akhir=<?= $bulan_akhir; ?>&tahun=<?= $tahun; ?>"
+           class="btn btn-success ms-1"
+           title="Export data periode ini ke Excel (CSV)">
+          <i class="ti ti-file-spreadsheet me-1"></i> Export Excel
+        </a>
       </form>
     </div>
   </div>
@@ -54,7 +72,14 @@
 
   <!-- Period Badge -->
   <div class="mb-3">
-    <h6 class="text-muted mb-0">Periode: <span class="badge bg-label-primary fs-6"><?= $nama_bulan . ' ' . $tahun; ?></span></h6>
+    <?php if ($is_multi_month): ?>
+      <h6 class="text-muted mb-0">
+        Periode: <span class="badge bg-label-primary fs-6"><?= $nama_bulan . ' ' . $tahun; ?></span>
+        <small class="ms-2 text-muted fst-italic">(<?= ($bulan_akhir - $bulan_awal + 1); ?> bulan, agregat)</small>
+      </h6>
+    <?php else: ?>
+      <h6 class="text-muted mb-0">Periode: <span class="badge bg-label-primary fs-6"><?= $nama_bulan . ' ' . $tahun; ?></span></h6>
+    <?php endif; ?>
   </div>
 
   <!-- Score Cards Row -->
@@ -87,10 +112,12 @@
           <?php else: ?>
             <small class="d-block text-muted mt-2">Snapshot tersimpan</small>
           <?php endif; ?>
+          <?php if ($bulan_awal == $bulan_akhir): ?>
           <a href="<?= base_url('kpi_absensi/detail/' . $pegawai['pegawai_id'] . '/' . $bulan . '/' . $tahun); ?>"
              class="btn btn-sm btn-outline-<?= $abs_class ?> mt-3 w-100">
             <i class="ti ti-eye me-1"></i> Lihat Detail Absensi
           </a>
+          <?php endif; ?>
         </div>
       </div>
     </div>
@@ -233,6 +260,133 @@
     </div>
   </div>
 
+  <?php if ($is_multi_month && !empty($kpi_per_bulan)): ?>
+  <!-- Breakdown KPI Per Bulan (hanya tampil saat multi-bulan) -->
+  <div class="row g-4 mb-4">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header border-bottom d-flex align-items-center justify-content-between">
+          <h5 class="card-title mb-0">
+            <i class="ti ti-calendar-month me-2 text-primary"></i>
+            Breakdown KPI Per Bulan &mdash; <?= $nama_bulan . ' ' . $tahun; ?>
+          </h5>
+          <span class="badge bg-label-info"><?= count($kpi_per_bulan); ?> bulan</span>
+        </div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-hover table-bordered align-middle mb-0" id="tblPerBulan">
+              <thead class="table-dark">
+                <tr>
+                  <th class="text-center" style="width:130px;">Bulan</th>
+                  <th class="text-center">Hari Efektif</th>
+                  <th class="text-center">Hadir</th>
+                  <th class="text-center">Alpha</th>
+                  <th class="text-center">Izin</th>
+                  <th class="text-center">Sakit</th>
+                  <th class="text-center">Cuti</th>
+                  <th class="text-center">% Hadir</th>
+                  <th class="text-center">Terlambat</th>
+                  <th class="text-center">SP</th>
+                  <th class="text-center" style="width:105px;">KPI Absensi</th>
+                  <th class="text-center" style="width:105px;">KPI Evaluasi</th>
+                  <th class="text-center" style="width:105px;">Total KPI</th>
+                  <th class="text-center" style="width:70px;">Aksi</th>
+                </tr>
+              </thead>
+              <tbody>
+                <?php foreach ($kpi_per_bulan as $pb): ?>
+                <?php
+                  $pb_tot_class = 'success';
+                  if ($pb['total'] < 50)     $pb_tot_class = 'danger';
+                  elseif ($pb['total'] < 70) $pb_tot_class = 'warning';
+                  elseif ($pb['total'] < 85) $pb_tot_class = 'info';
+
+                  $pb_abs_class = 'success';
+                  if ($pb['kpi_absensi'] < 50)     $pb_abs_class = 'danger';
+                  elseif ($pb['kpi_absensi'] < 70) $pb_abs_class = 'warning';
+                  elseif ($pb['kpi_absensi'] < 85) $pb_abs_class = 'info';
+                ?>
+                <tr>
+                  <td class="text-center fw-semibold">
+                    <span class="badge bg-label-secondary"><?= $pb['nama_bulan'] . ' ' . $pb['tahun']; ?></span>
+                  </td>
+                  <td class="text-center"><?= $pb['hari_kerja_efektif']; ?></td>
+                  <td class="text-center text-success fw-semibold"><?= $pb['hari_hadir']; ?></td>
+                  <td class="text-center <?= $pb['hari_alpha'] > 0 ? 'text-danger fw-semibold' : 'text-muted'; ?>"><?= $pb['hari_alpha']; ?></td>
+                  <td class="text-center"><?= $pb['hari_izin']; ?></td>
+                  <td class="text-center"><?= $pb['hari_sakit']; ?></td>
+                  <td class="text-center"><?= $pb['hari_cuti']; ?></td>
+                  <td class="text-center"><?= number_format($pb['persen_kehadiran'], 1); ?>%</td>
+                  <td class="text-center <?= $pb['jumlah_terlambat'] > 0 ? 'text-warning fw-semibold' : 'text-muted'; ?>"><?= $pb['jumlah_terlambat']; ?>×</td>
+                  <td class="text-center <?= $pb['jumlah_sp'] > 0 ? 'text-danger fw-bold' : 'text-muted'; ?>"><?= $pb['jumlah_sp']; ?></td>
+                  <td class="text-center">
+                    <span class="badge bg-label-<?= $pb_abs_class; ?>"><?= number_format($pb['kpi_absensi'], 2); ?></span>
+                  </td>
+                  <td class="text-center">
+                    <?php if ($pb['kpi_evaluasi'] !== null): ?>
+                      <span class="badge bg-label-warning"><?= number_format($pb['kpi_evaluasi'], 2); ?></span>
+                    <?php else: ?>
+                      <span class="text-muted small">-</span>
+                    <?php endif; ?>
+                  </td>
+                  <td class="text-center">
+                    <span class="badge bg-<?= $pb_tot_class; ?> text-white fs-6"><?= number_format($pb['total'], 2); ?></span>
+                  </td>
+                  <td class="text-center">
+                    <a href="<?= base_url('kpi_summary/index/' . $pegawai['pegawai_id']); ?>"
+                       onclick="setFilter(<?= $pb['bulan']; ?>, <?= $pb['bulan']; ?>, <?= $pb['tahun']; ?>); return false;"
+                       class="btn btn-sm btn-icon btn-outline-primary" title="Lihat bulan ini saja">
+                      <i class="ti ti-eye"></i>
+                    </a>
+                  </td>
+                </tr>
+                <?php endforeach; ?>
+              </tbody>
+              <tfoot class="table-light fw-semibold">
+                <?php
+                  $sum_efektif   = array_sum(array_column($kpi_per_bulan, 'hari_kerja_efektif'));
+                  $sum_hadir     = array_sum(array_column($kpi_per_bulan, 'hari_hadir'));
+                  $sum_alpha     = array_sum(array_column($kpi_per_bulan, 'hari_alpha'));
+                  $sum_izin      = array_sum(array_column($kpi_per_bulan, 'hari_izin'));
+                  $sum_sakit     = array_sum(array_column($kpi_per_bulan, 'hari_sakit'));
+                  $sum_cuti      = array_sum(array_column($kpi_per_bulan, 'hari_cuti'));
+                  $sum_terlambat = array_sum(array_column($kpi_per_bulan, 'jumlah_terlambat'));
+                  $sum_sp        = array_sum(array_column($kpi_per_bulan, 'jumlah_sp'));
+                  $avg_persen    = $sum_efektif > 0 ? ($sum_hadir / $sum_efektif * 100) : 0;
+                ?>
+                <tr>
+                  <td class="text-center"><small class="text-muted">Total / Rata-rata</small></td>
+                  <td class="text-center"><?= $sum_efektif; ?></td>
+                  <td class="text-center text-success"><?= $sum_hadir; ?></td>
+                  <td class="text-center <?= $sum_alpha > 0 ? 'text-danger' : ''; ?>"><?= $sum_alpha; ?></td>
+                  <td class="text-center"><?= $sum_izin; ?></td>
+                  <td class="text-center"><?= $sum_sakit; ?></td>
+                  <td class="text-center"><?= $sum_cuti; ?></td>
+                  <td class="text-center"><?= number_format($avg_persen, 1); ?>%</td>
+                  <td class="text-center"><?= $sum_terlambat; ?>×</td>
+                  <td class="text-center"><?= $sum_sp; ?></td>
+                  <td class="text-center"><span class="badge bg-label-primary"><?= number_format($kpi_absensi_score, 2); ?></span></td>
+                  <td class="text-center"><?= $kpi_evaluasi_score !== null ? '<span class="badge bg-label-warning">' . number_format($kpi_evaluasi_score, 2) . '</span>' : '<span class="text-muted">-</span>'; ?></td>
+                  <td class="text-center">
+                    <?php
+                      $tf_class = 'success';
+                      if ($total_kpi < 50)     $tf_class = 'danger';
+                      elseif ($total_kpi < 70) $tf_class = 'warning';
+                      elseif ($total_kpi < 85) $tf_class = 'info';
+                    ?>
+                    <span class="badge bg-<?= $tf_class; ?> text-white"><?= number_format($total_kpi, 2); ?></span>
+                  </td>
+                  <td></td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <?php endif; ?>
+
   <!-- Detail KPI Evaluasi -->
   <?php if ($kpi_evaluasi): ?>
   <div class="row g-4 mb-4">
@@ -340,7 +494,14 @@
               7=>'Jul',8=>'Agu',9=>'Sep',10=>'Okt',11=>'Nov',12=>'Des'
             ];
           ?>
-          <tr class="align-middle <?= ($r['bulan'] == $bulan && $r['tahun'] == $tahun) ? 'table-active fw-semibold' : ''; ?>">
+          <tr class="align-middle <?php
+            if ($is_multi_month) {
+              // highlight jika bulan ini berada dalam rentang yang sedang ditampilkan
+              echo ($r['bulan'] >= $bulan_awal && $r['bulan'] <= $bulan_akhir && $r['tahun'] == $tahun) ? 'table-active fw-semibold' : '';
+            } else {
+              echo ($r['bulan'] == $bulan && $r['tahun'] == $tahun) ? 'table-active fw-semibold' : '';
+            }
+          ?>">
             <td><?= $no++; ?></td>
             <td>
               <span class="badge bg-label-primary">
@@ -366,7 +527,7 @@
             </td>
             <td>
               <a href="<?= base_url('kpi_summary/index/' . $pegawai['pegawai_id']); ?>"
-                 onclick="setFilter(<?= $r['bulan']; ?>, <?= $r['tahun']; ?>); return false;"
+                 onclick="setFilter(<?= $r['bulan']; ?>, <?= $r['bulan']; ?>, <?= $r['tahun']; ?>); return false;"
                  class="btn btn-sm btn-icon btn-outline-primary" title="Lihat periode ini">
                 <i class="ti ti-eye"></i>
               </a>
@@ -383,20 +544,45 @@
 <!-- / Content -->
 
 <script>
-  function setFilter(bulan, tahun) {
+  function setFilter(bulan_awal, bulan_akhir, tahun) {
     const form = document.querySelector('form[action*="kpi_summary"]');
     if (form) {
-      form.querySelector('[name="bulan"]').value = bulan;
+      form.querySelector('[name="bulan_awal"]').value = bulan_awal;
+      form.querySelector('[name="bulan_akhir"]').value = bulan_akhir;
       form.querySelector('[name="tahun"]').value = tahun;
       form.submit();
     }
   }
 
+  // Sinkronkan URL tombol Export Excel dengan nilai dropdown yang dipilih
+  function syncExportUrl() {
+    const form  = document.querySelector('form[action*="kpi_summary"]');
+    const btn   = document.getElementById('btnExportExcel');
+    if (!form || !btn) return;
+
+    const ba  = form.querySelector('[name="bulan_awal"]').value;
+    const bk  = form.querySelector('[name="bulan_akhir"]').value;
+    const thn = form.querySelector('[name="tahun"]').value;
+
+    const baseHref = btn.href.split('?')[0];
+    btn.href = baseHref + '?bulan_awal=' + ba + '&bulan_akhir=' + bk + '&tahun=' + thn;
+  }
+
   $(document).ready(function () {
+    // Inisialisasi DataTable
     $('#dataTable').DataTable({
       order: [[1, 'desc']],
       columnDefs: [{ orderable: false, targets: [5] }],
       pageLength: 12
     });
+
+    // Sinkronkan saat dropdown berubah
+    const form = document.querySelector('form[action*="kpi_summary"]');
+    if (form) {
+      form.querySelectorAll('select').forEach(function (sel) {
+        sel.addEventListener('change', syncExportUrl);
+      });
+      syncExportUrl(); // jalankan sekali saat load
+    }
   });
 </script>

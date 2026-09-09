@@ -108,18 +108,46 @@ class Leave_balance extends MY_Controller {
             foreach ($employee_ids as $emp_id) {
                 $this->db->where('employee_id', $emp_id);
                 $this->db->delete('employee_leave_balance');
-
+                $employee = $this->db->query("select * from m_pegawai where pegawai_id = '$emp_id'")->row_array();
+                $isPermanent = $employee['status_pegawai'] == 'permanent' ? true : false;
+                
                 $this->db->insert('employee_leave_balance', [
                     'employee_id' => $emp_id,
-                    'from' => $this->input->post('from'),
-                    'to' => $this->input->post('to'),
-                    'quota' => $this->input->post('quota'),
-                    'used' => $this->input->post('used') ? $this->input->post('used') : 0
+                    'from' => $employee['contract_start_date'],
+                    'to' => $employee['contract_end_date'],
+                    'quota' => 12,
+                    'used' => $this->input->post('used') ? $this->input->post('used') : 0,
+                    'isPermanent' => $isPermanent
                 ]);
             }
         }
         
         redirect('leave_balance');
+    }
+
+    public function renew($employeeId){
+      $employee = $this->db->query("select * from m_pegawai where pegawai_id = '$employeeId'")->row_array();
+      if($employee['status_pegawai'] == 'permanent') {
+        $balance = $this->db->query("select * from employee_leave_balance where employee_id = '$employeeId'")->row_array();
+        redirect('leave_balance/edit/'.$balance['id']);
+      }
+      else{
+        $contractStartDate = $employee['contract_start_date'];
+        $contractEndDate = $employee['contract_end_date'];
+
+        $this->db->where('employee_id', $employeeId);
+        $this->db->delete('employee_leave_balance');
+
+        $this->db->insert('employee_leave_balance', [
+            'employee_id' => $employeeId,
+            'from' => $contractStartDate,
+            'to' => $contractEndDate,
+            'quota' => 12,
+            'used' => 0
+        ]);
+
+        redirect('leave_balance');
+      }
     }
 
     public function edit($id){

@@ -39,10 +39,11 @@ class Kpi_absensi_model extends CI_Model
      * @param  int    $tahun       YYYY
      * @return array  Array hasil KPI
      */
-    public function calculate_kpi($pegawai_id, $bulan, $tahun)
+    public function calculate_kpi($pegawai_id, $bulan_awal, $bulan_akhir, $tahun)
     {
-        $date_start = sprintf('%04d-%02d-01', $tahun, $bulan);
-        $date_end   = date('Y-m-t', strtotime($date_start)); // last day of month
+        $date_start = sprintf('%04d-%02d-01', $tahun, $bulan_awal);
+        $date_end_temp = sprintf('%04d-%02d-01', $tahun, $bulan_akhir);
+        $date_end   = date('Y-m-t', strtotime($date_end_temp)); // last day of end month
 
         // ── Ambil data absensi seluruh bulan ──────────────────
         $rows = $this->db->query(
@@ -209,7 +210,7 @@ class Kpi_absensi_model extends CI_Model
         }
 
         // ── Surat Peringatan (SP) ─────────────────────────────
-        $jumlah_sp = $this->db->query("select * from warning where employeeId = ? and MONTH(expired) >= {$bulan}", [$pegawai_id])->num_rows();
+        $jumlah_sp = $this->db->query("select * from warning where employeeId = ? and MONTH(expired) >= {$bulan_awal} AND MONTH(expired) <= {$bulan_akhir}", [$pegawai_id])->num_rows();
 
         // ── Kalkulasi persentase ──────────────────────────────
         $persen_kehadiran = $hari_kerja_efektif > 0
@@ -270,7 +271,9 @@ class Kpi_absensi_model extends CI_Model
         return [
             // Meta
             'pegawai_id'              => $pegawai_id,
-            'periode_bulan'           => $bulan,
+            'periode_bulan'           => $bulan_awal, // Using bulan_awal as representative if needed backward compatibility
+            'periode_bulan_awal'      => $bulan_awal,
+            'periode_bulan_akhir'     => $bulan_akhir,
             'periode_tahun'           => $tahun,
             // Kehadiran
             'hari_kerja_efektif'      => $hari_kerja_efektif,
