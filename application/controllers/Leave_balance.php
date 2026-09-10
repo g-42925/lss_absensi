@@ -108,19 +108,21 @@ class Leave_balance extends MY_Controller {
             foreach ($employee_ids as $emp_id) {
                 $this->db->where('employee_id', $emp_id);
                 $this->db->delete('employee_leave_balance');
-                $employee = $this->db->query("select * from m_pegawai where pegawai_id = '$emp_id'")->row_array();
-                $isPermanent = $employee['status_pegawai'] == 'permanent' ? true : false;
-                
+                $from = new DateTime($this->input->post('from'));
+                $to = new DateTime($this->input->post('to'));
+                $diff = $from->diff($to);
+                $diffInMonths = ($diff->y * 12) + $diff->m;
+
                 $this->db->insert('employee_leave_balance', [
                     'employee_id' => $emp_id,
-                    'from' => $employee['contract_start_date'],
-                    'to' => $employee['contract_end_date'],
-                    'quota' => 12,
-                    'used' => $this->input->post('used') ? $this->input->post('used') : 0,
-                    'isPermanent' => $isPermanent
+                    'from' => $this->input->post('from'),
+                    'to' => $this->input->post('to'),
+                    'quota' => $diffInMonths,
+                    'used' => 0,
                 ]);
             }
         }
+
         
         redirect('leave_balance');
     }
@@ -134,6 +136,10 @@ class Leave_balance extends MY_Controller {
       else{
         $contractStartDate = $employee['contract_start_date'];
         $contractEndDate = $employee['contract_end_date'];
+        $from = new DateTime($contractStartDate);
+        $to = new DateTime($contractEndDate);
+        $diff = $from->diff($to);
+        $diffInMonths = ($diff->y * 12) + $diff->m;
 
         $this->db->where('employee_id', $employeeId);
         $this->db->delete('employee_leave_balance');
@@ -142,7 +148,7 @@ class Leave_balance extends MY_Controller {
             'employee_id' => $employeeId,
             'from' => $contractStartDate,
             'to' => $contractEndDate,
-            'quota' => 12,
+            'quota' => $diffInMonths,
             'used' => 0
         ]);
 
@@ -174,11 +180,15 @@ class Leave_balance extends MY_Controller {
     public function edit_proses(){
         $id = $this->input->post('id');
         $this->db->where('id', $id);
+        $from = new DateTime($this->input->post('from'));
+        $to = new DateTime($this->input->post('to'));
+        $diff = $from->diff($to);
+        $diffInMonths = ($diff->y * 12) + $diff->m;
         $this->db->update('employee_leave_balance', [
             'employee_id' => $this->input->post('employee_id'),
             'from' => $this->input->post('from'),
             'to' => $this->input->post('to'),
-            'quota' => $this->input->post('quota'),
+            'quota' => $diffInMonths,
             'used' => $this->input->post('used') ? $this->input->post('used') : 0
         ]);
         redirect('leave_balance');

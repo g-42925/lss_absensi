@@ -32,7 +32,7 @@
 
     <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6">
       <label class="form-label">Quota Cuti<i class="text-danger">*</i></label>
-      <input type="number" step="0.5" class="form-control" name="quota" placeholder="Contoh: 12" value="<?= $data['quota'] ?>" required />
+      <input readonly type="number" step="0.5" class="form-control" name="quota" placeholder="Contoh: 12" value="<?= $data['quota'] ?>" required />
     </div>
 
     <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6">

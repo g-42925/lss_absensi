@@ -41,16 +41,6 @@
       <input type="text" class="form-control" name="to" placeholder="YYYY-MM-DD" id="flatpickr-date2" required />
     </div>
 
-    <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6">
-      <label class="form-label">Quota Cuti<i class="text-danger">*</i></label>
-      <input type="number" step="0.5" class="form-control" name="quota" placeholder="Contoh: 12" required />
-    </div>
-
-    <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6">
-      <label class="form-label">Sudah Terpakai</label>
-      <input type="number" step="0.5" class="form-control" name="used" placeholder="Contoh: 0" value="0" />
-    </div>
-
     <div class="col-12 mt-4">
       <button type="submit" class="btn btn-primary">Simpan</button>
       <a href="<?= site_url('leave_balance') ?>" class="btn btn-outline-secondary">Kembali</a>

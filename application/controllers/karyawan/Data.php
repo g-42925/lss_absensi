@@ -192,10 +192,7 @@ class Data extends MY_Controller {
           $division = $this->db->query("select * from divisions where id = ?",[$d['division_id']])->row_array();
           $data['datas'][$index]['divisi'] = $division ? $division['division_name'] : '-';
           $warning = $this->db->query("SELECT level FROM warning WHERE employeeId = ? ORDER BY id DESC LIMIT 1", [$d['pegawai_id']])->row_array();
-          $data['datas'][$index]['latest_sp'] = $warning ? $warning['level'] : null;
-          $status = $this->db->query("select * from employee_leave_balance where employee_id = ? order by id desc LIMIT 1",[$d['pegawai_id']])->row_array();
-          $data['remain'] = (float) $status['quota'] - (float) $status['used'];
-          
+          $data['datas'][$index]['latest_sp'] = $warning ? $warning['level'] : null;        
         }
 
         $data['divisions'] = $divisions;
