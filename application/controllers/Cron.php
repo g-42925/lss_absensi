@@ -336,7 +336,7 @@ class Cron extends MY_Controller {
     #[SkipPermission]
     public function deduction(){
       $this->db->query("SET time_zone = '+07:00'");
-      $companies = $this->db->query("select * from companies")->result_array();
+      $companies = $this->db->query("select * from companies where active='1'")->result_array();
 
       foreach($companies as $company){
         $data = $this->db->query("select * from tx_absensi where company_id = ? and tanggal_absen = curdate()",[$company['id']])->result_array();
@@ -350,54 +350,102 @@ class Cron extends MY_Controller {
 
           if($d["is_status"] == "alpha-2"){
             
-            $e = $this->db->query("select * from m_pegawai where pegawai_id = ?",[$d['pegawai_id']])->row_array();
+            $e = $this->db->query("select * from m_pegawai where pegawai_id = ? and is_del='n'",[$d['pegawai_id']])->row_array();
             $div = $this->db->query("select * from divisions where id = ?",[$e['division_id']])->row_array();
 
-
-            if($div['alpha_penalty_type'] == "percent"){
-              $penaltyValue = $div['alpha_penalty_value'] / 100;
-              if (date('m') === '02') {
-                $deductionValue = ($e['salary'] / 24) * $penaltyValue;
+            if($div['alpha_consequence'] == 2){
+              $leaveBalanceRecord = $this->db->query("select * from employee_leave_balance where employee_id = ?",[$d['pegawai_id']])->row_array();
+              if($leaveBalanceRecord['used'] < $leaveBalanceRecord['quota']){
+                $data =  ['used' => $leaveBalanceRecord['used']+1];
+                $this->db->where('employee_id',$e['pegawai_id']);
+                $this->db->update('employee_leave_balance',$data);
               }
               else{
-                $deductionValue = ($e['salary'] / 26) * $penaltyValue;
+                if (date('m') === '02') {
+                  $deductionValue = ($e['salary'] / 24);
+                  $data = [
+                    'deduction_id' => uniqid(),
+                    'employee_id' => $e['pegawai_id'],
+                    'deduction_type' => 'alpha-2',
+                    'date' => date('Y-m-d'),
+                    'amount' => $deductionValue,
+                    'note' => '...'
+                  ];
+                  $this->db->insert(
+                    'salary_deduction',
+                    $data
+                  );
+                }
+                else{
+                  $deductionValue = ($e['salary'] / 26);
+                  $data = [
+                    'deduction_id' => uniqid(),
+                    'employee_id' => $e['pegawai_id'],
+                    'deduction_type' => 'alpha-2',
+                    'date' => date('Y-m-d'),
+                    'amount' => $deductionValue,
+                    'note' => '...'
+                  ];
+                  $this->db->insert(
+                    'salary_deduction',
+                    $data
+                  );
+                }
               }
-              
-
-              $data = [
-                'deduction_id' => uniqid(),
-                'employee_id' => $e['pegawai_id'],
-                'deduction_type' => $d['is_status'],
-                'date' => date('Y-m-d'),
-                'amount' => $deductionValue,
-                'note' => '...'
-              ];
-
-              $this->db->insert(
-                'salary_deduction',
-                $data
-              );
             }
-            if($div['alpha_penalty_type'] == "custom"){
-              $penaltyValue = $div['alpha_penalty_value'];
-
-              $data = [
-                'deduction_id' => uniqid(),
-                'employee_id' => $e['pegawai_id'],
-                'deduction_type' => $d['is_status'],
-                'date' => date('Y-m-d'),
-                'amount' => $penaltyValue,
-                'note' => '...'
-              ];
-
-              $this->db->insert(
-                'salary_deduction',
-                $data
-              );
+            else{
+              if($div['alpha_penalty_type'] == 'custom'){
+                  $data = [
+                    'deduction_id' => uniqid(),
+                    'employee_id' => $e['pegawai_id'],
+                    'deduction_type' => 'alpha-2',
+                    'date' => date('Y-m-d'),
+                    'amount' => $div['alpha_penalty_value'],
+                    'note' => '...'
+                  ];
+                  $this->db->insert(
+                    'salary_deduction',
+                    $data
+                  );                
+              }
+              else{
+                if(date('m') === '02'){
+                  $x = ($e['salary'] / 24);
+                  $amount = $x * ($div['alpha_penalty_value']/100);
+                  $data = [
+                    'deduction_id' => uniqid(),
+                    'employee_id' => $e['pegawai_id'],
+                    'deduction_type' => 'alpha-2',
+                    'date' => date('Y-m-d'),
+                    'amount' => $amount,
+                    'note' => '...'
+                  ];
+                  $this->db->insert(
+                    'salary_deduction',
+                    $data
+                  ); 
+                }
+                else{
+                  $x = ($e['salary'] / 26);
+                  $amount = $x * ($div['alpha_penalty_value']/100);
+                  $data = [
+                    'deduction_id' => uniqid(),
+                    'employee_id' => $e['pegawai_id'],
+                    'deduction_type' => 'alpha-2',
+                    'date' => date('Y-m-d'),
+                    'amount' => $amount,
+                    'note' => '...'
+                  ];
+                  $this->db->insert(
+                    'salary_deduction',
+                    $data
+                  ); 
+                }                              
+              }
             }
           }
           
-          if($d['is_status'] == 'hhk' && $d['jam_keluar'] == '00:00'){
+          if($d['is_status'] == 'hhk' && $d['jam_keluar'] == '00:00' && $div['clockout_penalty']){
             $e = $this->db->query("select * from m_pegawai where pegawai_id = ?",[$d['pegawai_id']])->row_array();
             $div = $this->db->query("select * from divisions where id = ?",[$e['division_id']])->row_array();
 
@@ -418,51 +466,51 @@ class Cron extends MY_Controller {
             );
           }
 
-          if($d['is_status'] == 'i'){
-            $e = $this->db->query("select * from m_pegawai where pegawai_id = ?",[$d['pegawai_id']])->row_array();
-            $div = $this->db->query("select * from divisions where id = ?",[$e['division_id']])->row_array();
+          // if($d['is_status'] == 'i'){
+          //   $e = $this->db->query("select * from m_pegawai where pegawai_id = ?",[$d['pegawai_id']])->row_array();
+          //   $div = $this->db->query("select * from divisions where id = ?",[$e['division_id']])->row_array();
 
-            $offDaysAmount = $e['jumlah_cuti'];
+          //   $offDaysAmount = $e['jumlah_cuti'];
             
-            if($div['alpha_consequence'] == "2"){
-              if($e['jumlah_cuti'] > 0){
-                $offDaysAmount = $offDaysAmount - 1;
-                $data =  ['jumlah_cuti' => $offDaysAmount];
-                $this->db->where('pegawai_id',$e['pegawai_id']);
-                $this->db->update('m_pegawai',$data);
-              }
-              else{
-                $data = [
-                  'deduction_id' => uniqid(),
-                  'employee_id' => $e['pegawai_id'],
-                  'deduction_type' => $d['is_status'],
-                  'date' => date('Y-m-d'),
-                  'amount' => $penaltyValue,
-                  'note' => '...'
-                ];
+          //   if($div['alpha_consequence'] == "2"){
+          //     if($e['jumlah_cuti'] > 0){
+          //       $offDaysAmount = $offDaysAmount - 1;
+          //       $data =  ['jumlah_cuti' => $offDaysAmount];
+          //       $this->db->where('pegawai_id',$e['pegawai_id']);
+          //       $this->db->update('m_pegawai',$data);
+          //     }
+          //     else{
+          //       $data = [
+          //         'deduction_id' => uniqid(),
+          //         'employee_id' => $e['pegawai_id'],
+          //         'deduction_type' => $d['is_status'],
+          //         'date' => date('Y-m-d'),
+          //         'amount' => $penaltyValue,
+          //         'note' => '...'
+          //       ];
 
-                $this->db->insert(
-                  'salary_deduction',
-                  $data
-                );
-              }
-            }
-            else{
-              $data = [
-                'id' => uniqid(),
-                'employee_id' => $e['pegawai_id'],
-                'deduction_type' => $d['is_status'],
-                'date' => date('Y-m-d'),
-                'amount' => $penaltyValue,
-                'note' => '...'
-              ];
+          //       $this->db->insert(
+          //         'salary_deduction',
+          //         $data
+          //       );
+          //     }
+          //   }
+          //   else{
+          //     $data = [
+          //       'id' => uniqid(),
+          //       'employee_id' => $e['pegawai_id'],
+          //       'deduction_type' => $d['is_status'],
+          //       'date' => date('Y-m-d'),
+          //       'amount' => $penaltyValue,
+          //       'note' => '...'
+          //     ];
 
-              $this->db->insert(
-                'salary_deduction',
-                $data
-              );
-            }
-          }
+          //     $this->db->insert(
+          //       'salary_deduction',
+          //       $data
+          //     );
+          //   }
+          // }
 
         }
       }
