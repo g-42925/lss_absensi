@@ -187,7 +187,7 @@ class Kpi_absensi extends MY_Controller
         $tahun   = $periode['tahun'];
 
         // Hitung KPI real-time untuk breakdown harian
-        $kpi = $this->kpi_m->calculate_kpi($pegawai_id, $bulan, $tahun);
+        $kpi = $this->kpi_m->calculate_kpi($pegawai_id, $bulan, $bulan, $tahun);
 
         // Ambil snapshot tersimpan (untuk status "sudah di-generate")
         $snapshot = $this->kpi_m->get_kpi_one($companyId, $pegawai_id, $bulan, $tahun);
@@ -238,7 +238,7 @@ class Kpi_absensi extends MY_Controller
 
         foreach ($pegawais as $p) {
             try {
-                $kpi = $this->kpi_m->calculate_kpi($p['pegawai_id'], $bulan, $tahun);
+                $kpi = $this->kpi_m->calculate_kpi($p['pegawai_id'], $bulan, $bulan, $tahun);
                 $saved = $this->kpi_m->save_kpi($companyId, $p['pegawai_id'], $bulan, $tahun, $kpi);
                 if ($saved) { $success++; } else { $failed++; }
             } catch (Exception $e) {

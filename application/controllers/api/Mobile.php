@@ -7,12 +7,16 @@ class Mobile extends CI_Controller{
   public $upload;
   public $pagination;
 
+  public $kpi_m;
+
   function __construct() {
     parent::__construct();
     header('Access-Control-Allow-Origin: *');
     header("Access-Control-Allow-Methods: PUT, GET, POST, DELETE, OPTIONS");
     header("Access-Control-Allow-Headers: Origin, Content-Type, Authorization, Accept, X-Requested-With, x-xsrf-token");
     header("Content-Type: application/json; charset=utf-8");
+    $this->load->model('user/kpi_absensi_model', 'kpi_m');
+
   }
 
   function leave(){
@@ -3009,5 +3013,135 @@ function login(){
     $q = "select * from exception where date = ? and type = ? and employee_id = ? and status = ?";
     $r = $this->db->query($q,$parameter)->num_rows();
     echo $r > 0 ? json_encode(['exist' => 'yes']) : json_encode(['exist' => 'no']);
+  }
+
+  function get_task($employeeId){
+     $tasks = $this->db->query("select * from office_task where assigned_to = '$employeeId'")->result_array();
+     echo json_encode(['success' => true, 'result' => $tasks]);
+  }
+
+  public function get_kpi($pegawai_id = null, $bulan = null, $tahun = null) {
+        $employee = $this->db->query("select * from m_pegawai where pegawai_id = '$pegawai_id'")->row_array();
+        $companyId = $employee['company_id'];
+
+        // Cek apakah sudah ada evaluasi di periode ini
+        $eval = $this->db->query(
+            "SELECT * FROM tx_kpi_evaluation 
+             WHERE pegawai_id = ? AND periode_bulan = ? AND periode_tahun = ? AND company_id = ? LIMIT 1",
+            [$pegawai_id, $bulan, $tahun, $companyId]
+        )->row_array();
+
+        $data['eval'] = $eval;
+
+        // Ambil daftar KPI
+        // Jika sudah ada evaluasi, kita ambil detailnya + kpi master (termasuk yg is_aktif='n' jika sudah pernah dinilai)
+        // Jika belum ada, kita hanya ambil kpi_master yg is_aktif='y'
+        
+        if ($eval) {
+            $data['kpi_list'] = $this->db->query(
+                "SELECT m.*, d.id as detail_id, d.nilai_aktual, d.nilai_bobot, d.catatan_kpi
+                 FROM m_kpi_master m
+                 LEFT JOIN tx_kpi_evaluation_detail d ON m.id = d.kpi_master_id AND d.evaluation_id = ?
+                 WHERE m.company_id = ? AND m.is_del = 'n'
+                 AND (m.is_aktif = 'y' OR d.id IS NOT NULL)
+                 ORDER BY m.kategori, m.nama_kpi",
+                [$eval['id'], $companyId]
+            )->result_array();
+        } 
+        else {
+            $data['kpi_list'] = $this->db->query(
+                "SELECT * FROM m_kpi_master 
+                 WHERE company_id = ? AND is_aktif = 'y' AND is_del = 'n'
+                 ORDER BY kategori, nama_kpi",
+                [$companyId]
+            )->result_array();
+        }
+        
+        $isEmpty = $eval ? false : true;
+        
+        echo json_encode([
+          'success' => true,
+          'isEmpty' => $isEmpty,
+          'eval' => $data['eval'],
+          'kpi_list' => $data['kpi_list']
+        ]);
+    }
+
+   
+    
+  public function kpi_absensi($pegawai_id = null, $bulan = null, $tahun = null){
+      function _nama_bulan($n){
+          $months = [
+              1 => 'Januari',    2 => 'Februari', 3 => 'Maret',
+              4 => 'April',      5 => 'Mei',       6 => 'Juni',
+              7 => 'Juli',       8 => 'Agustus',   9 => 'September',
+              10 => 'Oktober',  11 => 'November', 12 => 'Desember',
+          ];
+          return $months[$n] ?? '-';
+      }
+     
+      function _periode_default(){
+        $now   = new DateTime();
+        $first = new DateTime('first day of this month');
+        $prev  = (clone $first)->modify('-1 month');
+        return [
+            'bulan' => intval($prev->format('n')),
+            'tahun' => intval($prev->format('Y')),
+        ];
+      }
+      
+      function _validate_periode($bulan, $tahun){
+            $bulan = intval($bulan);
+            $tahun = intval($tahun);
+
+            // Tidak boleh menggunakan bulan berjalan atau masa depan
+            $now      = new DateTime();
+            $sekarang = intval($now->format('Ym'));
+            $pilihan  = $tahun * 100 + $bulan;
+
+            if ($bulan < 1 || $bulan > 12 || $tahun < 2020 || $pilihan >= $sekarang) {
+                return _periode_default();
+            }
+            return ['bulan' => $bulan, 'tahun' => $tahun];
+        }
+
+        $emp = $this->db->query("select * from m_pegawai where pegawai_id = '$pegawai_id'")->row_array();
+        $company = $this->db->query("select * from companies where id = ?",[$emp['company_id']])->row_array();
+      
+        $companyId = $company['id'];
+
+        // Validasi pegawai
+        $pegawai = $this->db->query(
+            "SELECT p.*, d.division_name, pos.name AS position_name
+             FROM m_pegawai p
+             LEFT JOIN divisions d ON p.division_id = d.id
+             LEFT JOIN position pos ON p.position_id = pos.id
+             WHERE p.pegawai_id = ? AND p.company_id = ? AND p.is_del = 'n' LIMIT 1",
+            [$pegawai_id, $companyId]
+        )->row_array();
+
+        $periode = _validate_periode($bulan, $tahun);
+        $bulan   = $periode['bulan'];
+        $tahun   = $periode['tahun'];
+
+        // Hitung KPI real-time untuk breakdown harian
+        $kpi = $this->kpi_m->calculate_kpi($pegawai_id, $bulan, $bulan, $tahun);
+
+        // Ambil snapshot tersimpan (untuk status "sudah di-generate")
+        $snapshot = $this->kpi_m->get_kpi_one($companyId, $pegawai_id, $bulan, $tahun);
+
+        $data = [
+            'pegawai'     => $pegawai,
+            'kpi'         => $kpi,
+            'snapshot'    => $snapshot,
+            'bulan'       => $bulan,
+            'tahun'       => $tahun,
+            'nama_bulan'  => _nama_bulan($bulan),
+        ];
+
+        echo json_encode([
+          'succcess' => true,
+          'data' => $data
+        ]);
   }
 }

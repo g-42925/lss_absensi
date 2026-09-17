@@ -35,12 +35,11 @@ class Attendance_record extends MY_Controller {
         
         $data['datas'] = $this->attr->get_data($companyId,date('Y-m-01'),date('Y-m-d'));
 
-
-        foreach ($data['datas'] as $key => $value) {
-          $emp = $this->db->get_where('m_pegawai', ['pegawai_id' => $value['pegawai_id']])->result_array();
-          $data['datas'][$key]['jumlah_cuti'] = $emp[0]['jumlah_cuti'];
+        foreach($data['datas'] as $key => $value){
+          $emp = $this->db->get_where('m_pegawai', ['pegawai_id' => $value['pegawai_id']])->row_array();
+          $leaveBalanceRecord = $this->db->query("select * from employee_leave_balance where employee_id = ?",[$emp['pegawai_id']])->row_array();
+          $data['datas'][$key]['jumlah_cuti'] = $leaveBalanceRecord['quota'] - $leaveBalanceRecord['used'];
         }
-
 
         $this->load->view('templates/header', $data);
         $this->load->view('templates/sidemenu', $data);

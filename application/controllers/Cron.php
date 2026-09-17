@@ -349,8 +349,10 @@ class Cron extends MY_Controller {
           }
 
           if($d["is_status"] == "alpha-2"){
+            
             $e = $this->db->query("select * from m_pegawai where pegawai_id = ?",[$d['pegawai_id']])->row_array();
             $div = $this->db->query("select * from divisions where id = ?",[$e['division_id']])->row_array();
+
 
             if($div['alpha_penalty_type'] == "percent"){
               $penaltyValue = $div['alpha_penalty_value'] / 100;
