@@ -19,47 +19,63 @@
             </div>
             <!-- /Logo -->
 
-            <h5 class="mb-1 pt-2">Reset Password 🔐</h5>
+            <h5 class="mb-1 pt-2">Reset Username & Password 🔐</h5>
             <p class="mb-4 text-muted" style="font-size: 0.9rem;">
-              Masukkan <strong>Secret Key</strong> dan <strong>Password Baru</strong> Anda, lalu klik <em>Request OTP</em> untuk mendapatkan kode verifikasi.
+              Masukkan <strong>Username (Email)</strong> Anda, lalu klik <em>Request OTP</em> untuk mendapatkan kode verifikasi. Setelah itu isi OTP, (opsional) Username Baru, dan Password Baru.
             </p>
 
             <?=$this->session->flashdata('message');?>
 
             <form id="formResetPassword" class="mb-3" action="<?=base_url('reset/proccess/');?>" method="POST">
 
-              <!-- Secret Key -->
+              <!-- Current Username -->
               <div class="mb-3">
-                <label for="secret_key" class="form-label">Secret Key</label>
+                <label for="username" class="form-label">Username Saat Ini (Email)</label>
+                <div class="input-group input-group-merge">
+                  <span class="input-group-text"><i class="ti ti-mail"></i></span>
+                  <input
+                    type="email"
+                    class="form-control"
+                    id="username"
+                    name="username"
+                    autocomplete="off"
+                    placeholder="Masukkan email Anda..."
+                    required
+                    autofocus />
+                </div>
+              </div>
+
+              <!-- OTP -->
+              <div class="mb-3">
+                <label for="otp" class="form-label">Kode OTP</label>
                 <div class="input-group input-group-merge">
                   <span class="input-group-text"><i class="ti ti-key"></i></span>
                   <input
                     type="text"
                     class="form-control"
-                    id="secret_key"
-                    name="secret_key"
+                    id="otp"
+                    name="otp"
                     autocomplete="off"
-                    placeholder="Masukkan secret key Anda..."
-                    autofocus />
-                </div>
-              </div>
-
-              <div class="mb-4">
-                <label for="new_password" class="form-label">Password Baru</label>
-                <div class="input-group input-group-merge">
-                  <span class="input-group-text"><i class="ti ti-lock"></i></span>
-                  <input
-                    type="password"
-                    class="form-control"
-                    id="new_password"
-                    name="new_password"
-                    placeholder="Masukkan password baru..." />
-                  <span class="input-group-text" style="cursor:pointer;" onclick="togglePassword()">
-                    <i class="ti ti-eye" id="toggleIcon"></i>
-                  </span>
+                    placeholder="Masukkan OTP yang dikirim ke email..."
+                    required />
                 </div>
               </div>
               
+              <!-- New Username -->
+              <div class="mb-3">
+                <label for="new_username" class="form-label">Username Baru (Opsional)</label>
+                <div class="input-group input-group-merge">
+                  <span class="input-group-text"><i class="ti ti-mail-forward"></i></span>
+                  <input
+                    type="email"
+                    class="form-control"
+                    id="new_username"
+                    name="new_username"
+                    autocomplete="off"
+                    placeholder="Kosongkan jika tidak ingin mengubah username..." />
+                </div>
+              </div>
+
               <!-- New Password -->
               <div class="mb-4">
                 <label for="new_password" class="form-label">Password Baru</label>
@@ -70,7 +86,7 @@
                     class="form-control"
                     id="new_password"
                     name="new_password"
-                    placeholder="Masukkan password baru..." />
+                    placeholder="Masukkan password baru..." required />
                   <span class="input-group-text" style="cursor:pointer;" onclick="togglePassword()">
                     <i class="ti ti-eye" id="toggleIcon"></i>
                   </span>
@@ -90,7 +106,7 @@
                   type="submit"
                   id="btnNext"
                   class="btn btn-primary w-50">
-                  Next <i class="ti ti-arrow-right ms-1"></i>
+                  Submit <i class="ti ti-check ms-1"></i>
                 </button>
               </div>
 
@@ -125,13 +141,31 @@
     }
 
     function requestOtp() {
-      const secretKey = document.getElementById('secret_key').value.trim();
-      if (!secretKey) {
-        alert('Harap isi Secret Key terlebih dahulu.');
-        document.getElementById('secret_key').focus();
+      const username = document.getElementById('username').value.trim();
+      if (!username) {
+        alert('Harap isi Username Saat Ini (Email) terlebih dahulu.');
+        document.getElementById('username').focus();
         return;
       }
-      // TODO: implementasi AJAX request OTP ke endpoint yang sesuai
-      alert('Permintaan OTP telah dikirim ke email terdaftar.');
+      
+      fetch('<?=base_url('reset/send_otp')?>', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: 'username=' + encodeURIComponent(username)
+      })
+      .then(response => response.json())
+      .then(data => {
+          if (data.status === 'success') {
+              alert(data.message);
+          } else {
+              alert('Gagal: ' + data.message);
+          }
+      })
+      .catch(error => {
+          console.error('Error:', error);
+          alert('Terjadi kesalahan saat mengirim permintaan OTP.');
+      });
     }
   </script>

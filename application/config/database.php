@@ -73,7 +73,9 @@ defined('BASEPATH') or exit('No direct script access allowed');
 $active_group = 'default';
 $query_builder = TRUE;
 
-if ($_SERVER['HTTP_HOST'] == 'localhost') {
+$host = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : '';
+
+if (strpos($host, 'localhost') !== false || strpos($host, '127.0.0.1') !== false) {
 	$db['default'] = array(
 		'dsn' => '',
 		'hostname' => 'localhost',
@@ -96,8 +98,7 @@ if ($_SERVER['HTTP_HOST'] == 'localhost') {
 		'save_queries' => TRUE
 	);
 }
-
-if ($_SERVER['HTTP_HOST'] == '192.168.1.29') {
+elseif (strpos($host, '192.168.1') !== false) {
 	$db['default'] = array(
 		'dsn' => '',
 		'hostname' => 'localhost',
