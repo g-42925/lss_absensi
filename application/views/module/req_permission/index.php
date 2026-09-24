@@ -75,7 +75,7 @@ foreach ($datas as $row):
               <a href="<?= base_url('req_permission/edit/' . $row['request_izin_id']); ?>" class="btn p-1">
                 <i class="ti ti-edit"></i>
               </a>
-              <a href="#" class="<?= $row['tipe_request'] == "s" ? "" : "d-none"?> btn p-1" data-bs-toggle="modal"
+              <a class="<?= $row['medicalEvidence'] === 'no' ? 'text-red-900':'' ?>" href="#" class="<?= $row['tipe_request'] == "s" ? "" : "d-none"?> btn p-1" data-bs-toggle="modal"
                 data-bs-target="#cutRow<?= $row['request_izin_id']; ?>" title="payroll">
                 <i class="ti ti-scissors"></i>
               </a>
@@ -97,7 +97,7 @@ foreach ($datas as $row):
                           aria-label="Close">
                           Batal
                         </button>
-                        <a href="<?= base_url('req_permission/cut/' . $row['pegawai_id']) . '/' . $row['tanggal_request'] . '/' . $row['tanggal_request_end']?>"
+                        <a href="<?= base_url('req_permission/cut/' . $row['pegawai_id']).'/'.$row['tanggal_request'].'/'.$row['tanggal_request_end'].'/'.$row['request_izin_id'] ?>"
                           class="btn btn-danger">Ya, Potong!</a>
                       </div>
                     </div>

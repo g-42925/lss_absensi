@@ -345,7 +345,7 @@ class Req_permission extends MY_Controller {
             $this->load->view('module/req_permission/download_perid', $data);
         }
     }
-    public function cut($employeeId,$startFrom,$until){
+    public function cut($employeeId,$startFrom,$until,$requestId){
       $status = $this->db->query("select * from employee_leave_balance where employee_id = ? order by id desc limit 1",[$employeeId])->row_array();
       $check_izin = $this->db->query("SELECT tri.tipe_request FROM tx_request_izin tri JOIN tx_request_izin_pegawai trip ON tri.request_izin_id = trip.request_izin_id WHERE trip.pegawai_id = ? AND tri.tanggal_request = ? AND tri.tanggal_request_end = ?", [$employeeId, $startFrom, $until])->row_array();
 
@@ -394,6 +394,10 @@ class Req_permission extends MY_Controller {
             $this->db->insert('salary_deduction', $data);
         }
       }
+      
+      $this->db->where('request_izin_id',$requestId);
+      $this->db->update('tx_request_izin',['medicalEvidence' => 'no']);
+
 
       if($this->db->trans_status() === FALSE) {
         $this->db->trans_rollback();
