@@ -153,7 +153,6 @@ class Data_model extends CI_Model {
 
         if($this->input->post('statusPegawai') === 'contract'){
           $this->db->insert('employee_leave_balance',[
-            'id' => uniqid(),
             'employee_id' => $newPegawaiId,
             'from' => $this->input->post('contract_start_date'),
             'to' => $this->input->post('contract_end_date'),
