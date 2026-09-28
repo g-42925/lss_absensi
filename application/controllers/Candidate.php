@@ -138,6 +138,30 @@ class Candidate extends MY_Controller {
               $this->db->delete('candidate_file');
             }
 
+            $from = new DateTime($this->input->post('contract_start_date'));
+            $to = new DateTime($this->input->post('contract_end_date'));
+            $quota = (($to->format('Y') - $from->format('Y')) * 12) + ($to->format('m') - $from->format('m')) + 1;
+
+             if($this->input->post('statusPegawai') === 'contract'){
+                $this->db->insert('employee_leave_balance',[
+                    'employee_id' => $newInsertedId,
+                    'from' => $this->input->post('contract_start_date'),
+                    'to' => $this->input->post('contract_end_date'),
+                    'quota' => $quota,
+                    'used' => 0
+                ]);
+            }
+            else{
+            $this->db->insert('employee_leave_balance',[
+                'id' => uniqid(),
+                'employee_id' => $newInsertedId,
+                'from' => date('Y-m-d'),
+                'to' => date('Y-m-d', strtotime('+1 year -1 day')),
+                'quota' => $quota,
+                'used' => 0
+            ]);
+            }
+
             if($this->db->trans_status() === FALSE) {
                 $this->db->trans_rollback();
                 $this->session->set_flashdata(
