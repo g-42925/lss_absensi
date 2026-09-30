@@ -102,11 +102,12 @@ class Warning extends MY_Controller{
 
         $spNumber = $data['sp_number'];
         $penalty = $data['penalty'];
+        $level = $data['level'];
 
         $dataNotification = [
             'notification_id' => uniqid(),
             'employee_id' => $nik,
-            'description' => "kamu telah mendapatkan sanksi peringatan ke $spNumber dengan penalty sebesar $penalty",
+            'description' => "kamu telah mendapatkan sanksi peringatan ke $level dengan penalty sebesar $penalty",
             'date' => date('Y-m-d'),
             'seen' => false,
             'nType' => 1,
