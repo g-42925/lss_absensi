@@ -85,9 +85,23 @@ class Task extends MY_Controller
             'created_at'  => date('Y-m-d'),
         ];
 
-        $q = $this->db->insert('office_task', $data);
+        $description = $data['description'];
+        $deadline = $data['deadline'];
 
-        if($q) {
+        $dataNotification = [
+            'notification_id' => uniqid(),
+            'employee_id' => $nik,
+            'description' => "kamu telah diberikan tugas untuk $description dengan batas waktu sampai $deadline",
+            'date' => date('Y-m-d'),
+            'seen' => false,
+            'nType' => 2
+        ];
+
+        $q = $this->db->insert('office_task', $data);
+        $qNotification = $this->db->insert('notification',$dataNotification);
+
+
+        if($q && $qNotification) {
             $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-success p-cg" role="alert">Task berhasil disimpan.</div></div>');
             redirect('task/list');
         } 

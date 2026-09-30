@@ -3151,4 +3151,25 @@ function login(){
           'data' => $data
         ]);
   }
+  
+  function get_n1($employeeId){
+    $notifications = $this->db->query("select * from notification where employee_id = ? and seen = ? and nType = ?",[$employeeId,false,1]);
+    
+    $data = ['counter' => $numRows = $notifications->num_rows()];
+    
+    
+    echo json_encode([
+      'success' => true,
+      'data' => $data
+    ]);
+  }
+  
+  function update_n1($employeeId){
+        $this->db->where('employee_id', $employeeId);
+        $this->db->where('nType', 1);
+        $this->db->where('seen', false);
+        $this->db->update('notification', [
+          'seen' => true,
+        ]);
+  }
 }
