@@ -100,9 +100,22 @@ class Warning extends MY_Controller{
             'expired'    => $this->input->post('expired'),
         ];
 
-        $q = $this->db->insert('warning', $data);
+        $spNumber = $data['sp_number'];
+        $penalty = $data['penalty'];
 
-        if ($q) {
+        $dataNotification = [
+            'employeeId' => $nik,
+            'description' => "kamu telah mendapatkan sanksi peringatan ke $spNumber dengan penalty sebesar $penalty",
+            'seen' => false,
+            'nType' => 1,
+            'date' => date('Y-m-d')
+        ];
+
+        $q = $this->db->insert('warning', $data);
+        
+        $qNotification = $this->db->insert('notification', $dataNotification);
+
+        if ($q && $qNotification) {
             $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-success p-cg" role="alert">Surat Peringatan berhasil disimpan.</div></div>');
             redirect('warning');
         } 

@@ -1065,6 +1065,7 @@ function login(){
                                     $deduction
                                 );
                             }
+                            
                             $this->db->where('absen_id',$lastDefaultStatus["absen_id"]);
                             $this->db->update('tx_absensi',[...$data2,'isLate' => true]);
                             echo json_encode(["success" => true,"message" => ""]);
@@ -2608,36 +2609,42 @@ function login(){
 
 
   function hasException($employeeId,$reason){
+    function isRestricted($limit) {
+      return strtotime(date('H:i:s')) <= strtotime($limit);
+    }
+      
     $employee = $this->db->query("select * from m_pegawai where pegawai_id = ?",[$employeeId])->row_array();
-    $division = $this->db->query("select * from divisions where division_id = ?",[$employee['division_id']])->row_array();
+    $division = $this->db->query("select * from divisions where id = ?",[$employee['division_id']])->row_array();
     $r = $this->db->query("select * from exception where employee_id = ? and status = ? and date = ? and type = ?",[$employeeId,1,date('Y-m-d'),urldecode($reason)])->num_rows() > 0;
     $r2 =  $this->db->query("select * from exception where employee_id = ? and status = ? and date = ? and type = ?",[$employeeId,1,date('Y-m-d'),'Terlambat'])->num_rows() > 0;
     
     $patternId = explode('-',$division['work_system'])[1];
+    
 
-    if(explode('-',$division['work_system'])[1] == 'wd'){
+    if(explode('-',$division['work_system'])[0] == 'wd'){
       $params = [$patternId,date('N')];
-      $q = "select * from m_pola_kerja det where pola_kerja_id = ? and is_day = ?";
+      $q = "select * from m_pola_kerja_det where pola_kerja_id = ? and is_day = ?";
       $pattern = $this->db->query($q,$params)->row_array();
-      $hasException = $r || $r2 ? true : false;
       $limit = $r ? $pattern['c1'] : '23:58:00';
-      
+      $hasException = $r && isRestricted($limit) || $r2 ? true : false;
+
       echo json_encode([
         'hasException' => $hasException,
-        'reason' => $reason,
-        'limit' => $limit
+        'reason' => urldecode($reason),
+        'limit' => $limit,
       ]);
+      return;
     }
-    else{
+    if(explode('-',$division['work_system'])[0] != 'wd'){
       $q1 = $this->db->query("select * from employee_shift where employee_id = ?",[$employeeId])->row_array();
       $q2 = $this->db->query("select * from shift_detail where shift_detail_id = ?",[$q1['shift_detail_id']])->row_array();
-      $hasException = $r || $r2 ? true : false;
-      $limit = $r ? $q2['c1'] : '23:58:00';
+      $limit = $r ? $pattern['c1'] : '23:58:00';
+      $hasException = $r && isRestricted($limit) || $r2 ? true : false;
       
       echo json_encode([
         'hasException' => $hasException,
-        'reason' => $reason,
-        'limit' => $limit
+        'reason' => urldecode($reason),
+        'limit' => $limit,
       ]);
     }
    

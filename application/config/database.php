@@ -121,6 +121,29 @@ elseif (strpos($host, '192.168.1') !== false) {
 		'save_queries' => TRUE
 	);
 }
+elseif (strpos($host, 'dom.my.id') !== false) {
+  $db['default'] = array(
+    'dsn'      => '',
+    'hostname' => 'localhost',
+    'username' => 'bowed_associate_wib', // User DB DOM Cloud kamu
+    'password' => 'P5t41RH8FAh(y9vs--', // Password DB DOM Cloud
+    'database' => 'bowed_associate_wib_db',
+    'dbdriver' => 'mysqli',
+    'dbprefix' => '',
+    'pconnect' => FALSE,
+    'db_debug' => (ENVIRONMENT !== 'production'),
+    'cache_on' => FALSE,
+    'cachedir' => '',
+    'char_set' => 'utf8mb4',
+    'dbcollat' => 'utf8_general_ci',
+    'swap_pre' => '',
+    'encrypt'  => FALSE,
+    'compress' => FALSE,
+    'stricton'  => FALSE,
+    'failover' => array(),
+    'save_queries' => TRUE
+  );
+}
 else {
 	$db['default'] = array(
 		'dsn' => '',
