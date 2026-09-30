@@ -104,11 +104,12 @@ class Warning extends MY_Controller{
         $penalty = $data['penalty'];
 
         $dataNotification = [
-            'employeeId' => $nik,
+            'notification_id' => uniqid(),
+            'employee_id' => $nik,
             'description' => "kamu telah mendapatkan sanksi peringatan ke $spNumber dengan penalty sebesar $penalty",
+            'date' => date('Y-m-d'),
             'seen' => false,
             'nType' => 1,
-            'date' => date('Y-m-d')
         ];
 
         $q = $this->db->insert('warning', $data);
