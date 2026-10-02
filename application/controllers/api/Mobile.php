@@ -3152,8 +3152,8 @@ function login(){
         ]);
   }
   
-  function get_n1($employeeId){
-    $notifications = $this->db->query("select * from notification where employee_id = ? and seen = ? and nType = ?",[$employeeId,false,1]);
+  function get_notifications($employeeId,$nType){
+    $notifications = $this->db->query("select * from notification where employee_id = ? and seen = ? and nType = ?",[$employeeId,false,$nType]);
     
     $data = ['counter' => $numRows = $notifications->num_rows()];
     
@@ -3164,9 +3164,9 @@ function login(){
     ]);
   }
   
-  function update_n1($employeeId){
+  function mark_as_seen($employeeId,$nType){
         $this->db->where('employee_id', $employeeId);
-        $this->db->where('nType', 1);
+        $this->db->where('nType', $nType);
         $this->db->where('seen', false);
         $this->db->update('notification', [
           'seen' => true,

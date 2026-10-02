@@ -5,8 +5,10 @@ import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:http/http.dart' as http;
 import '../providers/global_state.dart';
 import '../providers/location_provider.dart';
+import '../env/env.dart';
 
 class MyHomePage extends ConsumerStatefulWidget {
   const MyHomePage({super.key});
@@ -29,6 +31,19 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
   @override
   void initState() {
     super.initState();
+  }
+
+  Future<void> _markTaskNotifAsSeen() async {
+    final globalState = ref.read(globalStateProvider);
+    final pegawaiId = globalState.other.pegawaiId;
+    if (pegawaiId.isEmpty) return;
+
+    final url = Uri.parse(
+      '${Env.api}/api/mobile/mark_as_seen/$pegawaiId/2',
+    );
+    await http.get(url);
+    // Refresh counter badge setelah mark as seen
+    ref.invalidate(taskNotifCountProvider);
   }
 
   DateTime makeTime(DateTime param) {
@@ -421,7 +436,12 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                           IconLabel(
                             icon: Icons.work,
                             label: 'Tugas',
-                            onPressed: () {
+                            badgeCount: ref.watch(taskNotifCountProvider).maybeWhen(
+                              data: (count) => count,
+                              orElse: () => 0,
+                            ),
+                            onPressed: () async {
+                              await _markTaskNotifAsSeen();
                               Navigator.pushNamed(
                                 context,
                                 '/task',
@@ -562,11 +582,13 @@ class IconLabel extends StatelessWidget {
   final IconData icon;
   final String label;
   final VoidCallback? onPressed;
+  final int badgeCount;
 
   const IconLabel({
     required this.icon,
     required this.label,
     this.onPressed, // optional
+    this.badgeCount = 0,
     super.key,
   });
 
@@ -577,9 +599,39 @@ class IconLabel extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          CircleAvatar(
-            backgroundColor: Colors.black,
-            child: Icon(icon, color: Colors.white),
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              CircleAvatar(
+                backgroundColor: Colors.black,
+                child: Icon(icon, color: Colors.white),
+              ),
+              if (badgeCount > 0)
+                Positioned(
+                  top: -4,
+                  right: -4,
+                  child: Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: const BoxDecoration(
+                      color: Colors.red,
+                      shape: BoxShape.circle,
+                    ),
+                    constraints: const BoxConstraints(
+                      minWidth: 18,
+                      minHeight: 18,
+                    ),
+                    child: Text(
+                      badgeCount > 99 ? '99+' : '$badgeCount',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+            ],
           ),
           const SizedBox(height: 4),
           Text(

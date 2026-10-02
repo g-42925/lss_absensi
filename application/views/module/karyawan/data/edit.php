@@ -40,10 +40,6 @@
             <input type="password" class="form-control" name="password" placeholder="**********" />
           </div>
           <div class="col-xl-6 col-md-6 col-sm-6 col-xs-6">
-            <label class="form-label">Jumlah cuti</label>
-            <input type="text" class="form-control" name="jumlahCuti" value="<?=$edit['jumlah_cuti'];?>" placeholder="..." />
-          </div>
-          <div class="col-xl-6 col-md-6 col-sm-6 col-xs-6">
             <label class="form-label">Salary</label>
             <input type="text" class="form-control" name="salary" value="<?=$edit['salary'];?>" placeholder="..." />
           </div>

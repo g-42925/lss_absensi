@@ -1,5 +1,8 @@
+import 'dart:convert';
 import 'package:hydrated_riverpod/hydrated_riverpod.dart';
+import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import '../env/env.dart';
 
 // typedef GlobalState = Map<String, Map<String, dynamic>>;
 typedef Task = ({List<String> started, List<String> finished});
@@ -867,3 +870,22 @@ class GlobalStateProvider extends HydratedStateNotifier<GlobalState> {
     };
   }
 }
+
+/// Provider untuk mengambil jumlah notifikasi tugas yang belum dibaca (nType=2)
+final taskNotifCountProvider = FutureProvider<int>((ref) async {
+  final globalState = ref.read(globalStateProvider);
+  final pegawaiId = globalState.other.pegawaiId;
+
+  if (pegawaiId.isEmpty) return 0;
+
+  final url = Uri.parse('${Env.api}/api/mobile/get_notifications/$pegawaiId/2');
+  final response = await http.get(url);
+
+  if (response.statusCode == 200) {
+    final body = jsonDecode(response.body);
+    if (body['success'] == true) {
+      return (body['data']['counter'] as num).toInt();
+    }
+  }
+  return 0;
+});

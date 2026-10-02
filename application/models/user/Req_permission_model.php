@@ -418,45 +418,21 @@ class Req_permission_model extends CI_Model {
 
         if($this->input->post('kat') == "c"){
           if($this->input->post("status") == 1){
-            $tanggalAwal = new DateTime($this->input->post('tgl1'));
-            $tanggalAkhir = new DateTime($this->input->post('tgl2'));
-            $difference = $tanggalAwal->diff($tanggalAkhir)->days+1;
-            if($employee['jumlah_cuti'] >= $difference){
-              $sisaJumlahCuti = $employee['jumlah_cuti'] - $difference;
-              $sisaJumlahCuti = $sisaJumlahCuti > 0 ? $sisaJumlahCuti :0;
-
-              $this->db->set([
-                'jumlah_cuti' => $sisaJumlahCuti,
-              ]);
-              $this->db->where(
-                'pegawai_id',$this->input->post('idp')[0]
-              );
-              $this->db->update(
-                'm_pegawai'
-              );
-            }
-            
-            if($difference > $employee['jumlah_cuti']){
-              $tanggalX = new DateTime($this->input->post('tgl1'));
-              $tanggalZ = new DateTime($this->input->post('tgl2'));
-              $cuti = intval($employee['jumlah_cuti']);
-              $tanggalX->modify("+{$cuti} day");
-
-              $tanggalZ->modify('+1 day');
+            $startDate = new DateTime($this->input->post('tgl1'));
+            $endDate = new DateTime($this->input->post('tgl2'));
+            $diff = $startDate ->diff($endDate)->days+1;
+            if($diff > $status['quota'] - $status['used']){
+              $dateX= new DateTime($this->input->post('tgl1'));
+              $dateZ = new DateTime($this->input->post('tgl2'));
+              $left = $status['quota'] - $status['used'];
+              $dateX->modify("+{$left} day");
+              $dateZ->modify('+1 day');
               $interval = new DateInterval('P1D');
-              $periode = new DatePeriod($tanggalX, $interval, $tanggalZ);
-              
-              
-              $this->db->set([
-                'jumlah_cuti' => 0,
-              ]);
-              $this->db->where(
-                'pegawai_id',$this->input->post('idp')[0]
-              );
-              $this->db->update(
-                'm_pegawai'
-              );
-              
+              $periode = new DatePeriod($dateX, $interval, $dateZ);
+              $this->db->set(['used' => $status['quota']]);
+              $this->db->where('employee_id',$this->input->post('idp')[0]);
+              $this->db->update('employee_leave_balance');
+
               foreach($periode as $tanggal){
                 $data = [
                   'deduction_id' => uniqid(),
@@ -472,11 +448,76 @@ class Req_permission_model extends CI_Model {
                   $data
                 );
               }
-              
-              
+            }
+            if($status['quota'] - $status['used'] > $diff){
+              $this->db->set(['used' => $status['quota'] - $diff]);
+              $this->db->where('employee_id',$this->input->post('idp')[0]);
+              $this->db->update('employee_leave_balance');
             }
           }
         }
+
+        // if($this->input->post('kat') == "c"){
+        //   if($this->input->post("status") == 1){
+        //     $tanggalAwal = new DateTime($this->input->post('tgl1'));
+        //     $tanggalAkhir = new DateTime($this->input->post('tgl2'));
+        //     $difference = $tanggalAwal->diff($tanggalAkhir)->days+1;
+        //     if($employee['jumlah_cuti'] >= $difference){
+        //       $sisaJumlahCuti = $employee['jumlah_cuti'] - $difference;
+        //       $sisaJumlahCuti = $sisaJumlahCuti > 0 ? $sisaJumlahCuti :0;
+
+        //       $this->db->set([
+        //         'jumlah_cuti' => $sisaJumlahCuti,
+        //       ]);
+        //       $this->db->where(
+        //         'pegawai_id',$this->input->post('idp')[0]
+        //       );
+        //       $this->db->update(
+        //         'm_pegawai'
+        //       );
+        //     }
+            
+        //     if($difference > $employee['jumlah_cuti']){
+        //       $tanggalX = new DateTime($this->input->post('tgl1'));
+        //       $tanggalZ = new DateTime($this->input->post('tgl2'));
+        //       $cuti = intval($employee['jumlah_cuti']);
+        //       $tanggalX->modify("+{$cuti} day");
+
+        //       $tanggalZ->modify('+1 day');
+        //       $interval = new DateInterval('P1D');
+        //       $periode = new DatePeriod($tanggalX, $interval, $tanggalZ);
+              
+              
+        //       $this->db->set([
+        //         'jumlah_cuti' => 0,
+        //       ]);
+        //       $this->db->where(
+        //         'pegawai_id',$this->input->post('idp')[0]
+        //       );
+        //       $this->db->update(
+        //         'm_pegawai'
+        //       );
+              
+        //       foreach($periode as $tanggal){
+        //         $data = [
+        //           'deduction_id' => uniqid(),
+        //           'employee_id' => $employee['pegawai_id'],
+        //           'deduction_type' => 'alpha-2',
+        //           'date' => $tanggal->format('Y-m-d'),
+        //           'amount' => intval($employee['salary'] / 26),
+        //           'note' => '...'
+        //         ];
+                
+        //         $this->db->insert(
+        //           'salary_deduction',
+        //           $data
+        //         );
+        //       }
+              
+              
+        //     }
+        //   }
+        // }
 
         if($this->input->post('status') == 1){
           $this->db->where('tanggal_absen',$this->input->post('tgl1'));

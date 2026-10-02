@@ -13,7 +13,7 @@
           <?= $pegawai['position_name'] ? ' / ' . htmlspecialchars($pegawai['position_name']) : ''; ?>
         </small>
       </div>
-      <a href="<?= base_url('karyawan/data'); ?>" class="btn btn-sm btn-label-secondary">
+      <a href="<?= base_url('kpi_summary/'); ?>" class="btn btn-sm btn-label-secondary">
         <i class="ti ti-arrow-left me-1"></i> Kembali
       </a>
     </div>

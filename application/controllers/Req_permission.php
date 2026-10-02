@@ -380,7 +380,7 @@ class Req_permission extends MY_Controller {
             $data = ['used' => $status['used'] + 1];
             $this->db->where('employee_id', $employeeId);
             $this->db->update('employee_leave_balance', $data);
-        } 
+        }
         else {
             $data = [
                 'deduction_id' => uniqid(),

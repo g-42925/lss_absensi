@@ -30,7 +30,6 @@
             <th class="w-s-n ">Nama Lengkap</th>
             <th class="w-s-n">No WhatsApp</th>
             <th class="w-s-n">Alamat</th>
-            <th class="w-s-n">cuti</th>
             <th class="w-s-n">Tangggal Kontrak</th>
             <th>Gaji</th>
             <th>Action</th>
@@ -49,7 +48,6 @@
             </td>
             <td><?= $row['nomor_pegawai'];?></td>
             <td><?= $row['address'] == "" ? "-":$row['address']; ?></td>
-            <td><?= $row['jumlah_cuti'] ?> </td>
             <td><?= $row['status_pegawai'] == 'contract' ? date('d M Y',strtotime($row['contract_start_date']))."-".date('d M Y',strtotime($row['contract_end_date'])):"-" ?></td>
             <td><?= number_format($row['salary'],2); ?></td>
             <td>
@@ -59,7 +57,7 @@
               <a href="#" class="btn p-1" data-bs-toggle="modal" data-bs-target="#delRow<?=$row['pegawai_id'];?>" title="Hapus">
                 <i class="ti ti-trash"></i>
               </a>
-              <a href="<?= base_url('allowance/config/').$row['pegawai_id'] ?>" class="btn p-1" titke="bonus / tunjangan">
+              <a href="<?= base_url('allowance/config/').$row['pegawai_id'] ?>" class="btn p-1" title="bonus / tunjangan">
                 <i class="ti ti-currency-dollar"></i>
               </a>
               <a href="<?= base_url('benefit/config/').$row['pegawai_id'] ?>" class="btn p-1" title="potongan">

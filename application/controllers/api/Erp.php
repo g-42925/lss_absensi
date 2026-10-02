@@ -79,7 +79,17 @@ class Erp extends CI_Controller{
     
     $company = $this->db->query('select * from companies where erpId = ?',[$erpId])->row_array();
 
-    $employees = $this->db->query("select * from m_pegawai where company_id = ? and is_del = 'n'",[$company['id']])->result_array();
+    $akhirBulan = date('Y-m-t', strtotime(sprintf('%04d-%02d-01', $year, $month)));
+    
+    $employees = $this->db->query(
+      "SELECT * FROM m_pegawai 
+       WHERE company_id = ? 
+         AND is_del = 'n'
+         AND startWorkingAt <= ?",
+      [$company['id'], $akhirBulan]
+    )->result_array();
+            
+    
 
     foreach ($employees as $index => $emp) {
       $awalBulan = date($year.'-'.$month.'-'.'01');
