@@ -450,7 +450,7 @@ class Req_permission_model extends CI_Model {
               }
             }
             if($status['quota'] - $status['used'] > $diff){
-              $this->db->set(['used' => $status['quota'] - $diff]);
+              $this->db->set(['used' => $status['used'] + $diff]);
               $this->db->where('employee_id',$this->input->post('idp')[0]);
               $this->db->update('employee_leave_balance');
             }
