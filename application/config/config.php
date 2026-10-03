@@ -30,18 +30,20 @@ date_default_timezone_set('Asia/Jakarta');
 // $config['base_url'] .= "://".$_SERVER['HTTP_HOST'];
 // $config['base_url'] .= str_replace(basename($_SERVER['SCRIPT_NAME']),"",$_SERVER['SCRIPT_NAME']);
 
+// Solusi Issue 3: HTTPS & Redirect Loop (Support Coolify & Hostinger)
+if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && strtolower($_SERVER['HTTP_X_FORWARDED_PROTO']) === 'https') {
+    $_SERVER['HTTPS'] = 'on'; // Paksa set global HTTPS agar CI3 paham ini berjalan di https via proxy
+}
+
 $is_https = (
     (isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) === 'on') ||
-    (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && strtolower($_SERVER['HTTP_X_FORWARDED_PROTO']) === 'https') ||
-    (isset($_SERVER['HTTP_X_FORWARDED_SSL']) && strtolower($_SERVER['HTTP_X_FORWARDED_SSL']) === 'on') ||
     (isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443)
 );
-// $config['base_url'] = ($is_https ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'] . str_replace(basename($_SERVER['SCRIPT_NAME']), "", $_SERVER['SCRIPT_NAME']);
 
-//$config['base_url'] = 'http://192.168.1.14/lss_absensi';
 $protocol = $is_https ? "https://" : "http://";
-$host     = $_SERVER['HTTP_HOST'] ?? 'localhost';
-$config['base_url'] = $protocol . $host . '/';
+$host     = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : 'localhost';
+$dir      = str_replace(basename($_SERVER['SCRIPT_NAME']), "", $_SERVER['SCRIPT_NAME']);
+$config['base_url'] = $protocol . $host . $dir;
 
 $config['nhub_url'] = $config['base_url'].'../';
 
@@ -401,10 +403,15 @@ $config['encryption_key'] = '';
 | except for 'cookie_prefix' and 'cookie_httponly', which are ignored here.
 |
 */
+// Solusi Issue 2: Session Storage yang aman (Support Coolify & Hostinger)
+$session_path = APPPATH . 'cache/sessions/';
+if (!is_dir($session_path)) {
+    @mkdir($session_path, 0755, true);
+}
 $config['sess_driver'] = 'files';
-$config['sess_cookie_name'] = 'ci_session';
+$config['sess_cookie_name'] = 'lss_absensi_session'; // Nama unik mencegah bentrok di Hostinger
 $config['sess_expiration'] = 10800;
-$config['sess_save_path'] = (is_dir(APPPATH.'cache/') && is_writable(APPPATH.'cache/')) ? APPPATH.'cache/' : sys_get_temp_dir();
+$config['sess_save_path'] = (is_dir($session_path) && is_writable($session_path)) ? $session_path : sys_get_temp_dir();
 $config['sess_match_ip'] = FALSE;
 $config['sess_time_to_update'] = 300;
 $config['sess_regenerate_destroy'] = FALSE;
