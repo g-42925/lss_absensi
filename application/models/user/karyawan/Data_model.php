@@ -212,7 +212,8 @@ class Data_model extends CI_Model {
             'contract_end_date'   => $this->input->post('contract_end_date'),
             'on_training'         => $this->input->post('on_training'),
             'address'             => $this->input->post('alamat'),
-            'married'             => $this->input->post('statusPernikahan')
+            'married'             => $this->input->post('statusPernikahan'),
+            'startWorkingAt'      => $this->input->post('startWorkingAt')
         ]);
         $this->db->where('pegawai_id', $id);
         $res = $this->db->update('m_pegawai');
