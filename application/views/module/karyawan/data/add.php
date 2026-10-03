@@ -105,13 +105,17 @@
               <option value="0">No</option>
             </select>
           </div>
+          <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6" id="swa">
+            <label class="form-label">Start working at<i class="text-danger">*</i></label>
+            <input class="form-control" name="startWorkingAt" placeholder="YYYY-MM-DD" id="flatpickr-date" required />
+          </div>
           <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 hidden" id="csd">
             <label class="form-label">Contract start date<i class="text-danger">*</i></label>
-            <input class="form-control" name="contract_start_date" placeholder="YYYY-MM-DD" id="flatpickr-date" required />
+            <input class="form-control" name="contract_start_date" placeholder="YYYY-MM-DD" id="flatpickr-date" />
           </div>
           <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 hidden" id="ced">
             <label class="form-label">Contract end date<i class="text-danger">*</i></label>
-            <input class="form-control" name="contract_end_date" placeholder="YYYY-MM-DD" id="flatpickr-date-2" required />
+            <input class="form-control" name="contract_end_date" placeholder="YYYY-MM-DD" id="flatpickr-date-2" />
           </div>
           <div class="col-xl-6 col-md-6 col-sm-6 col-xs-6 hidden">
             <label class="form-label" for="multicol-country">Status<i class="text-danger">*</i></label>

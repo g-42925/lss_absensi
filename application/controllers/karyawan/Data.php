@@ -260,6 +260,7 @@ class Data extends MY_Controller {
         $this->form_validation->set_rules('nik','Nik','trim|required|xss_clean|htmlspecialchars|min_length[16]');
         $this->form_validation->set_rules('alamat','Alamat','trim|xss_clean|htmlspecialchars');
         $this->form_validation->set_rules('statusPernikahan','Status Pernikahan','trim|required|xss_clean|htmlspecialchars');
+        $this->form_validation->set_rules('startWorkingAt', 'Mulai Bekerja Dari','trim|required|xss_clean|htmlspecialchars');
 
         if ($this->form_validation->run() == false) {
             $this->session->set_flashdata('message', '<div class="alert alert-danger p-cg" role="alert">'.validation_errors().'</div>');

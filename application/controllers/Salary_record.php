@@ -92,7 +92,17 @@ class Salary_record extends MY_Controller
     $companyData = $this->db->query("select * from companies where id = ?", [$company])->row_array();
     $spPolicy = $companyData['sp_deduction_policy'] ?? 'tiap_bulan';
 
-    $employees = $this->db->query("select * from m_pegawai where company_id = $company and is_del = 'n'")->result_array();
+    //$employees = $this->db->query("select * from m_pegawai where company_id = $company and is_del = 'n'")->result_array();
+
+    $akhirBulan = date('Y-m-t', strtotime(sprintf('%04d-%02d-01', date('Y'), date('m'))));
+
+    $employees = $this->db->query(
+      "SELECT * FROM m_pegawai 
+       WHERE company_id = ? 
+         AND is_del = 'n'
+         AND startWorkingAt <= ?",
+      [$company, $akhirBulan]
+    )->result_array();
 
     foreach ($employees as $index => $emp) {
       $awalBulan = date('Y-m-01');
@@ -328,7 +338,16 @@ class Salary_record extends MY_Controller
     $companyData = $this->db->query("select * from companies where id = ?", [$company])->row_array();
     $spPolicy = $companyData['sp_deduction_policy'] ?? 'tiap_bulan';
 
-    $employees = $this->db->query("select * from m_pegawai where company_id = $company and is_del = 'n'")->result_array();
+
+    $akhirBulan = date('Y-m-t', strtotime(sprintf('%04d-%02d-01', date('Y'), $month)));
+
+    $employees = $this->db->query(
+      "SELECT * FROM m_pegawai 
+       WHERE company_id = ? 
+         AND is_del = 'n'
+         AND startWorkingAt <= ?",
+      [$company, $akhirBulan]
+    )->result_array();
 
     foreach ($employees as $index => $emp) {
       $awalBulan = date('Y-' . $month . '-01');
@@ -397,8 +416,8 @@ class Salary_record extends MY_Controller
     }
 
     foreach ($employees as $index => $emp) {
-      $awalBulan = date('Y-m-01');
-      $akhirBulan = date('Y-m-t');
+      $awalBulan = date('Y-m-01', strtotime(date('Y') . '-' . $month . '-01'));
+      $akhirBulan = date('Y-m-t', strtotime(date('Y') . '-' . $month . '-01'));
       $recap = $this->db->query("select * from recap where employee_id = ? and date between ? and ? and required = ?", [$emp['pegawai_id'], $awalBulan, $akhirBulan, true])->result_array();
       $absences = $this->db->query("select * from tx_absensi where pegawai_id = ? and tanggal_absen between ? and ?", [$emp['pegawai_id'], $awalBulan, $akhirBulan])->result_array();
       foreach ($this->db->query("select * from allowance a join employee_allowance ea on a.allowance_id = ea.allowance_id where a.company_id = ? and ea.employee_id = ?", [$company, $emp['pegawai_id']])->result_array() as $idx => $a) {
@@ -410,6 +429,13 @@ class Salary_record extends MY_Controller
                   $hasil = array_filter($absences, function ($item) {
                     return $item['isLate'] == 1;
                   });
+
+                  // if($emp['pegawai_id'] == '106'){
+                  //   //print_r($a);
+                  //   print_r($absences);
+                  //   print_r($hasil);
+                  //   exit;
+                  // }
                   if (count($hasil) < 1) {
                     $employees[$index]['plus'][] = ['name' => $a['name'], 'value' => $a['value']];
                   }

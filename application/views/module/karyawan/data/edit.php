@@ -67,6 +67,10 @@
               <option <?= $edit['on_training'] == 0 ? 'selected':'' ?> value="1">No</option>
             </select>
           </div>
+          <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6" id="startWorkingAt">
+            <label class="form-label">Start Working At<i class="text-danger">*</i></label>
+            <input class="form-control" name="startWorkingAt" value="<?= $edit['startWorkingAt'] ?>" id="flatpickr-date" required />
+          </div>          
           <div class="col-xl-6 col-md-6 col-sm-6 col-xs-6">
             <label class="form-label" for="multicol-country">Jenis Kelamin<i class="text-danger">*</i></label>
             <select class="select2 form-select" name="jeniskelamin" required>

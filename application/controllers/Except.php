@@ -115,11 +115,13 @@ class Except extends MY_Controller {
       
       $exception = $this->db->query("select * from exception where id = ?",[$id])->row_array();
       $employee = $this->db->query("select * from m_pegawai where pegawai_id = ?",[$exception['employee_id']])->row_array();
+      $absensi = $this->db->query("select * from tx_absensi where pegawai_id = ? and tanggal_absen =  ?",[$exception['employee_id'],$exception['date']])->row_array();
+
 
       $leaveStatus = $this->db->query("select * from employee_leave_balance where employee_id = ? order by id desc limit 1",[$exception['employee_id']])->row_array();
 
       if($status == "1" && $exception['is_csh']){
-        if($employee['jumlah_cuti'] >= 0.5){
+        if($leaveStatus['quota'] - $leaveStatus['used'] >= 0.5){
           $this->db->set(['used' => $leaveStatus['used'] + 0.5]);
           $this->db->where('employee_id', $employee['pegawai_id']);
           $this->db->update('employee_leave_balance');
@@ -142,7 +144,10 @@ class Except extends MY_Controller {
             'amount' => $halfOfOneDaySalary,
             'note' => '...'     
           ];
-          
+
+          $this->db->where('absen_id', $absensi['absen_id']);
+          $this->db->update('tx_absensi', ['isLate' => true]);
+
           $this->db->insert('salary_deduction',$cshData);
 
         }

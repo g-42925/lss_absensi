@@ -85,7 +85,8 @@ class Data_model extends CI_Model {
             'contract_end_date'   => $this->input->post('contract_end_date'),
             'on_training'         => $this->input->post('on_training'),
             'address'             => $this->input->post('alamat'),
-            'married'             => $this->input->post('statusPernikahan')
+            'married'             => $this->input->post('statusPernikahan'),
+            'startWorkingAt'      => $this->input->post('startWorkingAt'),
         ];
 
         $this->db->trans_begin();
@@ -162,7 +163,6 @@ class Data_model extends CI_Model {
         }
         else{
           $this->db->insert('employee_leave_balance',[
-            'id' => uniqid(),
             'employee_id' => $newPegawaiId,
             'from' => date('Y-m-d'),
             'to' => date('Y-m-d', strtotime('+1 year -1 day')),
