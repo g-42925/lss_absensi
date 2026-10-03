@@ -502,6 +502,9 @@
 <IfModule mod_php.c>
     php_value display_errors On
 </IfModule>
+<IfModule mod_env.c>
+    SetEnvIf X-Forwarded-Proto "^https$" HTTPS=on
+</IfModule>
 
 <IfModule mod_rewrite.c>
     RewriteEngine On
