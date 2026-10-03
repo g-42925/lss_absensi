@@ -36,10 +36,12 @@ $is_https = (
     (isset($_SERVER['HTTP_X_FORWARDED_SSL']) && strtolower($_SERVER['HTTP_X_FORWARDED_SSL']) === 'on') ||
     (isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443)
 );
-$config['base_url'] = ($is_https ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'] . str_replace(basename($_SERVER['SCRIPT_NAME']), "", $_SERVER['SCRIPT_NAME']);
+// $config['base_url'] = ($is_https ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'] . str_replace(basename($_SERVER['SCRIPT_NAME']), "", $_SERVER['SCRIPT_NAME']);
 
 //$config['base_url'] = 'http://192.168.1.14/lss_absensi';
-
+$protocol = $is_https ? "https://" : "http://";
+$host     = $_SERVER['HTTP_HOST'] ?? 'localhost';
+$config['base_url'] = $protocol . $host . '/';
 
 $config['nhub_url'] = $config['base_url'].'../';
 
@@ -541,6 +543,6 @@ $config['rewrite_short_tags'] = FALSE;
 | Comma-separated:	'10.0.1.200,192.168.5.0/24'
 | Array:		array('10.0.1.200', '192.168.5.0/24')
 */
-$config['proxy_ips'] = '';
+$config['proxy_ips'] = '10.0.0.0/8,172.16.0.0/12,192.168.0.0/16';
 
 $config['otp_secret_key'] = 'KunciRahasiaSistemSaya123!';
