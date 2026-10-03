@@ -21,8 +21,23 @@ class Erp extends CI_Controller{
     echo json_encode($employeeList);
   }
   
-  function payroll($erpId,$year,$month){
-    $data['filter'] = date('m');
+  public function payroll($erpId,$year,$month){
+    header('Access-Control-Allow-Origin: http://192.168.1.29:3000');
+    header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+    header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
+
+    if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+        http_response_code(204);
+        exit;
+    }
+
+    $data['htmlpagejs'] = 'none';
+    $data['nmenu']      = 'Rekap Gaji';
+    $data['title']      = 'Rekap Gaji';
+    $data['namalabel']  = $data['title'];
+    $data['auth']       = authUser();
+
+    $data['filter'] = $month;
 
     $thpGrandTotal = 0;
 
@@ -76,11 +91,14 @@ class Erp extends CI_Controller{
         'month' => 'december'
       ],
     ];
-    
-    $company = $this->db->query('select * from companies where erpId = ?',[$erpId])->row_array();
 
-    $akhirBulan = date('Y-m-t', strtotime(sprintf('%04d-%02d-01', $year, $month)));
-    
+    $company = $this->db->query("select * from companies where erpId = ?",[$erpId])->row_array();
+    //$companyData = $this->db->query("select * from companies where id = ?", [$company['id']])->row_array();
+    //$spPolicy = $companyData['sp_deduction_policy'] ?? 'tiap_bulan';
+
+
+    $akhirBulan = date('Y-m-t', strtotime(sprintf('%04d-%02d-01', date('Y'), $month)));
+
     $employees = $this->db->query(
       "SELECT * FROM m_pegawai 
        WHERE company_id = ? 
@@ -88,14 +106,14 @@ class Erp extends CI_Controller{
          AND startWorkingAt <= ?",
       [$company['id'], $akhirBulan]
     )->result_array();
-            
-    
 
     foreach ($employees as $index => $emp) {
-      $awalBulan = date($year.'-'.$month.'-'.'01');
-      $akhirBulan = date($year.'-'.$month.'-'.'t');
+      $awalBulan = date('Y-' . $month . '-01');
+      $akhirBulan = date('Y-' . $month . '-t');
       $deduction = $this->db->query("select * from salary_deduction where employee_id = $emp[pegawai_id] and date between '$awalBulan' and '$akhirBulan'")->result_array();
       $employees[$index]['deduction'] = $deduction;
+      $penalties = $this->db->query("SELECT * FROM warning WHERE MONTH(expired) >= {$data['filter']} AND employeeId = $emp[pegawai_id]")->result_array();
+      $employees[$index]['penalties'] = $penalties;
     }
 
     foreach ($employees as $index => $emp) {
@@ -104,7 +122,7 @@ class Erp extends CI_Controller{
       $alpha2 = 0;
       $latePenalty = 0;
       $sick = 0;
-
+      $penalty = 0;
       $deduction = [];
 
       foreach ($emp['deduction'] as $idx => $d) {
@@ -120,26 +138,32 @@ class Erp extends CI_Controller{
         if ($d['deduction_type'] == 'late penalty') {
           $latePenalty += $d['amount'];
         }
-        if ($d['deduction_type'] == 'mmc') {
+        if ($d['deduction_type'] == 'denda sakit') {
           $sick += $d['amount'];
         }
       }
+
+      foreach ($emp['penalties'] as $idx => $p) {
+        $penalty += $p['penalty'];
+      }
+
 
       $deduction['clockout_late'] = $clockoutLatePenalty;
       $deduction['clockout_forget'] = $clockoutForget;
       $deduction['alpha-2'] = $alpha2;
       $deduction['late_penalty'] = $latePenalty;
       $deduction['sick'] = $sick;
+      $deduction['penalty'] = $penalty;
 
       unset($employees[$index]['deduction']);
-
+     
       $employees[$index]['minus'][] = ['name' => 'Clockout Late Penalty', 'value' => $clockoutLatePenalty];
       $employees[$index]['minus'][] = ['name' => 'Clockout Forget', 'value' => $clockoutForget];
       $employees[$index]['minus'][] = ['name' => 'Alpha-2', 'value' => $alpha2];
       $employees[$index]['minus'][] = ['name' => 'Late Penalty', 'value' => $latePenalty];
       $employees[$index]['minus'][] = ['name' => 'Denda sakit', 'value' => $sick];
+      $employees[$index]['minus'][] = ['name' => 'Penalty', 'value' => $penalty];
     }
-
 
     foreach ($employees as $index => $emp) {
       foreach ($this->db->query("select * from benefit b join employee_benefit eb on b.benefit_id = eb.benefit_id where b.company_id = ? and eb.employee_id = ?", [$company['id'], $emp['pegawai_id']])->result_array() as $idx => $b) {
@@ -150,8 +174,8 @@ class Erp extends CI_Controller{
     }
 
     foreach ($employees as $index => $emp) {
-      $awalBulan = date($year.'-'.$month.'-'.'01');
-      $akhirBulan = date($year.'-'.$month.'-'.'t');
+      $awalBulan = date('Y-m-01', strtotime(date('Y') . '-' . $month . '-01'));
+      $akhirBulan = date('Y-m-t', strtotime(date('Y') . '-' . $month . '-01'));
       $recap = $this->db->query("select * from recap where employee_id = ? and date between ? and ? and required = ?", [$emp['pegawai_id'], $awalBulan, $akhirBulan, true])->result_array();
       $absences = $this->db->query("select * from tx_absensi where pegawai_id = ? and tanggal_absen between ? and ?", [$emp['pegawai_id'], $awalBulan, $akhirBulan])->result_array();
       foreach ($this->db->query("select * from allowance a join employee_allowance ea on a.allowance_id = ea.allowance_id where a.company_id = ? and ea.employee_id = ?", [$company['id'], $emp['pegawai_id']])->result_array() as $idx => $a) {
@@ -163,6 +187,13 @@ class Erp extends CI_Controller{
                   $hasil = array_filter($absences, function ($item) {
                     return $item['isLate'] == 1;
                   });
+
+                  // if($emp['pegawai_id'] == '106'){
+                  //   //print_r($a);
+                  //   print_r($absences);
+                  //   print_r($hasil);
+                  //   exit;
+                  // }
                   if (count($hasil) < 1) {
                     $employees[$index]['plus'][] = ['name' => $a['name'], 'value' => $a['value']];
                   }
@@ -197,7 +228,10 @@ class Erp extends CI_Controller{
     }
 
     foreach ($employees as $index => $emp) {
-      foreach ($this->db->query("select * from reimburse_claim where employee_id = ? and Date(date) between ? and ? and status = ?", [$emp['pegawai_id'], date('Y-m-1'), date('Y-m-t'), 'approved'])->result_array() as $idx => $rmb) {
+      $awalBulan = date('Y-m-01', strtotime(date('Y') . '-' . $month . '-01'));
+      $akhirBulan = date('Y-m-t 23:59:59', strtotime($awalBulan));
+
+      foreach ($this->db->query("select * from reimburse_claim where employee_id = ? and Date(date) between ? and ? and status = ?", [$emp['pegawai_id'], $awalBulan, $akhirBulan, 'approved'])->result_array() as $idx => $rmb) {
         $reimburse = $this->db->query("select * from reimburse where reimburse_id = ?", [$rmb['reimburse_id']])->row_array();
         $employees[$index]['plus'][] = ['name' => $reimburse['reimburse_name'], 'value' => $rmb['value']];
       }
@@ -213,18 +247,17 @@ class Erp extends CI_Controller{
     }
 
     foreach ($employees as $index => $emp) {
-      $bulan = date('n'); // 1-12
+      $bulan = $month; // 1-12
       $tahun = date('Y');
       $isFebruari = $bulan == 2;
       $isKabisat = checkdate(2, 29, $tahun);
-      $awalBulan = date($year.'-'.$month.'-'.'01');
-      $akhirBulan = date($year.'-'.$month.'-'.'t');
+      $awalBulan = date('Y-m-01', strtotime(date('Y') . '-' . $month . '-01'));
+      $akhirBulan = date('Y-m-t', strtotime($awalBulan));
       $recap = $this->db->query("select * from recap where employee_id = ? and date between ? and ? and required = ?", [$emp['pegawai_id'], $awalBulan, $akhirBulan, true])->num_rows();
       $basicIncome = $isFebruari ? ($isKabisat ? $emp['salary'] / 24 : $emp['salary'] / 25) : $emp['salary'] / 26;
 
       $employees[$index]['totalPlus'] = array_sum(array_column($emp['plus'] ?? [], 'value'));
       $employees[$index]['totalMinus'] = array_sum(array_column($emp['minus'] ?? [], 'value'));
-
       $employees[$index]['income'] = ($recap * $basicIncome) + array_sum(array_column($emp['plus'] ?? [], 'value'));
       $employees[$index]['thp'] = $employees[$index]['income'] - $employees[$index]['totalMinus'];
 
@@ -237,4 +270,5 @@ class Erp extends CI_Controller{
     
     echo json_encode($data);
   }
+
 }
