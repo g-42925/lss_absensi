@@ -63,7 +63,7 @@ class Auth extends MY_Controller {
                         'permission_id' => $user['permission_id'],
                         'company_id'    => $user['company_id'],
                         'nama_lengkap'  => $user['nama_lengkap'],
-                        'position_id'   => $user['position_id'],
+                        'position_id'   => $user['position_id'] ?? null,
                         'login_expired' => time() + $rememberDuration
                     ];
 
