@@ -45,7 +45,7 @@ class Auth extends MY_Controller {
         $password = $this->input->post('password');
         $remember = $this->input->post('remember');
         $user = $this->auth->proses_login($email);
-        $rememberDuration = $remember == "on" ? 7200 : 3600;
+        $rememberDuration = $remember == "on" ? 7300 : 3600;
 
         if ($user != null) {
             if ($user['is_status']=='y') {
