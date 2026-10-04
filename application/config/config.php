@@ -30,9 +30,15 @@ date_default_timezone_set('Asia/Jakarta');
 // $config['base_url'] .= "://".$_SERVER['HTTP_HOST'];
 // $config['base_url'] .= str_replace(basename($_SERVER['SCRIPT_NAME']),"",$_SERVER['SCRIPT_NAME']);
 
-// Solusi Issue 3: HTTPS & Redirect Loop (Support Coolify & Hostinger)
-if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && strtolower($_SERVER['HTTP_X_FORWARDED_PROTO']) === 'https') {
-    $_SERVER['HTTPS'] = 'on'; // Paksa set global HTTPS agar CI3 paham ini berjalan di https via proxy
+// Solusi Issue 3: HTTPS & Redirect Loop (Support Coolify/Traefik & Hostinger)
+// Coolify/Traefik mengirim X-Forwarded-Proto: https
+if (
+    (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && strtolower($_SERVER['HTTP_X_FORWARDED_PROTO']) === 'https') ||
+    (isset($_SERVER['HTTP_X_FORWARDED_SSL']) && strtolower($_SERVER['HTTP_X_FORWARDED_SSL']) === 'on') ||
+    (isset($_SERVER['HTTP_FORWARDED']) && strpos(strtolower($_SERVER['HTTP_FORWARDED']), 'proto=https') !== false)
+) {
+    $_SERVER['HTTPS'] = 'on';
+    $_SERVER['SERVER_PORT'] = 443; // Paksa port 443 agar CI3 tidak salah deteksi
 }
 
 $is_https = (
@@ -42,7 +48,7 @@ $is_https = (
 
 $protocol = $is_https ? "https://" : "http://";
 $host     = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : 'localhost';
-$dir      = str_replace(basename($_SERVER['SCRIPT_NAME']), "", $_SERVER['SCRIPT_NAME']);
+$dir      = '/';
 $config['base_url'] = $protocol . $host . $dir;
 
 $config['nhub_url'] = $config['base_url'].'../';
@@ -434,8 +440,9 @@ $config['sess_regenerate_destroy'] = FALSE;
 $config['cookie_prefix']	= '';
 $config['cookie_domain']	= '';
 $config['cookie_path']		= '/';
-$config['cookie_secure']	= FALSE;
-$config['cookie_httponly'] 	= FALSE;
+// Aktifkan cookie_secure saat HTTPS agar session berfungsi benar di browser modern via reverse proxy
+$config['cookie_secure']	= $is_https ? TRUE : FALSE;
+$config['cookie_httponly'] 	= TRUE;
 
 /*
 |--------------------------------------------------------------------------

@@ -3,8 +3,11 @@ FROM php:8.1-apache
 # Install ekstensi MySQLi dan pdo_mysql yang dibutuhkan CI3
 RUN docker-php-ext-install mysqli pdo pdo_mysql
 
-# Enable module rewrite Apache untuk (.htaccess / URL rewrite CI3)
-RUN a2enmod rewrite
+# Enable module rewrite, env, headers Apache untuk (.htaccess / URL rewrite CI3 + HTTPS proxy)
+RUN a2enmod rewrite env headers
+
+# Set ServerName untuk menghindari warning FQDN
+RUN echo 'ServerName localhost' >> /etc/apache2/apache2.conf
 
 # Copy seluruh file proyek ke folder web root Apache
 COPY . /var/www/html/
