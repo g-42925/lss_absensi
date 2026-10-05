@@ -129,7 +129,19 @@ class Attendance_model extends CI_Model {
             if ($tgl >= $row['tanggal_mulai_kerja']) {
 
 
-                $q3 = $this->db->query("SELECT * FROM tx_request_izin a JOIN tx_request_izin_pegawai b ON a.request_izin_id=b.request_izin_id WHERE b.pegawai_id='$row[pid]' AND a.is_status=1 AND (a.tanggal_request='$tgl' OR (date(a.tanggal_request) BETWEEN a.tanggal_request AND '$tgl' AND date(a.tanggal_request_end) BETWEEN '$tgl' AND a.tanggal_request_end AND a.tanggal_request_end!=''))")->row_array();
+                $q3 = $this->db->query(
+                    "SELECT *
+FROM tx_request_izin a
+JOIN tx_request_izin_pegawai b
+    ON a.request_izin_id = b.request_izin_id
+WHERE b.pegawai_id = '100'
+  AND a.is_status = 1
+  AND a.tanggal_request <= '2026-10-05'
+  AND (
+      a.tanggal_request_end >= '2026-10-05'
+      OR a.tanggal_request_end IS NULL
+  )"
+                )->row_array();
 
                 if (isset($q3['tipe_request']))
                     $row['is_status'] = $q3['tipe_request'];
