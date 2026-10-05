@@ -12,7 +12,7 @@
 	},
 	"require": {
 		"php": ">=8.2",
-		"dompdf/dompdf": "^2.0.8",
+		"dompdf/dompdf": "^3.0",
 		"xendit/xendit-php": "^2.19",
 		"aws/aws-sdk-php": "^3.263",
 		"endroid/qr-code": "^6.0",
