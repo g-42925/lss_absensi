@@ -8,13 +8,13 @@ use Aws\Exception\AwsException;
 
 class S3_model extends CI_Model {
 
-    private $bucket = 'leryn-ljm-1';
+    private $bucket = 'leryn-ljm-10';
     private $endpoint = 'https://de-s3.storage.bunnycdn.com';
-    private $cdn = 'https://leryn-ljm-1.b-cdn.net/';
+    private $cdn = 'https://leryn-ljm-10.b-cdn.net/';
 
-    private $accessKey = 'leryn-ljm-1';
+    private $accessKey = 'leryn-ljm-10';
 
-    private $secretKey = '69427750-0f24-44a3-9ec6b2279be8-9a16-47ec';  
+    private $secretKey = '06ea0a87-4b56-4cc3-a927ce9ff86a-26b1-44ad';  
 
 
     public function __construct() {
