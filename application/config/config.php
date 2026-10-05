@@ -164,10 +164,21 @@ $config['subclass_prefix'] = 'MY_';
 | Note: This will NOT disable or override the CodeIgniter-specific
 |	autoloading (application/config/autoload.php)
 */
-if (phpversion()>='7.2.5') {
-	$config['composer_autoload'] = FCPATH . 'vendor/autoload.php'; // FALSE
-}else{
-	$config['composer_autoload'] = true;
+/*
+|--------------------------------------------------------------------------
+| Composer auto-loading
+|--------------------------------------------------------------------------
+*/
+if (file_exists(FCPATH . 'vendor/autoload.php')) {
+    $config['composer_autoload'] = FCPATH . 'vendor/autoload.php';
+} 
+// 2. Fallback jika vendor diletakkan di dalam folder application/
+elseif (file_exists(APPPATH . 'vendor/autoload.php')) {
+    $config['composer_autoload'] = APPPATH . 'vendor/autoload.php';
+} 
+// 3. Fallback default
+else {
+    $config['composer_autoload'] = TRUE;
 }
 
 /*
