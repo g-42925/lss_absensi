@@ -1,4 +1,4 @@
-FROM php:8.1-apache
+FROM php:8.2-apache
 
 # 1. Copy binary Composer langsung dari image resmi
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
