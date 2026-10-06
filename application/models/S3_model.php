@@ -23,12 +23,11 @@ class S3_model extends CI_Model {
 
     private function getS3(){
         return new S3Client([
-            'version' => 'latest',
             'endpoint' => $this->endpoint,
             'region' => 'auto',
             'credentials' => [
-                'accessKeyId' => $this->accessKey,
-                'secretAccessKey' => $this->secretKey,
+                'key' => $this->accessKey,
+                'secret' => $this->secretKey,
             ],
         ]);
     }
