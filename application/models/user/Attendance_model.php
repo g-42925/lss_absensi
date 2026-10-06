@@ -577,9 +577,11 @@ WHERE b.pegawai_id = '100'
             FROM tx_request_izin a 
             JOIN tx_request_izin_pegawai b ON a.request_izin_id = b.request_izin_id 
             WHERE b.pegawai_id = ? 
-            AND a.is_status = 1";    
+            AND a.is_status = 1 
+            (AND ? >= DATE(a.tanggal_request) 
+            AND ? <= DATE(a.tanggal_request_end))";            
 
-            $q3 = $this->db->query($sql, array($row['pid']))->row_array();
+            $q3 = $this->db->query($sql, array($row['pid'], $rowTgl, $rowTgl))->row_array();
            
           
 
