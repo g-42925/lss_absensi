@@ -10,7 +10,7 @@ class S3_model extends CI_Model {
 
     private $cdn = 'https://cdn.lerynpest.com/';
     private $bucket = 'absensi-lerynsoftware-com';
-    private $endpoint = 'https://a9b834b798483ca01f0f33ccfab2d31d.r2.cloudflarerstorage.com';
+    private $endpoint = 'https://a9b834b798483ca01f0f33ccfab2d31d.r2.cloudflarestorage.com';
 
     private $accessKey = '9d95d51b57c4f172b3c7fe54c850843e';
 
@@ -26,10 +26,9 @@ class S3_model extends CI_Model {
             'version' => 'latest',
             'endpoint' => $this->endpoint,
             'region' => 'auto',
-            'use_path_style_endpoint' => true,
             'credentials' => [
-                'key' => $this->accessKey,
-                'secret' => $this->secretKey,
+                'accessKeyId' => $this->accessKey,
+                'secretAccessKey' => $this->secretKey,
             ],
         ]);
     }
@@ -51,8 +50,7 @@ class S3_model extends CI_Model {
         $result = $this->getS3()->putObject([
             'Bucket' => $this->bucket,
             'Key' => $key,
-            'SourceFile' => $file,
-            'ContentType' => $contentType,
+            'Body' => $file,
         ]);
 
         return $this->cdn . $key;
