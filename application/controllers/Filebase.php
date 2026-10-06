@@ -71,11 +71,14 @@ class Filebase extends MY_Controller{
     #[SkipPermission]
     public function task($fileName, $id){
         try {
+
+            $bin = file_get_contents($_FILES['file']['tmp_name']);
+
             echo $this->s3->upload(
                 $fileName,
                 $id,
                 'task',
-                $_FILES['file']['tmp_name'],
+                $bin,
                 $_FILES['file']['type']
             );
         } 
