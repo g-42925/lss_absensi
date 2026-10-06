@@ -579,7 +579,7 @@ WHERE b.pegawai_id = '100'
             WHERE b.pegawai_id = ? 
             AND a.is_status = 1";    
 
-            $q3 = $this->db->query($sql, array($row['pid'], $rowTgl, $rowTgl, $rowTgl))->row_array();
+            $q3 = $this->db->query($sql, array($row['pid']))->row_array();
            
           
 
