@@ -58,7 +58,7 @@ class S3_model extends CI_Model {
             }
         }
 
-        $key = "absensi_{$rootDir}_{$type}_{$year}_{$month}/{$fileName}";
+        $key = "{$rootDir}_{$type}_{$year}_{$month}/{$fileName}";
 
         
 
