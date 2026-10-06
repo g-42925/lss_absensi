@@ -8,16 +8,16 @@ use Aws\Exception\AwsException;
 
 class S3_model extends CI_Model {
 
-    private $bucket = 'leryn-ljm-10';
-    private $endpoint = 'https://de-s3.storage.bunnycdn.com';
-    private $cdn = 'https://leryn-ljm-10.b-cdn.net/';
+    private $cdn = 'https://cdn.lerynpest.com/';
+    private $bucket = 'absensi-lerynsoftware-com';
+    private $endpoint = 'https://a9b834b798483ca01f0f33ccfab2d31d.r2.cloudflarerstorage.com';
 
-    private $accessKey = 'leryn-ljm-10';
+    private $accessKey = '9d95d51b57c4f172b3c7fe54c850843e';
 
-    private $secretKey = '06ea0a87-4b56-4cc3-a927ce9ff86a-26b1-44ad';  
+    private $secretKey = '5dee914ebc364f5a046164791017b558d512cd22b68ae0d36611373665bc443c';
 
 
-    public function __construct() {
+    public function __construct(){
         parent::__construct();
     }
 
@@ -25,7 +25,7 @@ class S3_model extends CI_Model {
         return new S3Client([
             'version' => 'latest',
             'endpoint' => $this->endpoint,
-            'region' => 'de',
+            'region' => 'auto',
             'use_path_style_endpoint' => true,
             'credentials' => [
                 'key' => $this->accessKey,
@@ -35,11 +35,11 @@ class S3_model extends CI_Model {
     }
 
     private function getRootDir($id){
-        $company = $this->db->query("SELECT * FROM companies WHERE id = ?",[$id])->row_array();
+        $company = $this->db->query("SELECT * FROM companies WHERE id = ?", [$id])->row_array();
         return explode('@', $company['email'])[0];
     }
 
-    public function upload($fileName, $id, $type,$file,$contentType){
+    public function upload($fileName, $id, $type, $file, $contentType){
         $rootDir = $this->getRootDir($id);
 
         $year = date('Y');
