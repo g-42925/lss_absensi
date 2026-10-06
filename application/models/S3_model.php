@@ -42,6 +42,7 @@ class S3_model extends CI_Model {
 
         $year = date('Y');
         $month = date('m');
+        $monthh = date('m');
 
         $ext = pathinfo($fileName, PATHINFO_EXTENSION);
 
