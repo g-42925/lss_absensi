@@ -558,23 +558,31 @@ WHERE b.pegawai_id = '100'
                 // Kondisi: $rowTgl sama dengan tanggal_request,
                 // ATAU $rowTgl jatuh di antara tanggal_request dan tanggal_request_end (multi-hari).
                 
-                $sql = "SELECT * 
-                FROM tx_request_izin a 
-                JOIN tx_request_izin_pegawai b ON a.request_izin_id = b.request_izin_id 
-                WHERE b.pegawai_id = ? 
-                AND a.is_status = 1 
-                AND (
-                    DATE(a.tanggal_request) = ? 
-                    OR (
-                        a.tanggal_request_end IS NOT NULL 
-                        AND a.tanggal_request_end != '' 
-                        AND ? >= DATE(a.tanggal_request) 
-                        AND ? <= DATE(a.tanggal_request_end)
-                    )
-                )";
+            // $sql = "SELECT * 
+            // FROM tx_request_izin a 
+            // JOIN tx_request_izin_pegawai b ON a.request_izin_id = b.request_izin_id 
+            // WHERE b.pegawai_id = ? 
+            // AND a.is_status = 1 
+            // AND (
+            //     DATE(a.tanggal_request) = ? 
+            //     OR (
+            //         a.tanggal_request_end IS NOT NULL 
+            //         AND a.tanggal_request_end != '' 
+            //         AND ? >= DATE(a.tanggal_request) 
+            //         AND ? <= DATE(a.tanggal_request_end)
+            //     )
+            // )";
 
-                $q3 = $this->db->query($sql, array($row['pid'], $rowTgl, $rowTgl, $rowTgl))->row_array();
-                
+            $sql = "SELECT * 
+            FROM tx_request_izin a 
+            JOIN tx_request_izin_pegawai b ON a.request_izin_id = b.request_izin_id 
+            WHERE b.pegawai_id = ? 
+            AND a.is_status = 1";    
+
+            $q3 = $this->db->query($sql, array($row['pid'], $rowTgl, $rowTgl, $rowTgl))->row_array();
+           
+          
+
                 //$q3 = $this->db->query("SELECT * FROM tx_request_izin a JOIN tx_request_izin_pegawai b ON a.request_izin_id=b.request_izin_id WHERE b.pegawai_id='$row[pid]' AND a.is_status=1 AND (date(a.tanggal_request)='$rowTgl' OR ('$rowTgl' BETWEEN date(a.tanggal_request) AND date(a.tanggal_request_end) AND a.tanggal_request_end!=''))")->row_array();
 
                 if (isset($q3['tipe_request']))
