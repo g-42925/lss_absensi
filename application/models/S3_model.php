@@ -43,13 +43,30 @@ class S3_model extends CI_Model {
         $year = date('Y');
         $month = date('m');
 
+        $ext = pathinfo($fileName, PATHINFO_EXTENSION);
+
+        if (empty($ext)) {
+            $mimeTypes = [
+                'image/jpeg' => 'jpg',
+                'image/png'  => 'png',
+                'image/webp' => 'webp',
+                'application/pdf' => 'pdf'
+            ];
+
+            if (isset($mimeTypes[$contentType])) {
+                $fileName .= '.' . $mimeTypes[$contentType];
+            }
+        }
+
         $key = "absensi_{$rootDir}_{$type}_{$year}_{$month}/{$fileName}";
 
+        
 
         $result = $this->getS3()->putObject([
             'Bucket' => $this->bucket,
             'Key' => $key,
             'Body' => $file,
+            'ContentType' => $contentType
         ]);
 
         return $this->cdn . $key;
