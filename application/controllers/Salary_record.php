@@ -93,7 +93,7 @@ class Salary_record extends MY_Controller
     $spPolicy = $companyData['sp_deduction_policy'] ?? 'tiap_bulan';
 
     //$employees = $this->db->query("select * from m_pegawai where company_id = $company and is_del = 'n'")->result_array();
-
+    $awalBulan = date('Y-m-01');
     $akhirBulan = date('Y-m-t', strtotime(sprintf('%04d-%02d-01', date('Y'), date('m'))));
 
     $employees = $this->db->query(
@@ -339,14 +339,15 @@ class Salary_record extends MY_Controller
     $spPolicy = $companyData['sp_deduction_policy'] ?? 'tiap_bulan';
 
 
+    $awalBulan = date('Y-m-01', strtotime(sprintf('%04d-%02d-01', date('Y'), $month)));
     $akhirBulan = date('Y-m-t', strtotime(sprintf('%04d-%02d-01', date('Y'), $month)));
 
     $employees = $this->db->query(
       "SELECT * FROM m_pegawai 
        WHERE company_id = ? 
-         AND is_del = 'n'
-         AND startWorkingAt <= ?",
-      [$company, $akhirBulan]
+         AND startWorkingAt <= ? 
+         AND (endWorkingAt IS NULL OR endWorkingAt >= ?)",
+      [$company, $akhirBulan, $awalBulan]
     )->result_array();
 
     foreach ($employees as $index => $emp) {

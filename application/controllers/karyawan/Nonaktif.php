@@ -71,4 +71,45 @@ class Nonaktif extends MY_Controller {
           redirect('karyawan/nonaktif?failed=true');
         }
     }
+
+    #[SkipPermission]
+    public function set_end_working($employeeId){
+        isEditable();
+
+        $endWorkingAt = $this->input->post('end_working_at');
+
+        // Jika kosong, set null; jika ada, validasi format tanggal
+        if (empty($endWorkingAt)) {
+            $endWorkingAt = null;
+        } else {
+            // Pastikan format valid (YYYY-MM-DD)
+            $parsed = date_create_from_format('Y-m-d', $endWorkingAt);
+            if (!$parsed) {
+                $this->session->set_flashdata(
+                    'message',
+                    '<div class="alert alert-danger">Format tanggal tidak valid.</div>'
+                );
+                redirect('karyawan/nonaktif?failed=true');
+                return;
+            }
+        }
+
+        $this->db->set(['endWorkingAt' => $endWorkingAt]);
+        $this->db->where('pegawai_id', $employeeId);
+        $q = $this->db->update('m_pegawai');
+
+        if ($q) {
+            $this->session->set_flashdata(
+                'message',
+                '<div class="alert alert-success">Tanggal berhenti kerja berhasil diperbarui.</div>'
+            );
+            redirect('karyawan/nonaktif');
+        } else {
+            $this->session->set_flashdata(
+                'message',
+                '<div class="alert alert-danger">Proses gagal. Silakan coba lagi.</div>'
+            );
+            redirect('karyawan/nonaktif?failed=true');
+        }
+    }
 }

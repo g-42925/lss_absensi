@@ -26,9 +26,17 @@
             <td><?= $row['nomor_pegawai'];?></td>
             <td><?= $row['email_pegawai'];?></td>
             <td>
-              <a href="<?= base_url('karyawan/nonaktif/undo/').$row['pegawai_id'] ?>" class="btn p-1">
-                <i class="ti ti-arrow-back-up"></i>
-              </a>
+              <button
+                type="button"
+                class="btn btn-sm btn-warning btn-set-end-working"
+                data-bs-toggle="modal"
+                data-bs-target="#modalSetEndWorking"
+                data-pegawai-id="<?= $row['pegawai_id']; ?>"
+                data-nama="<?= htmlspecialchars($row['nama_pegawai']); ?>"
+                data-end-working-at="<?= $row['endWorkingAt'] ?? ''; ?>"
+                title="Atur Tanggal Berhenti Kerja">
+                <i class="bx bx-calendar-x me-1"></i> Atur Tgl. Berhenti
+              </button>
             </td>
           </tr>
           <?php $no++; endforeach; ?>
@@ -38,3 +46,68 @@
   </div>
 </div>
 <!-- / Content -->
+
+<!-- Modal Set End Working At -->
+<div class="modal fade" id="modalSetEndWorking" tabindex="-1" aria-labelledby="modalSetEndWorkingLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalSetEndWorkingLabel">
+          <i class="bx bx-calendar-x me-2 text-warning"></i>Atur Tanggal Berhenti Kerja
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form id="formSetEndWorking" method="POST" action="">
+        <div class="modal-body">
+          <p class="mb-3">
+            Karyawan: <strong id="modalNamaPegawai"></strong>
+          </p>
+          <div class="mb-3">
+            <label for="inputEndWorkingAt" class="form-label">
+              Tanggal Berhenti Kerja <span class="text-danger">*</span>
+            </label>
+            <input
+              type="date"
+              class="form-control"
+              id="inputEndWorkingAt"
+              name="end_working_at"
+              required
+            />
+            <div class="form-text text-muted">
+              Kosongkan untuk menghapus tanggal berhenti kerja.
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
+          <button type="submit" class="btn btn-warning">
+            <i class="bx bx-save me-1"></i> Simpan
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<!-- / Modal Set End Working At -->
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const modalEl = document.getElementById('modalSetEndWorking');
+  const formEl  = document.getElementById('formSetEndWorking');
+  const namaEl  = document.getElementById('modalNamaPegawai');
+  const inputEl = document.getElementById('inputEndWorkingAt');
+  const baseUrl = '<?= base_url('karyawan/nonaktif/set_end_working/'); ?>';
+
+  modalEl.addEventListener('show.bs.modal', function (event) {
+    const btn         = event.relatedTarget;
+    const pegawaiId   = btn.getAttribute('data-pegawai-id');
+    const nama        = btn.getAttribute('data-nama');
+    const endWorking  = btn.getAttribute('data-end-working-at');
+
+    namaEl.textContent    = nama;
+    inputEl.value         = endWorking || '';
+    inputEl.required      = false;
+    formEl.action         = baseUrl + pegawaiId;
+  });
+});
+</script>

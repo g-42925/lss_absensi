@@ -38,7 +38,7 @@ if (
     (isset($_SERVER['HTTP_FORWARDED']) && strpos(strtolower($_SERVER['HTTP_FORWARDED']), 'proto=https') !== false)
 ) {
     $_SERVER['HTTPS'] = 'on';
-    $_SERVER['SERVER_PORT'] = 443; // Paksa port 443 agar CI3 tidak salah deteksi
+    $_SERVER['SERVER_PORT'] = 443;
 }
 
 $is_https = (
@@ -48,10 +48,14 @@ $is_https = (
 
 $protocol = $is_https ? "https://" : "http://";
 $host     = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : 'localhost';
-$dir      = '/';
-$config['base_url'] = $protocol . $host . $dir;
 
-$config['nhub_url'] = $config['base_url'].'../';
+// 2. Deteksi Path Directory secara Otomatis (Mendukung Subfolder Lokal & Root VPS)
+$script_name = isset($_SERVER['SCRIPT_NAME']) ? $_SERVER['SCRIPT_NAME'] : '';
+$dir = str_replace(basename($script_name), '', $script_name);
+
+// 3. Set Base URL
+$config['base_url'] = $protocol . $host . $dir;
+$config['nhub_url'] = $config['base_url'] . '../';
 
 /*|--------------------------------------------------------------------------
 | Index File
