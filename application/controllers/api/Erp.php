@@ -96,14 +96,13 @@ class Erp extends CI_Controller{
     //$companyData = $this->db->query("select * from companies where id = ?", [$company['id']])->row_array();
     //$spPolicy = $companyData['sp_deduction_policy'] ?? 'tiap_bulan';
 
-
+    $awalBulan = date('Y-m-01', strtotime(sprintf('%04d-%02d-01', date('Y'), $month)));
     $akhirBulan = date('Y-m-t', strtotime(sprintf('%04d-%02d-01', date('Y'), $month)));
 
     $employees = $this->db->query(
       "SELECT * FROM m_pegawai 
        WHERE company_id = ? 
-         AND is_del = 'n'
-         AND startWorkingAt <= ?",
+         AND startWorkingAt <= ? AND (endWorkingAt IS NULL OR endWorkingAt >= ?)",
       [$company['id'], $akhirBulan]
     )->result_array();
 
