@@ -534,12 +534,12 @@ class Salary_record extends MY_Controller
     $company = $this->session->userdata('company_id');
     $monthList = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
 
-    $employee = $this->db->query("select * from m_pegawai where company_id = $company and is_del = 'n' and pegawai_id = $empId")->row_array();
+    $employee = $this->db->query("select * from m_pegawai where company_id = $company and pegawai_id = $empId")->row_array();
 
     $awalBulan = date('Y-' . $month . '-01');
     $akhirBulan = date('Y-' . $month . '-t');
 
-    $deduction = $this->db->query("select * from salary_deduction where employee_id = $employee[pegawai_id] and date between '$awalBulan' and '$akhirBulan'")->result_array();
+    $deduction = $this->db->query("select * from salary_deduction where employee_id = ? and date between '$awalBulan' and '$akhirBulan'",[$employee['pegawai_id']])->result_array();
     $penalties = $this->db->query("select * from warning where MONTH(expired) >= {$month} and employeeId = $employee[pegawai_id]")->result_array();
 
     $employee['deduction'] = $deduction;
