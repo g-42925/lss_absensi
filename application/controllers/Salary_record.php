@@ -99,10 +99,17 @@ class Salary_record extends MY_Controller
     $employees = $this->db->query(
       "SELECT * FROM m_pegawai 
        WHERE company_id = ? 
-         AND is_del = 'n'
-         AND startWorkingAt <= ?",
-      [$company, $akhirBulan]
+         AND startWorkingAt <= ? AND (endWorkingAt IS NULL OR endWorkingAt >= ?)",
+      [$company, $akhirBulan, $awalBulan]
     )->result_array();
+
+    // $employees = $this->db->query(
+    //   "SELECT * FROM m_pegawai 
+    //    WHERE company_id = ? 
+    //      AND startWorkingAt <= ? 
+    //      AND (endWorkingAt IS NULL OR endWorkingAt >= ?)",
+    //   [$company, $akhirBulan, $awalBulan]
+    // )->result_array();
 
     foreach ($employees as $index => $emp) {
       $awalBulan = date('Y-m-01');
