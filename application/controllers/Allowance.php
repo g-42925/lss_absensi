@@ -255,37 +255,203 @@ class Allowance extends MY_Controller {
     }
 
     #[SkipPermission]
-    public function config_process($id){
-      $this->db->trans_begin(); // db transaction is started from here
+    public function config_process($id) {
+      $allowances = $this->input->post('allowance');
+      $values = $this->input->post('values');
+      $dates = $this->input->post('dates');
+      $overwrites = $this->input->post('overwrite');
+      $confirmed = $this->input->post('confirm_overwrite') === '1';
 
-      $this->db->where('employee_id',$id)->delete('employee_allowance');
+      $companyId = $this->session->userdata('company_id');
 
-      foreach($this->input->post('allowance') as $index => $a){
-        $value = $this->input->post('values')[$index];
+      $fail = function ($message) use ($id) {
+        $this->session->set_flashdata(
+          'message',
+          '<div class="alert alert-danger">' . $message . '</div>'
+        );
+        redirect('allowance/config/' . $id);
+      };
 
-        $data = [
-          'employee_allowance_id' => uniqid(),
-          'employee_id' => $id,
-          'allowance_id' => $a,
-          'value' => $value
+      // Validasi struktur input
+      if (
+        !is_array($allowances) ||
+        !is_array($values) ||
+        !is_array($dates) ||
+        !is_array($overwrites) ||
+        count($allowances) !== count($values) ||
+        count($allowances) !== count($dates) ||
+        count($allowances) !== count($overwrites)
+      ) {
+        $fail('Data form tidak valid.');
+        return;
+      }
+
+      $pending = [
+        'allowance' => $allowances,
+        'values' => $values,
+        'dates' => $dates,
+        'overwrite' => $overwrites
+      ];
+
+      $items = [];
+      $conflicts = [];
+
+      foreach ($allowances as $index => $allowanceId) {
+        $value = $values[$index];
+        $period = $dates[$index];
+        $overwrite = $overwrites[$index] === '1';
+
+        // Validasi input dasar
+        if (
+          !is_numeric($value) ||
+          !in_array($overwrites[$index], ['0', '1'], true)
+        ) {
+          $fail('Nilai tunjangan atau opsi overwrite tidak valid.');
+          return;
+        }
+
+        // Periode kosong berarti tidak ada record periode yang ditargetkan.
+        if ($period !== '' && !preg_match('/^\d{4}-\d{2}-\d{2}$/', $period)) {
+          $fail('Format periode tidak valid.');
+          return;
+        }
+
+        // Pastikan tunjangan milik perusahaan yang sedang login.
+        $allowance = $this->db->get_where('allowance', [
+          'allowance_id' => $allowanceId,
+          'company_id' => $companyId
+        ])->row_array();
+
+        if (!$allowance) {
+          $fail('Tunjangan tidak valid.');
+          return;
+        }
+
+        $exist = null;
+
+        if ($period !== '') {
+          $exist = $this->db->get_where('employee_allowance', [
+            'employee_id' => $id,
+            'allowance_id' => $allowanceId,
+            'payroll_period' => $period
+          ])->row_array();
+        }
+
+        $items[] = [
+          'allowance_id' => $allowanceId,
+          'value' => $value,
+          'payroll_period' => $period,
+          'overwrite' => $overwrite,
+          'exist' => $exist
         ];
 
-        $this->db->insert(
-          'employee_allowance',
-          $data
-        );
+        if ($overwrite && $exist) {
+          $conflicts[] = [
+            'name' => $allowance['name'],
+            'payroll_period' => $period
+          ];
+        }
       }
 
-      if($this->db->trans_status() === FALSE) {
-        $this->db->trans_rollback();
-        $this->session->set_flashdata('message','<div class="alert alert-danger">Proses gagal. Silakan coba lagi.</div>');
-        redirect('allowance/config/' . $id . '?failed=true');
-      } 
-      else {
-        $this->db->trans_commit();
-        redirect('karyawan/data');
+      // Minta konfirmasi sebelum menimpa record yang sudah ada.
+      if ($conflicts && !$confirmed) {
+        $this->session->set_flashdata('allowance_pending', $pending);
+        $this->session->set_flashdata('allowance_conflicts', $conflicts);
+        $this->session->set_flashdata(
+          'message',
+          '<div class="alert alert-warning">
+            Ditemukan record tunjangan pada periode yang sama.
+            Periksa daftar di bawah sebelum mengonfirmasi.
+          </div>'
+        );
+
+        redirect('allowance/config/' . $id);
+        return;
       }
+
+      $this->db->trans_begin();
+
+      foreach ($items as $item) {
+        $exist = null;
+
+        // Periksa ulang di dalam transaksi sebelum update.
+        if ($item['overwrite'] && $item['period'] !== '') {
+          $exist = $this->db->get_where('employee_allowance', [
+            'employee_id' => $id,
+            'allowance_id' => $item['allowance_id'],
+            'payroll_period' => $item['period']
+          ])->row_array();
+        }
+
+        if ($exist) {
+          $this->db->where(
+            'employee_allowance_id',
+            $exist['employee_allowance_id']
+          );
+          $this->db->update('employee_allowance', [
+            'value' => $item['value']
+          ]);
+        } 
+        else {
+          $this->db->insert('employee_allowance', [
+            'employee_allowance_id' => uniqid(),
+            'employee_id' => $id,
+            'allowance_id' => $item['allowance_id'],
+            'value' => $item['value'],
+            'payroll_period' => $item['payroll_period'],
+          ]);
+        }
+      }
+
+      if ($this->db->trans_status() === FALSE) {
+        $this->db->trans_rollback();
+        $fail('Proses gagal. Silakan coba lagi.');
+        return;
+      }
+
+      $this->db->trans_commit();
+      redirect('karyawan/data');
     }
+
+    #[SkipPermission]
+    public function history($employeeId, $allowanceId) {
+      log_message('error', 'Allowance history dipanggil: ' . $employeeId . ' / ' . $allowanceId);
+      
+      $companyId = $this->session->userdata('company_id');
+
+      $allowance = $this->db->get_where('allowance', [
+        'allowance_id' => $allowanceId,
+        'company_id' => $companyId
+      ])->row_array();
+
+      if (!$allowance) {
+        return $this->output
+          ->set_status_header(404)
+          ->set_content_type('application/json')
+          ->set_output(json_encode([
+            'success' => false,
+            'message' => 'Allowance tidak ditemukan.'
+          ]));
+      }
+
+      $history = $this->db
+        ->select('payroll_period, value')
+        ->from('employee_allowance')
+        ->where('employee_id', $employeeId)
+        ->where('allowance_id', $allowanceId)
+        ->order_by('payroll_period', 'DESC')
+        ->get()
+        ->result_array();
+
+      return $this->output
+        ->set_content_type('application/json')
+        ->set_output(json_encode([
+          'success' => true,
+          'allowance' => $allowance['name'],
+          'data' => $history
+        ]));
+    }
+
 
     public function config($id){
         isEditable();
@@ -305,15 +471,22 @@ class Allowance extends MY_Controller {
 
         foreach($data['data'] as $index => $a){
           $allowanceId = $a['allowance_id'];
-          $q = $this->db->query("select * from employee_allowance where allowance_id = ? and employee_id = ?",[$allowanceId,$id])->row_array();
+          $q = $this->db->query("select * from employee_allowance where allowance_id = ? and employee_id = ? order by payroll_period desc limit 1 ",[$allowanceId,$id])->row_array();
 
           if($q){
             $data['data'][$index]['value'] = $q['value'];
+            $data['data'][$index]['payroll_period'] = $q['payroll_period'];
           }
           else{
             $data['data'][$index]['value'] = 0;
+            $data['data'][$index]['payroll_period'] = date('Y-m-d');
           }
         }
+
+
+        $data['pending'] = $this->session->flashdata('allowance_pending') ?? [];
+        $data['conflicts'] = $this->session->flashdata('allowance_conflicts') ?? [];
+        $data['message'] = $this->session->flashdata('message');
 
         $this->load->view('templates/header', $data);
         $this->load->view('templates/sidemenu', $data);
