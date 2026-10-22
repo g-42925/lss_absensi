@@ -34,6 +34,24 @@ uploads/*
 !uploads/index.html
 
 # =========================
+# ASSETS
+# =========================
+
+# File yang diupload oleh user (data runtime, JANGAN masuk repo)
+assets/uploaded/*
+# Tapi tetap pertahankan struktur folder agar deployment tidak error
+!assets/uploaded/logo/.gitkeep
+!assets/uploaded/others/.gitkeep
+!assets/uploaded/thumbnails/.gitkeep
+!assets/uploaded/users/.gitkeep
+!assets/uploaded/components/.gitkeep
+
+# Library vendor di assets/temp (berat, bisa diinstall ulang)
+# CATATAN: Jika tidak ada package manager untuk assets ini,
+# hapus baris di bawah dan biarkan temp/ masuk repo
+assets/temp/
+
+# =========================
 # CODEIGNITER 4
 # =========================
 
