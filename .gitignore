@@ -46,10 +46,6 @@ assets/uploaded/*
 !assets/uploaded/users/.gitkeep
 !assets/uploaded/components/.gitkeep
 
-# Library vendor di assets/temp (berat, bisa diinstall ulang)
-# CATATAN: Jika tidak ada package manager untuk assets ini,
-# hapus baris di bawah dan biarkan temp/ masuk repo
-assets/temp/
 
 # =========================
 # CODEIGNITER 4
