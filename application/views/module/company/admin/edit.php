@@ -37,7 +37,7 @@
           </div>
           <div class="col-xl-6 col-md-6 col-sm-6">
             <label class="form-label w-100">
-              Permission/Izin<i class="text-danger">*</i>
+              Permission/Izin<i class="text-danger">* </i>
               <span class="float-right">
                 <a href="<?=base_url('company/permission');?>">Tambah&nbsp;</a>
               </span>
@@ -49,16 +49,16 @@
           </div>
           <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6">
             <label class="form-label">Email<i class="text-danger">*</i></label>
-            <input type="email" class="form-control" name="email" value="<?=$edit['email_address'];?>" placeholder="..." required />
+            <input <?= $isImmutable ? 'readonly' : '' ?>  type="email" class="form-control" name="email" value="<?=$edit['email_address'];?>" placeholder="..." required />
           </div>
           <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6">
             <label class="form-label">Password</label>
-            <input type="password" class="form-control" name="password" placeholder="***************" />
+            <input <?= $isImmutable ? 'readonly' : '' ?> type="password" class="form-control" name="password" placeholder="***************" />
             <div class="mt-2 small">Kosongkan jika password tidak dirubah.</div>
           </div>
           <div class="col-xl-6 col-md-6 col-sm-6">
             <label class="form-label w-100">Karyawan<i class="text-danger">*</i></label>
-            <select class="select2 form-select" name="employee" required>
+            <select class="select2 form-select" name="employee">
               <option value="">Pilih Karyawan</option>
               <?php foreach ($employees as $row) : ?>
                 <option value="<?=$row['pegawai_id'];?>" <?= $row['pegawai_id'] == $edit['employee_id'] ? 'selected' : '' ?>><?=$row['nama_pegawai'];?></option>
@@ -67,7 +67,7 @@
           </div>
           <div class="col-xl-12 col-md-12 col-sm-12">
             <label class="form-label" for="multicol-country">Divisi<i class="text-danger">*</i></label>
-            <select class="select2 form-select" name="division" required>
+            <select class="select2 form-select" name="division">
               <option value="">Pilih Divisi</option>
               <?php foreach ($divisions as $row): ?>
                 <option value="<?=$row['id'];?>" <?= $row['id'] == $edit['division_id'] ? 'selected' : '' ?>><?=$row['division_name'];?></option>

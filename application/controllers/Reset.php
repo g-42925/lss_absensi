@@ -9,6 +9,7 @@ class Reset extends CI_Controller {
   public $form_validation;
   public $upload;
   public $pagination;
+  public $resend_mail;
 
   public function __construct() {
     parent::__construct();

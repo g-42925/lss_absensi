@@ -2,7 +2,7 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 // 1. Fungsi untuk MEMBUAT OTP (Dikirim ke Email)
-if (!function_exists('generate_otp')) {
+if (!function_exists('get_otp')) {
     function get_otp($userId) {
         $CI =& get_instance();
         $CI->load->database();

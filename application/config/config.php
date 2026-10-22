@@ -185,6 +185,16 @@ else {
     $config['composer_autoload'] = TRUE;
 }
 
+// Load .env variables (vlucas/phpdotenv)
+// Wajib dilakukan agar RESEND_API_KEY dan variabel lain tersedia via $_ENV
+if (file_exists(FCPATH . 'vendor/autoload.php')) {
+    require_once FCPATH . 'vendor/autoload.php';
+}
+if (file_exists(FCPATH . '.env')) {
+    $dotenv = Dotenv\Dotenv::createImmutable(FCPATH);
+    $dotenv->safeLoad();
+}
+
 /*
 |--------------------------------------------------------------------------
 | Allowed URL Characters

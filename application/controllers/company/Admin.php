@@ -122,6 +122,10 @@ class Admin extends MY_Controller {
         $data['divisions'] = $this->db->query("select * from divisions where company_id = ?",[$companyId])->result_array();
         $data['employees'] = $this->db->query("select * from m_pegawai where company_id = ? and is_del = 'n'",[$companyId])->result_array();
 
+
+
+        $data['isImmutable'] = $data['edit']['role_id'] == 1 ? true : false;
+
         $this->load->view('templates/header', $data);
         $this->load->view('templates/sidemenu', $data);
         $this->load->view('templates/sidenav', $data);
