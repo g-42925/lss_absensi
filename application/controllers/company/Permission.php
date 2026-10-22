@@ -1,0 +1,142 @@
+<?php
+defined('BASEPATH') or exit('No direct script access allowed');
+
+class Permission extends MY_Controller {
+    public $email;
+    public $session;
+    public $form_validation;
+    public $upload;
+    public $pagination;
+    public $other;
+    public $menu;
+    public $izin;
+
+    public function __construct() {
+        parent::__construct();
+        $this->load->library('form_validation');
+        $this->load->model('other_model', 'other');
+        $this->load->model('user/menu_model', 'menu');
+        $this->load->model('user/perusahaan/permission_model', 'izin');
+    }
+
+    public function index() {
+        
+        $data['htmlpagejs'] = 'none';
+        $data['nmenu']      = 'Perusahaan';
+        $data['nmenusub']   = 'Jabatan & Izin';
+        $data['title']      = 'Izin';
+        $data['namalabel']  = $data['title'];
+        $data['auth']       = authUser();
+
+        $data['datas']      = $this->izin->get_data();
+
+        $this->load->view('templates/header', $data);
+        $this->load->view('templates/sidemenu', $data);
+        $this->load->view('templates/sidenav', $data);
+        $this->load->view('module/company/permission/index', $data);
+        $this->load->view('templates/footer', $data);
+        $this->load->view('templates/fscript-html-end', $data);
+    }
+
+    #[SkipPermission]
+    public function action($id) {
+        
+        if ($id=='baru') {
+            $this->load->view('module/company/permission/add');
+        }else{
+            $data['edit'] = $this->db->get_where('m_permission', ['permission_id' => $id])->row_array();
+            $this->load->view('module/company/permission/edit', $data);
+        }
+    }
+
+    #[SkipPermission]
+    public function add_proses() {
+        
+        
+        $data['auth'] = authUser();
+        
+        $unama  = $this->input->post('nama');
+        $this->form_validation->set_rules('nama', 'Nama', 'trim|required|xss_clean|htmlspecialchars');
+
+        if ($this->form_validation->run() == false) {
+            $this->session->set_flashdata('message', '<div class="alert alert-danger p-cg" role="alert">'.validation_errors().'</div>');
+            redirect('company/permission/add');
+        } else {
+            $query = $this->db->get_where('m_permission', ['nama_permission' => $unama, 'is_del' => 'n'])->num_rows();
+            if ($query < 1) {
+                $res = $this->izin->add_proses();
+                if ($res==true) {
+                    $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-success p-cg" role="alert">Data berhasil disimpan.</div></div>');
+                    redirect('company/permission');
+                }else{
+                    $this->session->set_flashdata('message', '<div class="alert alert-danger p-cg" role="alert">Proses gagal, silahkan coba lagi.</div>');
+                    redirect('company/permission');
+                }
+            } else {
+                $this->session->set_flashdata('message', '<div class="alert alert-warning p-cg" role="alert">Proses gagal, nama <b>"'.$unama.'"</b> ini sudah digunakan.</div>');
+                redirect('company/permission');
+            }
+        }
+    }
+
+    #[SkipPermission]
+    public function edit_proses($id = null) {
+        
+        
+        if($id==1){
+            $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-danger p-cg" role="alert">ID Default tidak bisa diedit ya.</div></div>');
+            redirect('company/permission');
+        }else{
+            $data['auth'] = authUser();
+            
+            $unama  = $this->input->post('nama');
+            $this->form_validation->set_rules('nama', 'Nama', 'trim|required|xss_clean|htmlspecialchars');
+
+            if ($this->form_validation->run() == false) {
+                $this->session->set_flashdata('message', '<div class="alert alert-danger p-cg" role="alert">'.validation_errors().'</div>');
+                redirect('company/permission');
+            } else {
+                $query = $this->db->get_where('m_permission', ['nama_permission' => $unama, 'is_del' => 'n', 'permission_id!=' => $id])->num_rows();
+                if ($query < 1) {
+                    $res = $this->izin->edit_proses($id);
+                    if ($res==true) {
+                        $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-success p-cg" role="alert">Data berhasil disimpan.</div></div>');
+                        redirect('company/permission');
+                    }else{
+                        $this->session->set_flashdata('message', '<div class="alert alert-danger p-cg" role="alert">Proses gagal, silahkan coba lagi.</div>');
+                        redirect('company/permission');
+                    }
+                } else {
+                    $this->session->set_flashdata('message', '<div class="alert alert-warning p-cg" role="alert">Proses gagal, nama <b>"'.$unama.'"</b> ini sudah digunakan.</div>');
+                    redirect('company/permission');
+                }
+            }
+        }
+    }
+
+    #[SkipPermission]
+    public function hapus($id){
+        
+        if($id==1){
+            $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-danger p-cg" role="alert">ID Default tidak bisa dihapus ya.</div></div>');
+            redirect('company/permission');
+        }else{
+            $data['auth'] = authUser();
+
+            if($id==1){
+                $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-danger p-cg" role="alert">[DEFAULT] - Jabatan ini tidak bisa dihapus.</div></div>');
+                redirect('company/permission/');
+            }
+            
+            $res = $this->other->hapus_data('m_permission','permission_id',$id);
+            if ($res==true) {
+                $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-success p-cg" role="alert">Data berhasil dihapus.</div></div>');
+                redirect('company/permission');
+            }else{
+                $this->session->set_flashdata('message', '<div class="me-3 ms-3 mt-3"><div class="alert alert-danger p-cg" role="alert">Proses gagal, silahkan coba lagi.</div></div>');
+                redirect('company/permission');
+            }
+        }
+    }
+
+}

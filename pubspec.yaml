@@ -1,4 +1,4 @@
-name: f_absensi
+name: absensi
 description: "A new Flutter project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -36,6 +36,27 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
+  camera: ^0.10.5+9
+  geolocator: ^12.0.0
+  supabase_flutter: ^2.5.6
+  intl: ^0.19.0
+  fluttertoast: ^8.2.11
+  path_provider: ^2.1.2
+  envied: ^1.2.0
+  flutter_riverpod: ^1.0.4
+  hydrated_riverpod: ^0.0.3
+  table_calendar: ^3.1.3
+  location: ^8.0.1
+  image_picker: ^1.2.0
+  timeago: ^3.6.0
+  appwrite: ^20.3.0
+  http_parser: ^4.0.0   # untuk MediaType
+  flutter_image_compress: ^2.0.4
+  rename: ^3.1.0
+  flutter_datetime_picker_plus: ^2.0.2
+  audioplayers: ^6.0.0
+  shared_preferences: ^2.1.0
+  google_mlkit_face_detection: ^0.11.0
 
 dev_dependencies:
   flutter_test:
@@ -47,7 +68,22 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
-  camera: ^0.10.5+9
+  envied_generator: ^1.2.0
+  build_runner: ^2.6.0
+  flutter_launcher_icons: "^0.13.1"
+  flutter_native_splash: ^2.4.0
+
+flutter_icons:
+    android: true
+    ios: true
+    image_path: "assets/logo.png"
+
+flutter_native_splash:
+  color: "#ffffff"
+  image: assets/logo.png
+  android: true
+  ios: true
+
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -62,6 +98,10 @@ flutter:
   assets:
     - assets/logo.png
     - assets/ilustrasi.png
+    - assets/enjoy.png
+    - assets/symbols/
+    - assets/alarm.mp3
+
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.

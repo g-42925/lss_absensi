@@ -1,6 +1,6 @@
 {
-    "name": "f_absensi",
-    "short_name": "f_absensi",
+    "name": "absensi",
+    "short_name": "absensi",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

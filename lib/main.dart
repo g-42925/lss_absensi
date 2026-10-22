@@ -1,343 +1,223 @@
+import 'package:absensi/pages/log.dart';
+import 'package:absensi/pages/activity.dart';
+import 'package:absensi/pages/break.dart';
+import 'package:absensi/pages/break_end.dart';
+import 'package:absensi/pages/claim.dart';
+import 'package:absensi/pages/claim_submit.dart';
+import 'package:absensi/pages/done_task.dart';
+import 'package:absensi/pages/employees.dart';
+import 'package:absensi/pages/exception.dart';
+import 'package:absensi/pages/exception_add.dart';
+import 'package:absensi/pages/exception_edit.dart';
+import 'package:absensi/pages/failed_sync.dart';
+import 'package:absensi/pages/half_leave.dart';
+import 'package:absensi/pages/leave.dart';
+import 'package:absensi/pages/leave_apply.dart';
+import 'package:absensi/pages/notification.dart';
+import 'package:absensi/pages/overwork.dart';
+import 'package:absensi/pages/overwork_add.dart';
+import 'package:absensi/pages/overwork_end.dart';
+import 'package:absensi/pages/overwork_start.dart';
+import 'package:absensi/pages/permission_success.dart';
+import 'package:absensi/pages/salary.dart';
+import 'package:absensi/pages/salary_slip.dart';
+import 'package:absensi/pages/schedule.dart';
+import 'package:absensi/pages/task.dart';
+import 'package:absensi/pages/task_add.dart';
+import 'package:absensi/pages/task_edit.dart';
+import 'package:absensi/pages/task_end.dart';
+import 'package:absensi/pages/task_filter.dart';
+import 'package:absensi/pages/task_start.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:camera/camera.dart';
-import './models/info.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hydrated_riverpod/hydrated_riverpod.dart';
+import 'package:path_provider/path_provider.dart';
+import './env/env.dart';
+import './pages/home.dart';
 import './pages/login.dart';
 import './pages/signin.dart';
+import './pages/signout.dart';
+import './pages/permission.dart';
+import './pages/permission_handle.dart';
+import './pages/short_permission.dart';
+import './pages/calendar.dart';
+import './pages/long_permission.dart';
+import 'dart:math';
+import 'package:audioplayers/audioplayers.dart';
+import '../providers/global_state.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+const int CURRENT_VERSION = 47; // naikkan setiap release
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final cameras = await availableCameras();
-  final firstCamera = cameras.first;
 
-  final frontCamera = cameras.firstWhere(
+  final cameras = await availableCameras();
+
+  final storageDirectory = await getApplicationDocumentsDirectory();
+
+
+  final storage = await HydratedStorage.build(
+    storageDirectory: storageDirectory,
+  );
+
+	final prefs = await SharedPreferences.getInstance();
+  final lastVersion = prefs.getInt('app_version') ?? 0;
+
+  await Supabase.initialize(url: Env.supabaseUrl, anonKey: Env.supabaseKey);
+
+  final camera = cameras.firstWhere(
     (cam) => cam.lensDirection == CameraLensDirection.front,
   );
 
+	if (lastVersion < CURRENT_VERSION) {
+    await storage.clear();     
+		prefs.setInt('app_version', CURRENT_VERSION);
+  }
+
+  HydratedRiverpod.initialize(storage: storage);
+
+	try {
+    runApp(
+      ProviderScope(
+        child: MyApp(camera: camera)
+      )
+    );
+  } 
+	catch(e) {
+    runApp(
+      MaterialApp(
+        home: Center(
+          child: Text(
+            'Terjadi kesalahan, silakan keluar daro aplikasi'
+          )
+        )
+      )
+    );
+  }
+
+
   runApp(
-    MultiProvider(
-      providers:[ChangeNotifierProvider(create:(_) => Info())],
-      child: MyApp(cameras:cameras,camera:frontCamera)
+    ProviderScope(
+      child: MyApp(camera: camera)
     )
   );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerStatefulWidget {
   final CameraDescription camera;
-  final List<CameraDescription> cameras;
-  
-  MyApp({
-    super.key,
-    required this.camera,
-    required this.cameras
-  });
 
-  Map<String,WidgetBuilder> createRoute(){
-    return {
-      '/': (_) => LoginPage(),
-      '/signin': (_) => SignInPage(
-        camera:camera,
-        cameras:cameras,
-      ),
-      '/feature' : (_) => MyHomePage(
-        title:'Flutter',
-        titleX:"XXX"
-      ),
-    };
+	const MyApp({super.key, required this.camera});
+
+  @override ConsumerState<MyApp> createState() => _MyAppState();
+
+}
+
+class _MyAppState extends ConsumerState<MyApp>{
+  late Future<List<dynamic>> _future;
+  double latitude = 0;
+  double longitude = 0;
+
+
+	Future<Map<String, double>> getLocation(BuildContext context) async {
+    try {
+      Position position = await Geolocator.getCurrentPosition();
+      return {'lat': position.latitude, 'lon': position.longitude};
+    } 
+    catch (e) {
+      await Geolocator.requestPermission();
+      Position position = await Geolocator.getCurrentPosition();
+      return {'lat': position.latitude, 'lon': position.longitude};
+    }
   }
 
-  @override Widget build(BuildContext context) {
+
+	@override
+  void initState() {
+    super.initState();
+    // _future = Future.wait([
+    //   requestLocation(),
+    // ])
+    // .then((value) {
+    //   latitude = value[0].latitude;
+    //   longitude = value[0].longitude;
+    //   return value;
+    // });
+  }
+
+	Map<String, WidgetBuilder> createRoute(BuildContext context) {
+    return {
+      '/': (_) => MyHomePage(),
+      '/log': (_) => LogPage(),
+      '/half_leave': (_) => HalfLeavePage(),
+      '/claim': (_) => ClaimPage(),
+      '/make_task': (_) => TaskAddPage(),
+      '/failed_sync': (_) => FailedSyncPage(),
+      '/task_edit': (_) => TaskEditPage(),
+      '/exception_edit': (_) => ExceptionEditPage(),
+      '/task_start': (_) =>
+          TaskStartPage(camera: widget.camera, coord: getLocation(context)),
+      '/task_end': (_) =>
+          TaskEndPage(camera: widget.camera, coord: getLocation(context)),
+      '/task': (_) => TaskPage(camera: widget.camera, coord: getLocation(context)),
+      '/task_filter': (_) =>
+          TaskFilterPage(camera: widget.camera, coord: getLocation(context)),
+      '/done_task': (_) =>
+          DoneTaskPage(camera: widget.camera, coord: getLocation(context)),
+
+      '/employees': (_) => EmployeesPage(),
+      '/notification': (_) => NotificationPage(),
+      '/activity': (_) => ActivityPage(),
+      '/schedule': (_) => SchedulePage(),
+      '/claim_submit': (_) => ClaimSubmitPage(),
+      '/salary': (_) => SalaryPage(),
+      '/salary_slip': (_) => SalarySlipPage(),
+      '/exception': (_) => ExceptionPage(),
+      '/makeexception': (_) => ExceptionAddPage(),
+      '/break': (_) => BreakPage(coord: getLocation(context)),
+      '/overwork': (_) =>
+          OverWorkPage(camera: widget.camera, coord: getLocation(context)),
+      '/makeoverwork': (_) => OverWorkAddPage(),
+      '/overwork_start': (_) =>
+          OverWorkStartPage(camera: widget.camera, coord: getLocation(context)),
+      '/overwork_end': (_) =>
+          OverWorkEndPage(camera: widget.camera, coord: getLocation(context)),
+      '/breakend': (_) => BreakEndPage(camera: widget.camera),
+      '/leave': (_) => LeavePage(),
+      '/leaveapply': (_) => LeaveApplyPage(),
+      '/login': (_) => LoginPage(),
+      '/calendar': (_) => CalendarPage(),
+      '/permission': (_) => PermissionPage(),
+      '/short_permission': (_) => ShortPermissionPage(),
+      '/long_permission': (_) => LongPermissionPage(),
+      '/permission_success': (_) => PermissionSuccessPage(),
+      '/signin': (_) => SignInPage(camera: widget.camera),
+      '/signout': (_) => SignOutPage(camera: widget.camera),
+      '/permission_handle': (_) => PermissionHandlePage(
+        createdAt: "",
+        duration: 0,
+        start: "",
+        end: "",
+        jamMasuk: "",
+        jamKeluar: "",
+        catatan: "",
+        requestIzinId: "",
+      ),
+    };	
+  }
+
+	@override
+  Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      routes:createRoute(),
+      routes: createRoute(context),
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
     );
   }
-}
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({
-    super.key, 
-    required this.title,
-    required this.titleX
-  });
-
-  final String title;
-  final String titleX;
-
-  @override State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> { 
-  void initState(){
-    super.initState();
-  }
-  
-
-  @override Widget build(BuildContext context) {
-    final Company company = context.read<Info>().detail.company;
-    final Schedule schedule = context.read<Info>().detail.schedule;
-    final String message = "maka sesungguhnya bersama kesulitan itu ada kemudahan";
-    final String scheduleStartTtime = schedule.start;
-    final String scheduleFinishTime = schedule.finish;
-    
-
-    test(){
-      print(company.name);
-    };
-
-    return Scaffold(
-      appBar: AppBar(
-        title: Row(
-          children: [
-            Image.asset(
-              'assets/logo.png', // Ganti dengan path image kamu
-              height: 30,
-            ),
-            const SizedBox(width: 8),
-            const Text(
-              'workly',
-              style: TextStyle(color: Colors.black),
-            ),
-          ]
-        ),
-        backgroundColor: Colors.white,
-        elevation: 0,
-        actions: const [
-          Padding(
-            padding: EdgeInsets.all(8.0),
-            child: CircleAvatar(
-              backgroundColor: Colors.teal,
-              child: Text('TR', style: TextStyle(color: Colors.white)),
-            ),
-          ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      Color(0xFF004D40), // hijau toska sangat gelap
-                      Color(0xFF00796B), // hijau toska gelap
-                      Color(0xFF26A69A), // toska terang
-                    ],
-                    stops: [0.0, 0.5, 1.0],
-                  ),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child:Column(
-                  children:[
-                    Row(
-                      children:[
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(16.0), // ubah angka untuk radius berbeda
-                           child: Image.network(
-                            'http://192.168.43.236/lss_absensi/assets/uploaded/components/${company.logo}',
-                            width: 70,
-                            height: 70,
-                            fit: BoxFit.cover,
-                          )
-                        ),
-                        SizedBox(
-                          width:15
-                        ),
-                        Container(
-                          width:250,
-                          child:Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children:[
-                              Text('Lyly petshop',style:TextStyle(color:Colors.white,fontWeight:FontWeight.bold,fontSize:18)),
-                              Text(message,overflow:TextOverflow.visible,style:TextStyle(color:Colors.white))
-                            ]
-                          )
-                        )
-                      ]
-                    ),
-                    SizedBox(
-                      height:16
-                    ),
-                    Container(
-                      padding:const EdgeInsets.all(16),
-                      decoration:BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                        color:Colors.white
-                      ),
-                      width:double.infinity,
-                      child:Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children:[
-                          Text("Jadwal Anda Hari Ini"),
-                          SizedBox(height:6),
-                          Container(
-                            width: MediaQuery.of(context).size.width * 0.5,
-                            child:Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Row(
-                                  children: [
-                                    Icon(Icons.login),
-                                    SizedBox(width: 4),
-                                   Text(scheduleStartTtime),
-                                  ],
-                                ),
-                                Text('...'),
-                                Row(
-                                  children: [
-                                    Icon(Icons.logout),
-                                    SizedBox(width: 4),
-                                    Text(scheduleFinishTime),
-                                  ],
-                                ),
-                              ],
-                            )
-                          )
-                        ]
-                      )
-                    )
-                  ]
-                )
-              ),
-              const SizedBox(height: 20),
-              GridView.count(
-                crossAxisCount: 4,
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                children: const [
-                  IconLabel(icon: Icons.local_cafe, label: 'Istirahat'),
-                  IconLabel(icon: Icons.access_time, label: 'Lembur'),
-                  IconLabel(icon: Icons.event_busy, label: 'Cuti'),
-                  IconLabel(icon: Icons.door_front_door, label: 'Izin'),
-                  IconLabel(icon: Icons.work, label: 'Pekerjaan'),
-                  IconLabel(icon: Icons.business_center, label: 'Kunjungan'),
-                  IconLabel(icon: Icons.calendar_today, label: 'Kalender'),
-                  IconLabel(icon: Icons.group, label: 'Karyawan'),
-                  IconLabel(icon: Icons.account_balance_wallet, label: 'Gaji'),
-                  IconLabel(icon: Icons.assignment_turned_in, label: 'Klaim'),
-                ],
-              ),
-              const SizedBox(height: 0),
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFD1FFDC), // Hijau muda
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
-                          Text(
-                            "Ringkasan Kehadiran",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.green,
-                            ),
-                          ),
-                          SizedBox(height: 4),
-                          Text(
-                            "Periksa kinerja rekap Anda bulan ini",
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.black54,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Image.asset(
-                      'assets/ilustrasi.png', // ganti dengan path gambar kamu
-                      height: 80,
-                    )
-                  ]
-                )
-              ),
-              SizedBox(height:16),
-              Container(
-                width:double.infinity,
-                child: ElevatedButton.icon(
-                  onPressed: () {
-                    Navigator.pushNamed(
-                      context, 
-                   '  /signin'
-                    );
-                  },
-                  icon: const Icon(
-                    Icons.login,
-                    size: 18,
-                    color: Colors.white,
-                  ),
-                  label: const Text(
-                    'Presensi Masuk',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF009688), // hijau tosca
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30), // oval
-                    ),
-                    elevation: 0, // tanpa shadow
-                  ),
-                )
-              )
-            ]
-          )
-        )
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        selectedItemColor: Colors.teal,
-        unselectedItemColor: Colors.black54,
-        currentIndex: 0,
-        type: BottomNavigationBarType.fixed, // <== Tambahkan ini
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Beranda'),
-          BottomNavigationBarItem(icon: Icon(Icons.schedule), label: 'Jadwal'),
-          BottomNavigationBarItem(icon: Icon(Icons.calendar_today), label: 'Aktivitas'),
-          BottomNavigationBarItem(icon: Icon(Icons.notifications), label: 'Notifikasi'),
-        ],
-      )
-    );
-  }
-}
-
-
-class IconLabel extends StatelessWidget {
-  final IconData icon;
-  final String label;
-
-  const IconLabel({required this.icon, required this.label, super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        CircleAvatar(
-          backgroundColor: Colors.teal.shade50,
-          child: Icon(icon, color: Colors.teal),
-        ),
-        const SizedBox(height: 4),
-        Text(label, textAlign: TextAlign.center, style: const TextStyle(fontSize: 12))
-      ],
-    );
-  }
 }
