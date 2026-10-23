@@ -24,6 +24,8 @@ class Attendance_record_model extends CI_Model {
         foreach($query as $row){
 
             $hHK = $this->db->query("select * from tx_absensi where is_status = 'hhk' and pegawai_id = ? and tanggal_absen between ? and ?",[$row['pegawai_id'],$tglawal,$tglakhr])->result_array();
+            
+            
             $alpha = $this->db->query("select * from tx_absensi where is_status = 'alpha-2' and pegawai_id = ? and tanggal_absen between ? and ?",[$row['pegawai_id'],$tglawal,$tglakhr])->result_array();
             $onDuty = $this->db->query("select * from tx_absensi where is_status = 'on duty' and pegawai_id = ? and tanggal_absen between ? and ?",[$row['pegawai_id'],$tglawal,$tglakhr])->result_array();
             $leave = $this->db->query("select * from tx_absensi where is_status = 'c' and pegawai_id = ? and tanggal_absen between ? and ? ",[$row['pegawai_id'],$tglawal,$tglakhr])->result_array();
@@ -34,7 +36,7 @@ class Attendance_record_model extends CI_Model {
             $data[] = array(
                 'pegawai_id'              => $row['pegawai_id'],
                 'nama_pegawai'            => $row['nama_pegawai'],
-                'hHK'                     => count($hHK) - (0.5 * $csh),
+                'hHK'                     => count($hHK) + (0.5 * $csh),
                 'alpha'                   => count($alpha),
                 'onDuty'                  => count($onDuty),
                 'c'                       => count($leave),
