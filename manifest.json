@@ -1,0 +1,22 @@
+{
+  "name": "LSS Absensi",
+  "short_name": "LSSAbsensi",
+  "description": "Sistem Manajemen Absensi Karyawan LSS",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#696cff",
+  "theme_color": "#696cff",
+  "orientation": "portrait-primary",
+  "scope": "./",
+  "lang": "id",
+  "icons": [
+    {
+      "src": "favicon.png",
+      "sizes": "any",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["business", "productivity"],
+  "screenshots": []
+}

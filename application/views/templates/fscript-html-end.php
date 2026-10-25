@@ -267,6 +267,103 @@
           $('#photoViewerModal').modal('show');
         }
     </script>
-  
+
+    <!-- PWA: Service Worker Registration -->
+    <script>
+      (function () {
+        if (!('serviceWorker' in navigator)) return;
+
+        var swUrl = '<?=base_url('sw.js');?>';
+
+        navigator.serviceWorker.register(swUrl, { scope: '<?=base_url();?>' })
+          .then(function (reg) {
+            console.log('[PWA] Service Worker registered, scope:', reg.scope);
+          })
+          .catch(function (err) {
+            console.warn('[PWA] Service Worker registration failed:', err);
+          });
+
+        // ── Install Prompt ──────────────────────────────────────────
+        var deferredPrompt = null;
+        var installBanner  = null;
+
+        window.addEventListener('beforeinstallprompt', function (e) {
+          e.preventDefault();
+          deferredPrompt = e;
+
+          // Tampilkan banner install jika belum pernah ditolak
+          if (localStorage.getItem('pwa_install_dismissed')) return;
+
+          installBanner = document.createElement('div');
+          installBanner.id = 'pwa-install-banner';
+          installBanner.innerHTML = [
+            '<style>',
+            '#pwa-install-banner {',
+            '  position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);',
+            '  background: linear-gradient(135deg,#696cff,#9155fd);',
+            '  color: #fff; border-radius: 14px; padding: 14px 20px;',
+            '  display: flex; align-items: center; gap: 14px;',
+            '  box-shadow: 0 8px 32px rgba(105,108,255,.45);',
+            '  z-index: 99999; font-family: "Public Sans",system-ui,sans-serif;',
+            '  font-size: 14px; max-width: 420px; width: calc(100% - 40px);',
+            '  animation: pwaSlideUp .35s ease;',
+            '}',
+            '@keyframes pwaSlideUp {',
+            '  from { opacity:0; transform:translateX(-50%) translateY(30px); }',
+            '  to   { opacity:1; transform:translateX(-50%) translateY(0); }',
+            '}',
+            '#pwa-install-banner .pwa-icon { font-size:28px; flex-shrink:0; }',
+            '#pwa-install-banner .pwa-text { flex:1; }',
+            '#pwa-install-banner .pwa-text strong { display:block; font-size:15px; }',
+            '#pwa-install-banner .pwa-text span { opacity:.85; }',
+            '#pwa-install-banner .pwa-btn-install {',
+            '  background:#fff; color:#696cff; border:none; border-radius:8px;',
+            '  padding:8px 16px; font-size:13px; font-weight:700;',
+            '  cursor:pointer; white-space:nowrap; flex-shrink:0;',
+            '}',
+            '#pwa-install-banner .pwa-btn-close {',
+            '  background:rgba(255,255,255,.2); border:none; border-radius:50%;',
+            '  width:28px; height:28px; cursor:pointer; color:#fff; font-size:16px;',
+            '  display:flex; align-items:center; justify-content:center; flex-shrink:0;',
+            '}',
+            '</style>',
+            '<div class="pwa-icon">📱</div>',
+            '<div class="pwa-text">',
+            '  <strong>Pasang LSS Absensi</strong>',
+            '  <span>Akses lebih cepat dari layar utama</span>',
+            '</div>',
+            '<button class="pwa-btn-install" id="pwa-install-btn">Pasang</button>',
+            '<button class="pwa-btn-close" id="pwa-dismiss-btn" title="Tutup">✕</button>',
+          ].join('');
+
+          document.body.appendChild(installBanner);
+
+          document.getElementById('pwa-install-btn').addEventListener('click', function () {
+            if (deferredPrompt) {
+              deferredPrompt.prompt();
+              deferredPrompt.userChoice.then(function (result) {
+                if (result.outcome === 'accepted') {
+                  localStorage.setItem('pwa_install_dismissed', '1');
+                }
+                deferredPrompt = null;
+              });
+            }
+            if (installBanner) installBanner.remove();
+          });
+
+          document.getElementById('pwa-dismiss-btn').addEventListener('click', function () {
+            localStorage.setItem('pwa_install_dismissed', '1');
+            if (installBanner) installBanner.remove();
+          });
+        });
+
+        window.addEventListener('appinstalled', function () {
+          localStorage.setItem('pwa_install_dismissed', '1');
+          if (installBanner) installBanner.remove();
+          console.log('[PWA] App berhasil dipasang!');
+        });
+      })();
+    </script>
+
   </body>
 </html>

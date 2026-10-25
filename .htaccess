@@ -510,5 +510,20 @@
     RewriteEngine On
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
+    # PWA: jangan route manifest.json dan sw.js ke CodeIgniter
+    RewriteCond %{REQUEST_URI} !manifest\.json [NC]
+    RewriteCond %{REQUEST_URI} !sw\.js [NC]
     RewriteRule ^(.*)$ index.php/$1 [L]
+</IfModule>
+
+# PWA: Service Worker harus bisa di-serve dari scope root
+<IfModule mod_headers.c>
+    <FilesMatch "sw\.js$">
+        Header set Service-Worker-Allowed "/"
+        Header set Cache-Control "no-cache, no-store, must-revalidate"
+    </FilesMatch>
+    <FilesMatch "manifest\.json$">
+        Header set Content-Type "application/manifest+json"
+        Header set Cache-Control "no-cache, no-store, must-revalidate"
+    </FilesMatch>
 </IfModule>

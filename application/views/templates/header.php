@@ -22,7 +22,17 @@
     <title><?=$title;?></title>
 
     <meta name="author" content="https://carvellonic.com">
-    <meta name="description" content="" />
+    <meta name="description" content="Sistem Manajemen Absensi Karyawan - LSS Absensi" />
+
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#696cff" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="LSS Absensi" />
+    <link rel="manifest" href="<?=base_url('manifest.json');?>" />
+    <link rel="apple-touch-icon" href="<?=base_url('favicon.png');?>" />
+
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="<?=base_url('assets/temp/');?>assets/logo/favicon.png" />
 
