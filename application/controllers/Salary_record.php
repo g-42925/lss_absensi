@@ -248,7 +248,8 @@ class Salary_record extends MY_Controller
       $isKabisat = checkdate(2, 29, $tahun);
       $awalBulan = date('Y-m-01');
       $akhirBulan = date('Y-m-t');
-      $recap = $this->db->query("select * from recap where employee_id = ? and date between ? and ? and required = ?", [$emp['pegawai_id'], $awalBulan, $akhirBulan, true])->num_rows();
+      $recap = $this->db->query("select * from recap where employee_id = ? and date between ? and ? and required = ? and isAlpha = ?", [$emp['pegawai_id'], $awalBulan, $akhirBulan, true,false])->num_rows();
+          
       $basicIncome = $isFebruari ? ($isKabisat ? $emp['salary'] / 24 : $emp['salary'] / 25) : $emp['salary'] / 26;
 
       $employees[$index]['totalPlus'] = array_sum(array_column($emp['plus'] ?? [], 'value'));
@@ -503,7 +504,7 @@ class Salary_record extends MY_Controller
       $isKabisat = checkdate(2, 29, $tahun);
       $awalBulan = date('Y-m-01', strtotime(date('Y') . '-' . $month . '-01'));
       $akhirBulan = date('Y-m-t', strtotime($awalBulan));
-      $recap = $this->db->query("select * from recap where employee_id = ? and date between ? and ? and required = ?", [$emp['pegawai_id'], $awalBulan, $akhirBulan, true])->num_rows();
+      $recap = $this->db->query("select * from recap where employee_id = ? and date between ? and ? and required = ? and isAlpha = ?", [$emp['pegawai_id'], $awalBulan, $akhirBulan, true,false])->num_rows();
       $basicIncome = $isFebruari ? ($isKabisat ? $emp['salary'] / 24 : $emp['salary'] / 25) : $emp['salary'] / 26;
 
       $employees[$index]['totalPlus'] = array_sum(array_column($emp['plus'] ?? [], 'value'));
@@ -685,7 +686,7 @@ class Salary_record extends MY_Controller
     $isKabisat = checkdate(2, 29, $tahun);
     $awalBulan = date('Y-m-01', strtotime(date('Y') . '-' . $month . '-01'));
     $akhirBulan = date('Y-m-t', strtotime($awalBulan));
-    $recap = $this->db->query("select * from recap where employee_id = ? and date between ? and ? and required = ?", [$employee['pegawai_id'], $awalBulan, $akhirBulan, true])->num_rows();
+    $recap = $this->db->query("select * from recap where employee_id = ? and date between ? and ? and required = ? and isAlpha = ?", [$employee['pegawai_id'], $awalBulan, $akhirBulan, true,false])->num_rows();
     $basicIncome = $isFebruari ? ($isKabisat ? $employee['salary'] / 24 : $employee['salary'] / 25) : $employee['salary'] / 26;
     $income = $recap * $basicIncome;
 

@@ -55,7 +55,7 @@ elseif (strpos($host, 'localhost') !== false || strpos($host, '127.0.0.1') !== f
   );
 }
 // 3. Jaringan Lokal IP 192.168.1.x
-elseif (strpos($host, '10.135.236.23') !== false) {
+elseif (strpos($host, '192.168.1.29') !== false) {
   $db['default'] = array(
     'dsn' => '',
     'hostname' => 'localhost',
