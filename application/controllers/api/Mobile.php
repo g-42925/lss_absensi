@@ -1138,42 +1138,25 @@ function login(){
             )->num_rows() > 0;
 
             if($serverDate < $tolerance){
-              if (!$hasException && $serverDate < (clone $dateTime1)->modify('-1 hour')) {
-    echo json_encode([
-      "success" => false,
-      "message" => "tidak bisa absen masuk sebelum waktunya"
-    ]);
-    return;
-  }
-
-  $this->db->where('pegawai_id', $post["pegawai_id"]);
-  $this->db->where('tanggal_absen', $tanggalHariIni);
-  $q = $this->db->update('tx_absensi', $data2);
-
-  $this->db->where('pegawai_id', $post['pegawai_id']);
-  $this->db->update('m_pegawai', ['signed_in' => true]);
-
-  echo json_encode(["success" => true, "message" => ""]);
-  return;
-                // if($serverDate < $dateTime1->modify('-1 hour')){
-                //     echo json_encode(
-                //         [
-                //             "success" => false,
-                //             "message" => "tidak bisa absen masuk sebelum waktunya"
-                //         ]
-                //     );
+                if($serverDate < $dateTime1->modify('-1 hour')){
+                    echo json_encode(
+                        [
+                            "success" => false,
+                            "message" => "tidak bisa absen masuk sebelum waktunya"
+                        ]
+                    );
                   
-                //     return;
-                // }
-                // else{
-                //     $this->db->where('pegawai_id',$post["pegawai_id"]);
-                //     $this->db->where('tanggal_absen',$tanggalHariIni);
-                //     $q = $this->db->update('tx_absensi',$data2);
-                //     $this->db->where('pegawai_id',$post['pegawai_id']);
-                //     $this->db->update('m_pegawai',['signed_in' => true]);
-                //     echo json_encode(["success" => true,"message" => ""]);
-                //     return;
-                // }
+                    return;
+                }
+                else{
+                    $this->db->where('pegawai_id',$post["pegawai_id"]);
+                    $this->db->where('tanggal_absen',$tanggalHariIni);
+                    $q = $this->db->update('tx_absensi',$data2);
+                    $this->db->where('pegawai_id',$post['pegawai_id']);
+                    $this->db->update('m_pegawai',['signed_in' => true]);
+                    echo json_encode(["success" => true,"message" => ""]);
+                    return;
+                }
               }
         }
         else{
