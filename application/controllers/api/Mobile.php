@@ -1124,19 +1124,6 @@ function login(){
                 
                 // works
             }
-
-            $empId = $post['pegawai_id'];
-
-            $hasException = $this->db->query(
-              "SELECT 1 FROM exception
-              WHERE employee_id = ?
-              AND status = 1
-              AND date = ?
-              AND type = ?
-              LIMIT 1",
-              [$empId, $tanggalHariIni, 'Absen Masuk']
-            )->num_rows() > 0;
-
             if($serverDate < $tolerance){
                 if($serverDate < $dateTime1->modify('-1 hour')){
                     echo json_encode(
