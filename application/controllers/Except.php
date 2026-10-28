@@ -118,7 +118,7 @@ class Except extends MY_Controller {
       $absensi = $this->db->query("select * from tx_absensi where pegawai_id = ? and tanggal_absen =  ?",[$exception['employee_id'],$exception['date']])->row_array();
       $leaveStatus = $this->db->query("select * from employee_leave_balance where employee_id = ? order by id desc limit 1",[$exception['employee_id']])->row_array();
 
-      if($this->session->userdata('division_id') === $employee['division_id'] && $this->session->userdata('employee_id') != $employee['pegawai_id'] ){
+      if(($this->session->userdata('division_id') === $employee['division_id'] && $this->session->userdata('employee_id') != $employee['pegawai_id'] ) || $this->session->userdata('role_id') == 1){
         if($status == "1" && $exception['is_csh']){
           if($leaveStatus['quota'] - $leaveStatus['used'] >= 0.5){
             $this->db->set(['used' => $leaveStatus['used'] + 0.5]);
