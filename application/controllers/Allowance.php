@@ -297,7 +297,6 @@ class Allowance extends MY_Controller {
       foreach ($allowances as $index => $allowanceId) {
         $value = $values[$index];
         $period = $dates[$index];
-        $overwrite = $overwrites[$index] === '1';
 
         // Validasi input dasar
         if (!is_numeric($value)) {
@@ -336,11 +335,10 @@ class Allowance extends MY_Controller {
           'allowance_id' => $allowanceId,
           'value' => $value,
           'payroll_period' => $period,
-          'overwrite' => $overwrite,
           'exist' => $exist
         ];
 
-        if (($overwrite && $exist) || $exist) {
+        if ($exist) {
           $conflicts[] = [
             'name' => $allowance['name'],
             'payroll_period' => $period
