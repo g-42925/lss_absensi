@@ -509,8 +509,10 @@ class Salary_record extends MY_Controller
 
       $employees[$index]['totalPlus'] = array_sum(array_column($emp['plus'] ?? [], 'value'));
       $employees[$index]['totalMinus'] = array_sum(array_column($emp['minus'] ?? [], 'value'));
+    
       $employees[$index]['income'] = ($recap * $basicIncome) + array_sum(array_column($emp['plus'] ?? [], 'value'));
       $employees[$index]['thp'] = $employees[$index]['income'] - $employees[$index]['totalMinus'];
+
 
       $thpGrandTotal += $employees[$index]['thp'];
     }
@@ -523,6 +525,7 @@ class Salary_record extends MY_Controller
       $this->load->view('module/salary_record/excel', $data);
       return;
     }
+
 
     $this->load->view('templates/header', $data);
     $this->load->view('templates/sidemenu', $data);
