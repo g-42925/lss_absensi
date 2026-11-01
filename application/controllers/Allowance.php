@@ -364,53 +364,87 @@ class Allowance extends MY_Controller {
 
       $this->db->trans_begin();
 
+      // foreach ($items as $item) {
+      //   $exist = null;
+
+      //   // Periksa ulang di dalam transaksi sebelum update.
+      //   if ($item['payroll_period'] !== '') {
+      //     $exist = $this->db->get_where('employee_allowance', [
+      //       'employee_id' => $id,
+      //       'allowance_id' => $item['allowance_id'],
+      //       'payroll_period' => $item['payroll_period']
+      //     ])->row_array();
+      //   }
+
+      //   if ($exist) {
+      //     $this->db->where(
+      //       [
+      //         'employee_id' => $id,
+      //         'allowance_id' => $item['allowance_id'],
+      //         'payroll_period' => $item['payroll_period']
+      //       ]
+      //     );
+      //     $this->db->delete('employee_allowance');
+      //     $this->db->where(
+      //       'employee_allowance_id',
+      //       $exist['employee_allowance_id']
+      //     );
+      //     $this->db->update('employee_allowance', [
+      //       'value' => $item['value']
+      //     ]);
+      //   } 
+      //   else {
+      //     $this->db->where(
+      //       [
+      //         'employee_id' => $id,
+      //         'allowance_id' => $item['allowance_id'],
+      //         'payroll_period' => $item['payroll_period']
+      //       ]
+      //     );
+      //     $this->db->delete('employee_allowance');
+      //     $this->db->insert('employee_allowance', [
+      //       'employee_allowance_id' => uniqid(),
+      //       'employee_id' => $id,
+      //       'allowance_id' => $item['allowance_id'],
+      //       'value' => $item['value'],
+      //       'payroll_period' => $item['payroll_period'],
+      //     ]);
+      //   }
+      // }
+
       foreach ($items as $item) {
-        $exist = null;
+  $exist = null;
 
-        // Periksa ulang di dalam transaksi sebelum update.
-        if ($item['payroll_period'] !== '') {
-          $exist = $this->db->get_where('employee_allowance', [
-            'employee_id' => $id,
-            'allowance_id' => $item['allowance_id'],
-            'payroll_period' => $item['payroll_period']
-          ])->row_array();
-        }
+  if ($item['payroll_period'] !== '') {
+    $exist = $this->db->get_where('employee_allowance', [
+      'employee_id' => $id,
+      'allowance_id' => $item['allowance_id'],
+      'payroll_period' => $item['payroll_period']
+    ])->row_array();
+  }
 
-        if ($exist) {
-          $this->db->where(
-            [
-              'employee_id' => $id,
-              'allowance_id' => $item['allowance_id'],
-              'payroll_period' => $item['payroll_period']
-            ]
-          );
-          $this->db->delete('employee_allowance');
-          $this->db->where(
-            'employee_allowance_id',
-            $exist['employee_allowance_id']
-          );
-          $this->db->update('employee_allowance', [
-            'value' => $item['value']
-          ]);
-        } 
-        else {
-          $this->db->where(
-            [
-              'employee_id' => $id,
-              'allowance_id' => $item['allowance_id'],
-              'payroll_period' => $item['payroll_period']
-            ]
-          );
-          $this->db->delete('employee_allowance');
-          $this->db->insert('employee_allowance', [
-            'employee_allowance_id' => uniqid(),
-            'employee_id' => $id,
-            'allowance_id' => $item['allowance_id'],
-            'value' => $item['value'],
-            'payroll_period' => $item['payroll_period'],
-          ]);
-        }
-      }
+  if ($exist) {
+    // Record sudah ada: cukup update nilainya.
+    $this->db->where(
+      'employee_allowance_id',
+      $exist['employee_allowance_id']
+    );
+
+    $this->db->update('employee_allowance', [
+      'value' => $item['value']
+    ]);
+  } 
+  else {
+    // Record belum ada: insert baru.
+    $this->db->insert('employee_allowance', [
+      'employee_allowance_id' => uniqid(),
+      'employee_id' => $id,
+      'allowance_id' => $item['allowance_id'],
+      'value' => $item['value'],
+      'payroll_period' => $item['payroll_period']
+    ]);
+  }
+}
 
       if ($this->db->trans_status() === FALSE) {
         $this->db->trans_rollback();
