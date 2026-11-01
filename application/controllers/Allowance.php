@@ -608,7 +608,7 @@ class Allowance extends MY_Controller {
     #[SkipPermission]
     function delete($allowanceId){
       $this->db->trans_begin();  // to start db transaction
-      $this->db->delete('employee_allowance',['allowance_id' => $allowanceUd]);
+      $this->db->delete('employee_allowance',['allowance_id' => $allowanceId]);
       $this->db->delete('allowance',['allowance_id' => $allowanceId]);
       if($this->db->trans_status() === FALSE) {
         $this->db->trans_rollback();
