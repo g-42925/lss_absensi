@@ -368,7 +368,7 @@ class Allowance extends MY_Controller {
         $exist = null;
 
         // Periksa ulang di dalam transaksi sebelum update.
-        if ($item['overwrite'] && $item['payroll_period'] !== '') {
+        if ($item['payroll_period'] !== '') {
           $exist = $this->db->get_where('employee_allowance', [
             'employee_id' => $id,
             'allowance_id' => $item['allowance_id'],
