@@ -10,7 +10,7 @@ $host = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : '';
 if (getenv('DB_HOST') !== false || strpos($host, 'sslip.io') !== false) {
   $db['default'] = array(
     'dsn'     => '',
-    'hostname' => getenv('DB_HOST') ?: '57robhyu1nqourxbgdst4fes:3306',
+    'hostname' => getenv('DB_HOST') ?: '57robhyu1nqourxbgdst4fes:3306', // Fallback ke nama service MySQL Coolify
     'username' => getenv('DB_USER') ?: 'root',
     'password' => getenv('DB_PASS') ?: 'nJPoQ5Rmxu7KLtsK4CYwgttc3Dasl2O0gjSzGimExvcYrXGI1QRAMZYmfU37jV2K',
     'database' => getenv('DB_NAME') ?: 'db_erp',
