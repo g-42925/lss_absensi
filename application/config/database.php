@@ -126,3 +126,11 @@ else {
     'save_queries' => TRUE
   );
 }
+
+log_message('error', '=== DATABASE CONFIG DEBUG ===');
+log_message('error', 'HTTP_HOST: ' . ($_SERVER['HTTP_HOST'] ?? 'NULL'));
+log_message('error', 'DB_HOST ENV: ' . var_export(getenv('DB_HOST'), true));
+log_message('error', 'ENVIRONMENT: ' . ENVIRONMENT);
+log_message('error', 'SELECTED DB HOST: ' . $db['default']['hostname']);
+log_message('error', 'SELECTED DB USER: ' . $db['default']['username']);
+log_message('error', 'SELECTED DB NAME: ' . $db['default']['database']);
