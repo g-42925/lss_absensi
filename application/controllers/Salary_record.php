@@ -354,13 +354,13 @@ class Salary_record extends MY_Controller
       "SELECT * FROM m_pegawai 
        WHERE company_id = ? 
          AND startWorkingAt <= ? 
-         AND (endWorkingAt IS NULL OR endWorkingAt >= ?)",
+         AND (endWorkingAt IS NULL OR endWorkingAt >= ?) and pegawai_id = 139",
       [$company, $akhirBulan, $awalBulan]
     )->result_array();
 
     foreach ($employees as $index => $emp) {
-      $awalBulan = date('Y-' . $month . '-01');
-      $akhirBulan = date('Y-' . $month . '-t');
+      $awalBulan = date('Y-m-01', strtotime(date('Y') . '-' . $month));
+      $akhirBulan = date('Y-m-t', strtotime(date('Y') . '-' . $month));
       $deduction = $this->db->query("select * from salary_deduction where employee_id = $emp[pegawai_id] and date between '$awalBulan' and '$akhirBulan'")->result_array();
       $employees[$index]['deduction'] = $deduction;
       $penalties = $this->db->query("SELECT * FROM warning WHERE MONTH(expired) >= {$data['filter']} AND employeeId = $emp[pegawai_id]")->result_array();
@@ -383,7 +383,7 @@ class Salary_record extends MY_Controller
         if ($d['deduction_type'] == 'clockout forget') {
           $clockoutForget += $d['amount'];
         }
-        if ($d['deduction_type'] == 'alpha-2') {
+        if ($d['deduction_type'] === 'alpha-2') {
           $alpha2 += $d['amount'];
         }
         if ($d['deduction_type'] == 'late penalty') {
@@ -498,6 +498,8 @@ class Salary_record extends MY_Controller
     }
 
     foreach ($employees as $index => $emp) {
+
+      
       $bulan = $month; // 1-12
       $tahun = date('Y');
       $isFebruari = $bulan == 2;
@@ -512,6 +514,8 @@ class Salary_record extends MY_Controller
     
       $employees[$index]['income'] = ($recap * $basicIncome) + array_sum(array_column($emp['plus'] ?? [], 'value'));
       $employees[$index]['thp'] = $employees[$index]['income'] - $employees[$index]['totalMinus'];
+
+      
 
 
       $thpGrandTotal += $employees[$index]['thp'];

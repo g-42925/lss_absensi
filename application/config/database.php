@@ -10,9 +10,9 @@ $host = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : '';
 if (getenv('DB_HOST') !== false || strpos($host, 'sslip.io') !== false) {
   $db['default'] = array(
     'dsn'     => '',
-    'hostname' => getenv('DB_HOST') ?: 'yb1m4buiisdlav5jyqhis2d0:3306', // Fallback ke nama service MySQL Coolify
+    'hostname' => getenv('DB_HOST') ?: '57robhyu1nqourxbgdst4fes:3306',
     'username' => getenv('DB_USER') ?: 'root',
-    'password' => getenv('DB_PASS') ?: 'iupm5OPBV7LYKWBsJiA5V68p3vDLLy54quMFAlzEGF0LI5mslBEL5kGW327GFwg9',
+    'password' => getenv('DB_PASS') ?: 'nJPoQ5Rmxu7KLtsK4CYwgttc3Dasl2O0gjSzGimExvcYrXGI1QRAMZYmfU37jV2K',
     'database' => getenv('DB_NAME') ?: 'db_erp',
     'dbdriver' => 'mysqli',
     'dbprefix' => '',
@@ -55,7 +55,7 @@ elseif (strpos($host, 'localhost') !== false || strpos($host, '127.0.0.1') !== f
   );
 }
 // 3. Jaringan Lokal IP 192.168.1.x
-elseif (strpos($host, '192.168.1.109') !== false) {
+elseif (strpos($host, '192.168.1.29') !== false) {
   $db['default'] = array(
     'dsn' => '',
     'hostname' => 'localhost',
