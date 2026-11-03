@@ -354,7 +354,7 @@ class Salary_record extends MY_Controller
       "SELECT * FROM m_pegawai 
        WHERE company_id = ? 
          AND startWorkingAt <= ? 
-         AND (endWorkingAt IS NULL OR endWorkingAt >= ?) and pegawai_id = 139",
+         AND (endWorkingAt IS NULL OR endWorkingAt >= ?)",
       [$company, $akhirBulan, $awalBulan]
     )->result_array();
 
