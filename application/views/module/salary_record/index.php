@@ -9,7 +9,7 @@
         </h1>
 
         <p class="text-sm text-gray-500">
-          Periode: Mei 2026
+          Periode: <?= $period ?>
         </p>
       </div>
       <div class="ml-auto">

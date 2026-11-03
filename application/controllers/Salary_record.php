@@ -34,6 +34,7 @@ class Salary_record extends MY_Controller
     $data['auth']       = authUser();
 
     $data['filter'] = date('m');
+    $data['period'] = date('F Y');
 
     $thpGrandTotal = 0;
 
@@ -289,6 +290,8 @@ class Salary_record extends MY_Controller
 
     $data['filter'] = $month;
 
+    $data['period'] = date('F Y', strtotime(date('Y') . '-' . $month . '-01'));
+
     $thpGrandTotal = 0;
 
     $data['months'] = [
@@ -354,7 +357,7 @@ class Salary_record extends MY_Controller
       "SELECT * FROM m_pegawai 
        WHERE company_id = ? 
          AND startWorkingAt <= ? 
-         AND (endWorkingAt IS NULL OR endWorkingAt >= ?)",
+         AND (endWorkingAt IS NULL OR endWorkingAt >= ?) and pegawai_id = 139",
       [$company, $akhirBulan, $awalBulan]
     )->result_array();
 
@@ -506,7 +509,7 @@ class Salary_record extends MY_Controller
       $isKabisat = checkdate(2, 29, $tahun);
       $awalBulan = date('Y-m-01', strtotime(date('Y') . '-' . $month . '-01'));
       $akhirBulan = date('Y-m-t', strtotime($awalBulan));
-      $recap = $this->db->query("select * from recap where employee_id = ? and date between ? and ? and required = ? and isAlpha = ?", [$emp['pegawai_id'], $awalBulan, $akhirBulan, true,false])->num_rows();
+      $recap = $this->db->query("select * from recap where employee_id = ? and date between ? and ? and required = ? and isAlpha = ?", [$emp['pegawai_id'], $awalBulan, $akhirBulan, true,false])->result_array();
       $basicIncome = $isFebruari ? ($isKabisat ? $emp['salary'] / 24 : $emp['salary'] / 25) : $emp['salary'] / 26;
 
       $employees[$index]['totalPlus'] = array_sum(array_column($emp['plus'] ?? [], 'value'));
