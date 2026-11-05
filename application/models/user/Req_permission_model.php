@@ -204,57 +204,57 @@ class Req_permission_model extends CI_Model {
 
         return $query;
 
-        // foreach ($query as $row) {
+        foreach ($query as $row) {
             
-        //     $query2 = $this->db->query("SELECT * FROM tx_request_izin_pegawai a LEFT JOIN m_pegawai b ON a.pegawai_id=b.pegawai_id WHERE a.request_izin_id='$row[request_izin_id]' AND b.is_del='n' ")->result_array();
+            $query2 = $this->db->query("SELECT * FROM tx_request_izin_pegawai a LEFT JOIN m_pegawai b ON a.pegawai_id=b.pegawai_id WHERE a.request_izin_id='$row[request_izin_id]' AND b.is_del='n' ")->result_array();
 
-        //     if ($row['tipe_request']=='s') {
-        //       $bgs = 'Sakit';
-        //     }else if ($row['tipe_request']=='i') {
-        //       $bgs = 'Izin';
-        //     }else if ($row['tipe_request']=='c') {
-        //       $bgs = 'Cuti';
-        //     }else if ($row['tipe_request']=='cb') {
-        //       $bgs = 'Cuti Bersama';
-        //     }else if ($row['tipe_request']=='ct') {
-        //       $bgs = 'Cuti Tahunan';
-        //     }else if ($row['tipe_request']=='csh') {
-        //       $bgs = 'Cuti Setengah Hari';
-        //     }else if ($row['tipe_request']=='tl') {
-        //       $bgs = 'Tugas Luar';
-        //     }else if ($row['tipe_request']=='lm') {
-        //       $bgs = 'Lembur';
-        //     }else{
-        //       $bgs = '';
-        //     }
+            if ($row['tipe_request']=='s') {
+              $bgs = 'Sakit';
+            }else if ($row['tipe_request']=='i') {
+              $bgs = 'Izin';
+            }else if ($row['tipe_request']=='c') {
+              $bgs = 'Cuti';
+            }else if ($row['tipe_request']=='cb') {
+              $bgs = 'Cuti Bersama';
+            }else if ($row['tipe_request']=='ct') {
+              $bgs = 'Cuti Tahunan';
+            }else if ($row['tipe_request']=='csh') {
+              $bgs = 'Cuti Setengah Hari';
+            }else if ($row['tipe_request']=='tl') {
+              $bgs = 'Tugas Luar';
+            }else if ($row['tipe_request']=='lm') {
+              $bgs = 'Lembur';
+            }else{
+              $bgs = '';
+            }
 
-        //     if ($row['is_status']==0) {
-        //         $status = 'Pending';
-        //     }else if ($row['is_status']==1) {
-        //       $status = 'Approved';
-        //     }else if ($row['is_status']==2) {
-        //       $status = 'Reject';
-        //     }else{
-        //       $status = 'Unknown';
-        //     }
+            if ($row['is_status']==0) {
+                $status = 'Pending';
+            }else if ($row['is_status']==1) {
+              $status = 'Approved';
+            }else if ($row['is_status']==2) {
+              $status = 'Reject';
+            }else{
+              $status = 'Unknown';
+            }
 
-        //     $totgl = '';
-        //     if ($row['tanggal_request_end']!='') {
-        //         $totgl = ' s/d '.indo($row['tanggal_request_end']);
-        //     }
+            $totgl = '';
+            if ($row['tanggal_request_end']!='') {
+                $totgl = ' s/d '.indo($row['tanggal_request_end']);
+            }
 
-        //     $data[] = array(
-        //         'id'                  => $row['request_izin_id'],
-        //         'tanggal'             => indo($row['tanggal_request']).$totgl,
-        //         'kategori'            => $bgs,
-        //         'j_masuk'             => $row['r_jam_masuk'],
-        //         'j_keluar'            => $row['r_jam_keluar'],
-        //         'pegawai'             => $query2,
-        //         'status'              => $status,
-        //         'tipe'                => $row['tipe_request']
-        //     );
-        // }
-        // return $data;
+            $data[] = array(
+                'id'                  => $row['request_izin_id'],
+                'tanggal'             => indo($row['tanggal_request']).$totgl,
+                'kategori'            => $bgs,
+                'j_masuk'             => $row['r_jam_masuk'],
+                'j_keluar'            => $row['r_jam_keluar'],
+                'pegawai'             => $query2,
+                'status'              => $status,
+                'tipe'                => $row['tipe_request']
+            );
+        }
+        return $data;
 
     }
 

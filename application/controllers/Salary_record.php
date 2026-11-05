@@ -633,7 +633,7 @@ class Salary_record extends MY_Controller
 
     $awalBulan = date('Y-m-01', strtotime(date('Y') . '-' . $month . '-01'));
     $akhirBulan = date('Y-m-t', strtotime($awalBulan));
-    $recap = $this->db->query("select * from recap where employee_id = ? and date between ? and ? and required = ?", [$employee['pegawai_id'], $awalBulan, $akhirBulan, true])->result_array();
+    $recap = $this->db->query("select * from recap where employee_id = ? and date between ? and ? and required = ? and isAlpha = ?", [$employee['pegawai_id'], $awalBulan, $akhirBulan, true])->result_array();
     $absences = $this->db->query("select * from tx_absensi where pegawai_id = ? and tanggal_absen between ? and ?", [$employee['pegawai_id'], $awalBulan, $akhirBulan])->result_array();
     foreach ($this->db->query("select * from allowance a join employee_allowance ea on a.allowance_id = ea.allowance_id where a.company_id = ? and ea.employee_id = ? and ea.payroll_period = ?", [$company, $employee['pegawai_id'], $awalBulan])->result_array() as $idx => $a) {
       if ($a['value'] > 0) {

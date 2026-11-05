@@ -2598,7 +2598,7 @@ function login(){
 
   public function log($empId){
     $from = date('Y').'-'.date('m').'-'.'01';
-    $to = date('Y').'-'.date('m').'-'.'31';
+    $to = date('Y-m-t');
     $q = $this->db->query("select * from tx_absensi where tanggal_absen between ? and ? and pegawai_id = ?",[$from,$to,$empId])->result_array();
     echo json_encode(
       [
