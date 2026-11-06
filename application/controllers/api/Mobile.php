@@ -1125,7 +1125,7 @@ function login(){
                 // works
             }
             if($serverDate < $tolerance){
-                if($serverDate < $dateTime1->modify('-1 hour')){
+                if($serverDate < $dateTime1->modify('-2 hour')){
                     echo json_encode(
                         [
                             "success" => false,

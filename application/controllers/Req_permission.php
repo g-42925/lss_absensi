@@ -36,7 +36,7 @@ class Req_permission extends MY_Controller {
         }
 
         $data['today'] = date('Y-m-d');
-        $data['tglakhir'] = date('Y-m-d');
+        $data['tglakhir'] = date('Y-m-t');
         if ($akhir!=null) {
             $data['tglakhir'] = $akhir;
         }
