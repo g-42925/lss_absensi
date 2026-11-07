@@ -176,7 +176,7 @@ class Req_permission_model extends CI_Model {
 	  public function get_data($tglawal,$tglakhr) {
         $data = array();
         $companyId = $this->session->userdata('company_id');
-	      $query = $this->db->query(" SELECT x.*, y.*, z.pegawai_id, z.nama_pegawai, z.is_del, m_u.nama_lengkap FROM tx_request_izin x JOIN tx_request_izin_pegawai y ON x.request_izin_id = y.request_izin_id JOIN m_pegawai z ON y.pegawai_id = z.pegawai_id right join m_user m_u on x.approvedBy = m_u.user_id WHERE x.company_id = ? AND z.is_del = 'n' AND DATE(x.tanggal_request) BETWEEN ? AND ? ORDER BY created_at DESC", [$companyId, $tglawal, $tglakhr])->result_array();
+	      $query = $this->db->query(" SELECT x.*, y.*, z.pegawai_id, z.nama_pegawai, z.is_del, m_u.nama_lengkap FROM tx_request_izin x JOIN tx_request_izin_pegawai y ON x.request_izin_id = y.request_izin_id JOIN m_pegawai z ON y.pegawai_id = z.pegawai_id left join m_user m_u on x.approvedBy = m_u.user_id WHERE x.company_id = ? AND z.is_del = 'n' AND DATE(x.tanggal_request) BETWEEN ? AND ? ORDER BY created_at DESC", [$companyId, $tglawal, $tglakhr])->result_array();
 
         foreach($query as $index => $r){
           if($r['tipe_request'] == "c"){
